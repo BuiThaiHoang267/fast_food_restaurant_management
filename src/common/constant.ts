@@ -16,17 +16,28 @@ export const bg_blue_800 = "#1E40AF";
 export const bg_blue_900 = "#1E3A8A";
 export const bg_blue_950 = "#172554";
 
-// Success
-export const Success50 = "#E6F4E6";
-export const Success100 = "#CCEACC";
-export const Success200 = "#99D599";
-export const Success300 = "#66BF66";
-export const Success400 = "#33AA33";
-export const Success500 = "#4BAC4D";
-export const Success600 = "#449944";
-export const Success700 = "#3D873D";
-export const Success800 = "#367636";
-export const Success900 = "#2F652F";
+// bg-green
+export const bg_green_50 = "#ECFDF5";
+export const bg_green_100 = "#D1FAE5";
+export const bg_green_200 = "#A7F3D0";
+export const bg_green_300 = "#6EE7B7";
+export const bg_green_400 = "#34D399";
+export const bg_green_500 = "#10B981";
+export const bg_green_600 = "#059669";
+export const bg_green_700 = "#047857";
+export const bg_green_800 = "#065F46";
+export const bg_green_900 = "#064E3B";
+
+export const success_50 = "#E9FBEF";
+export const success_100 = "#C8F2DA";
+export const success_200 = "#A3E8C2";
+export const success_300 = "#78DFAA";
+export const success_400 = "#4ED690";
+export const success_500 = "#22CC76";
+export const success_600 = "#1CA861";
+export const success_700 = "#15844D";
+export const success_800 = "#0E6038";
+export const success_900 = "#084426";
 
 // Grey
 export const Grey50 = "#f0f1f3";

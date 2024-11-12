@@ -1,6 +1,7 @@
 ﻿import {AppBar, Button, IconButton, Menu, MenuItem, Tooltip} from "@mui/material";
 import {useState} from "react";
 import CategoryIcon from '@mui/icons-material/Category';
+import { Link } from 'react-router-dom';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ListIcon from '@mui/icons-material/List';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
@@ -12,7 +13,7 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LunchDiningIcon from '@mui/icons-material/LunchDining';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import {bg_blue_500, bg_blue_700, bg_blue_800, color_white} from "../common/constant.ts";
+import {bg_blue_500, bg_blue_600, bg_blue_700, bg_blue_800, color_white} from "../common/constant.ts";
 
 const Navbar = () => {
     const navItemWidth = '125px';
@@ -31,19 +32,21 @@ const Navbar = () => {
     const handleUserMenuClose = () => setOpenUserMenu(null);
 
     return (
-        <AppBar position="static" sx={{'--AppBar-background': bg_blue_500, flexDirection: 'row'}}>
-            <div className="flex-row w-fit bg-inherit">
+        <AppBar position="static" sx={{'--AppBar-background': bg_blue_600, flexDirection: 'row'}}>
+            <div className="flex-row w-fit bg-inherit p-2">
                 {/*General*/}
-                <Button
-                    startIcon={<VisibilityIcon/>}
-                    color="inherit"
-                    sx={{
-                        width: navItemWidth,
-                        outline: 'none', // Remove outline
-                        '&:focus': {outline: 'none'},
-                    }}>
-                    Tổng quan
-                </Button>
+                <Link to="/">
+                    <Button
+                        startIcon={<VisibilityIcon/>}
+                        color="inherit"
+                        sx={{
+                            width: navItemWidth,
+                            outline: 'none', // Remove outline
+                            '&:focus': {outline: 'none'},
+                        }}>
+                        Tổng quan
+                    </Button>
+                </Link>
 
                 {/*Product*/}
                 <Button
@@ -79,13 +82,17 @@ const Navbar = () => {
                             color: color_white,
                         },
                     }}>
-                    <MenuItem className="flex w-full gap-2">
-                        <ListIcon fontSize="small"/>
-                        <div>Category</div>
+                    <MenuItem>
+                        <Link to="/product-category" className="flex w-full gap-2">
+                            <ListIcon fontSize="small"/>
+                            <div>Category</div>
+                        </Link>
                     </MenuItem>
-                    <MenuItem className="flex w-full gap-2">
-                        <LocalOfferIcon fontSize="small"/>
-                        <div>Price Setting</div>
+                    <MenuItem>
+                        <Link to="/product-price" className="flex w-full gap-2">
+                            <LocalOfferIcon fontSize="small"/>
+                            <div>Price Setting</div>
+                        </Link>
                     </MenuItem>
                 </Menu>
 
@@ -152,10 +159,11 @@ const Navbar = () => {
                     </MenuItem>
                 </Menu>
             </div>
-            <div className="flex-row ml-auto w-fit">
+            <div className="flex-row ml-auto w-fit content-center">
                 {/*Sales*/}
                 <Tooltip title="Sales">
                     <IconButton
+                        className="h-full"
                         color="inherit"
                         sx={{
                             backgroundColor: bg_blue_700,
@@ -173,6 +181,7 @@ const Navbar = () => {
                 {/*Kitchen*/}
                 <Tooltip title="Kitchen">
                     <IconButton
+                        className="h-full"
                         color="inherit"
                         sx={{
                             backgroundColor: bg_blue_700,
