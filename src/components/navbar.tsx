@@ -162,38 +162,42 @@ const Navbar = () => {
             <div className="flex-row ml-auto w-fit content-center">
                 {/*Sales*/}
                 <Tooltip title="Sales">
-                    <IconButton
-                        className="h-full"
-                        color="inherit"
-                        sx={{
-                            backgroundColor: bg_blue_700,
-                            borderRadius: '5%',
-                            '&:focus': {outline: 'none'},
-                            '&:hover': {
-                                backgroundColor: bg_blue_800,
-                            },
-                        }}
-                    >
-                        <AttachMoneyIcon/>
-                    </IconButton>
+                    <Link to="/sales">
+                        <IconButton
+                            className="h-full"
+                            color="inherit"
+                            sx={{
+                                backgroundColor: bg_blue_700,
+                                borderRadius: '5%',
+                                '&:focus': {outline: 'none'},
+                                '&:hover': {
+                                    backgroundColor: bg_blue_800,
+                                },
+                            }}
+                        >
+                            <AttachMoneyIcon/>
+                        </IconButton>
+                    </Link>
                 </Tooltip>
 
                 {/*Kitchen*/}
                 <Tooltip title="Kitchen">
-                    <IconButton
-                        className="h-full"
-                        color="inherit"
-                        sx={{
-                            backgroundColor: bg_blue_700,
-                            borderRadius: '5%',
-                            '&:focus': {outline: 'none'},
-                            '&:hover': {
-                                backgroundColor: bg_blue_800,
-                            },
-                        }}
-                    >
-                        <LunchDiningIcon/>
-                    </IconButton>
+                    <Link to="/kitchen">
+                        <IconButton
+                            className="h-full"
+                            color="inherit"
+                            sx={{
+                                backgroundColor: bg_blue_700,
+                                borderRadius: '5%',
+                                '&:focus': {outline: 'none'},
+                                '&:hover': {
+                                    backgroundColor: bg_blue_800,
+                                },
+                            }}
+                        >
+                            <LunchDiningIcon/>
+                        </IconButton>
+                    </Link>
                 </Tooltip>
 
                 {/*User*/}

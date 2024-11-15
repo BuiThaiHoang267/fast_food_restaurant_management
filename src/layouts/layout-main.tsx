@@ -1,11 +1,12 @@
 ﻿import Navbar from "../components/navbar.tsx";
+import {Outlet} from "react-router-dom";
 
-const LayoutMain : React.FC<{ children: React.ReactNode }> = ({children}) => {
+const LayoutMain = () => {
   return (
     <div className="bg-blue-50 h-screen w-screen flex flex-col">
         <Navbar></Navbar>
         <main className="flex-grow overflow-y-auto w-full h-full">
-            {children}
+            <Outlet />
         </main>
     </div>
   );

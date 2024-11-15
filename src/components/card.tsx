@@ -12,6 +12,7 @@
 } from "@mui/material"
 import SearchIcon from '@mui/icons-material/Search';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
 import {useState} from "react";
 
 interface SearchCardProps {
@@ -147,6 +148,95 @@ export const RadioBoxCard: React.FC<RadioBoxCardProps> = ({ title, options, sele
                     </FormControl>
                 )}
             </CardContent>
+        </Card>
+    );
+}
+
+interface ProductCardProps {
+    name: string;
+    price: number;
+    img?: string;
+}
+export const SalesProductCard: React.FC<ProductCardProps> = ({ name, price, img }) => {
+    return (
+        <Card
+            sx={{
+                width: 130,
+                height: 150,
+                borderRadius: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                boxShadow: 2,
+                overflow: 'hidden',
+                padding: 0,
+            }}
+        >
+            {/* Top Section with Image/Icon and Price */}
+            <div
+                style={{
+                    width: '100%',
+                    height: '60%',
+                    backgroundColor: '#E3F2FD', // Light blue background
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end', // Align price at the bottom
+                    paddingBottom: '0px', // Add padding at the bottom for spacing
+                }}
+            >
+                {img ? (
+                    <img src={img} alt={name} style={{ width: '50%', height: 'auto' }} />
+                ) : (
+                    <RestaurantIcon sx={{ fontSize: 30, color: '#90CAF9' }} />
+                )}
+                {/* Price with White Background and Border */}
+                <div
+                    style={{
+                        backgroundColor: '#fff',
+                        borderRadius: '4px 4px 0 0',
+                        padding: '0px 6px', // Reduced padding for smaller appearance
+                        marginTop: '4px',
+                        display: 'inline-block',
+                    }}
+                >
+                    <Typography
+                        variant="caption" // Changed to caption for a smaller font size
+                        sx={{
+                            color: '#1E88E5',
+                            fontWeight: 'bold',
+                            fontSize: '0.75rem', // 12px font size for smaller text
+                        }}
+                    >
+                        {price.toLocaleString()} đ
+                    </Typography>
+                </div>
+            </div>
+
+            {/* Bottom Section with Product Name */}
+            <div
+                style={{
+                    width: '100%',
+                    height: '40%',
+                    backgroundColor: '#F5F5F5', // Light gray background for name section
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start', // Align name at the top
+                    paddingTop: '0px', // Add padding at the top for spacing
+                    flexDirection: 'column',
+                }}
+            >
+                <Typography
+                    variant="caption"
+                    sx={{
+                        color: '#424242',
+                        fontSize: '0.75rem',
+                        fontWeight: 'bold',
+                    }}
+                >
+                    {name}
+                </Typography>
+            </div>
         </Card>
     );
 }
