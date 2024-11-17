@@ -156,10 +156,12 @@ interface ProductCardProps {
     name: string;
     price: number;
     img?: string;
+    onClick: () => void;
 }
-export const SalesProductCard: React.FC<ProductCardProps> = ({ name, price, img }) => {
+export const SalesProductCard: React.FC<ProductCardProps> = ({ name, price, img, onClick }) => {
     return (
         <Card
+            onClick={onClick}
             sx={{
                 width: 130,
                 height: 150,
@@ -167,9 +169,14 @@ export const SalesProductCard: React.FC<ProductCardProps> = ({ name, price, img 
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                boxShadow: 2,
                 overflow: 'hidden',
                 padding: 0,
+                transition: 'box-shadow 0.2s ease-in-out', // Smooth transition for hover effect
+                boxShadow: 'none', // No shadow in normal state
+                cursor: 'pointer', // Indicate the card is clickable
+                '&:hover': {
+                    boxShadow: 4, // Add shadow on hover
+                },
             }}
         >
             {/* Top Section with Image/Icon and Price */}
@@ -208,7 +215,7 @@ export const SalesProductCard: React.FC<ProductCardProps> = ({ name, price, img 
                             fontSize: '0.75rem', // 12px font size for smaller text
                         }}
                     >
-                        {price.toLocaleString()} đ
+                        {price.toLocaleString()}
                     </Typography>
                 </div>
             </div>

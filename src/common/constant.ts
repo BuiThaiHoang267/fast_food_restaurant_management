@@ -39,17 +39,17 @@ export const success_700 = "#15844D";
 export const success_800 = "#0E6038";
 export const success_900 = "#084426";
 
-// Grey
-export const Grey50 = "#f0f1f3";
-export const Grey100 = "#d0d3d9";
-export const Grey200 = "#b9bdc7";
-export const Grey300 = "#989fad";
-export const Grey400 = "#858d9d";
-export const Grey500 = "#667085";
-export const Grey600 = "#5d6679";
-export const Grey700 = "#48505e";
-export const Grey800 = "#383e49";
-export const Grey900 = "#2b2f38";
+// bg_grey
+export const bg_grey_50 = "#F9FAFB";
+export const bg_grey_100 = "#F3F4F6";
+export const bg_grey_200 = "#E5E7EB";
+export const bg_grey_300 = "#D1D5DB";
+export const bg_grey_400 = "#9CA3AF";
+export const bg_grey_500 = "#6B7280";
+export const bg_grey_600 = "#4B5563";
+export const bg_grey_700 = "#374151";
+export const bg_grey_800 = "#1F2937";
+export const bg_grey_900 = "#111827";
 
 // Error
 export const Error50 = "#FFEAEA";
