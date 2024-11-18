@@ -40,7 +40,7 @@ const Navbar = () => {
                         startIcon={<VisibilityIcon/>}
                         color="inherit"
                         sx={{
-                            width: navItemWidth,
+                            padding: '0 10px',
                             outline: 'none', // Remove outline
                             '&:focus': {outline: 'none'},
                         }}>
@@ -55,7 +55,7 @@ const Navbar = () => {
                     // onMouseLeave={handleMenuClose}
                     color="inherit"
                     sx={{
-                        width: navItemWidth,
+                        padding: '0 10px',
                         outline: 'none', // Remove outline
                         '&:focus': {outline: 'none'},
                     }}>
@@ -101,7 +101,7 @@ const Navbar = () => {
                     startIcon={<PeopleIcon/>}
                     color="inherit"
                     sx={{
-                        width: navItemWidth,
+                        padding: '0 10px',
                         outline: 'none', // Remove outline
                         '&:focus': {outline: 'none'},
                     }}>
@@ -114,7 +114,7 @@ const Navbar = () => {
                     onMouseEnter={handleReportMenuOpen}
                     color="inherit"
                     sx={{
-                        width: navItemWidth,
+                        padding: '0 10px',
                         outline: 'none', // Remove outline
                         '&:focus': {outline: 'none'},
                     }}>
