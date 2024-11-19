@@ -96,7 +96,7 @@ export const InputNumber: React.FC<InputNumberProps> = ({ label, value, onChange
                 value={value}
                 onChange={ handleChange}
                 sx={{
-                    width: '65%',
+                    width: '70%',
                     fontSize: '0.8rem',
                     textAlign: 'end',
                     '& input': {
@@ -107,3 +107,46 @@ export const InputNumber: React.FC<InputNumberProps> = ({ label, value, onChange
         </div>
     );
 }
+
+interface InputQuantityProps {
+    value: number;
+    onChange: (value: number) => void;
+}
+
+export const InputQuantity: React.FC<InputQuantityProps> = ({value, onChange }) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+
+        // Nếu người dùng xóa hết thì set giá trị thành chuỗi rỗng
+        if (inputValue === '') {
+            onChange("");
+            return;
+        }
+
+        // Chỉ set giá trị nếu nó là số hợp lệ
+        const numericValue = Number(inputValue);
+        if (!isNaN(numericValue)) {
+            onChange(numericValue);
+        }
+    };
+
+    return (
+        <div className="flex items-center justify-between">
+            <TextField
+                type="text"
+                variant="standard"
+                value={value}
+                onChange={ handleChange}
+                sx={{
+                    width: '50px',
+                    fontSize: '0.8rem',
+                    textAlign: 'end',
+                    '& input': {
+                        textAlign: 'end',
+                    },
+                }}
+            />
+        </div>
+    );
+}
+

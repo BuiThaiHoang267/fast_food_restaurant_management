@@ -10,15 +10,13 @@ import {
     Paper,
     Button,
     Typography, Checkbox,
-    TablePagination, Menu, MenuItem, Dialog, DialogContent, Card, CardContent
+    TablePagination, Menu, MenuItem,
 } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import ListIcon from '@mui/icons-material/List';
-import {bg_blue_300, bg_blue_500, color_black, color_white, success_600, success_700} from "../common/constant.ts";
+import { color_black, color_white, success_600, success_700} from "../common/constant.ts";
 import {Link} from "react-router-dom";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-import {InputDropdown, InputNumber, InputText} from "../components/input.tsx";
-import {red} from "@mui/material/colors";
 import DialogAddProduct from "../components/dialog-add-product.tsx";
 
 const ProductCategoryPage = () => {
@@ -52,8 +50,7 @@ const ProductCategoryPage = () => {
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [testText, setTestText] = useState('');
-    const [testNumber, setTestNumber] = useState(0);
+
 
     const handleRadioChange = (value: string) => {
         setRadioSelectedValue(value);
