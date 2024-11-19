@@ -1,4 +1,5 @@
 ﻿import {
+    ButtonGroup,
     Card,
     CardContent,
     Checkbox,
@@ -13,7 +14,11 @@
 import SearchIcon from '@mui/icons-material/Search';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import RemoveIcon from '@mui/icons-material/Remove';
+import AddIcon from '@mui/icons-material/Add';
 import {useState} from "react";
+import {bg_blue_800} from "../common/constant.ts";
 
 interface SearchCardProps {
     title: string;
@@ -154,17 +159,17 @@ export const RadioBoxCard: React.FC<RadioBoxCardProps> = ({ title, options, sele
 
 interface ProductCardProps {
     name: string;
-    price: number;
+    price: number
     img?: string;
-    onClick: () => void;
+    onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
-export const SalesProductCard: React.FC<ProductCardProps> = ({ name, price, img, onClick }) => {
+export const SalesProductCard: React.FC<ProductCardProps> = ({name, price, img, onClick }) => {
     return (
         <Card
             onClick={onClick}
             sx={{
-                width: 130,
-                height: 150,
+                width: 140,
+                height: 160,
                 borderRadius: 2,
                 display: 'flex',
                 flexDirection: 'column',
@@ -247,3 +252,176 @@ export const SalesProductCard: React.FC<ProductCardProps> = ({ name, price, img,
         </Card>
     );
 }
+
+interface OrderProductCardProps {
+    index: number
+    name: string;
+    childNames: string[];
+    quantity: number; // Controlled by parent
+    price: number;
+    onQuantityChange: (newQuantity: number) => void;
+    onDelete: () => void;
+}
+export const OrderProductCard: React.FC<OrderProductCardProps> = ({index, name, childNames, quantity, price, onQuantityChange, onDelete,}) => {
+    const handleIncrement = () => {
+        onQuantityChange(quantity + 1); // Notify parent of increment
+    };
+
+    const handleDecrement = () => {
+        if (quantity > 1) {
+            onQuantityChange(quantity - 1); // Notify parent of decrement
+        }
+    };
+
+    return (
+        <div
+            className="transition-shadow hover:shadow-md"
+            style={{
+                border: '1px solid transparent', // No border by default
+                borderRadius: 0, // No rounded corners
+                transition: 'border-color 0.3s, box-shadow 0.3s',
+            }}
+            onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = bg_blue_800; // Blue border on hover
+            }}
+            onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'transparent'; // Reset border on mouse leave
+            }}
+        >
+            {/* Order Item */}
+            <div className="flex justify-between items-center p-4">
+                {/* Product Name */}
+                <div className="flex-grow max-w-[200px]">
+                    <Typography
+                        variant="body1"
+                        sx={{
+                            fontWeight: 'bold',
+                            whiteSpace: 'normal', // Allow wrapping
+                            wordWrap: 'break-word', // Break words if they are too long
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                        }}
+                    >
+                        {index + 1}. {name}
+                    </Typography>
+                    <div>
+                        {childNames.map((child, index) => (
+                            <Typography
+                                key={index}
+                                variant="body2"
+                                sx={{
+                                    fontSize: '0.875rem',
+                                    color: '#666', // Grey color for child items
+                                    display: 'block', // Ensure each child is on a new line
+                                }}
+                            >
+                                {`${index + 1} ${child}`}
+                            </Typography>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Quantity Controls */}
+                <div className="flex items-center flex-shrink-0 gap-2">
+                    <ButtonGroup
+                        size="small"
+                        variant="outlined"
+                        sx={{
+                            borderRadius: '12px',
+                            '& .MuiButtonGroup-grouped:not(:last-of-type)': {
+                                borderColor: '#ddd',
+                            },
+                            '& .MuiButtonGroup-grouped': {
+                                minWidth: '30px',
+                                padding: '2px 6px',
+                            },
+                        }}
+                    >
+                        <IconButton
+                            onClick={handleDecrement}
+                            sx={{
+                                border: '1px solid',
+                                borderColor: bg_blue_800,
+                                borderBottomRightRadius: '0',
+                                borderTopRightRadius: '0',
+                                borderRight: '0',
+                                padding: '4px',
+                                minWidth: '24px',
+                            }}
+                        >
+                            <RemoveIcon fontSize="small" />
+                        </IconButton>
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                padding: '0 8px',
+                                border: '1px solid',
+                                borderColor: bg_blue_800,
+                                borderLeft: '0',
+                                borderRight: '0',
+                                minWidth: '32px',
+                            }}
+                        >
+                            {quantity}
+                        </Typography>
+                        <IconButton
+                            onClick={handleIncrement}
+                            sx={{
+                                border: '1px solid',
+                                borderColor: bg_blue_800,
+                                borderBottomLeftRadius: '0',
+                                borderTopLeftRadius: '0',
+                                borderLeft: '0',
+                                padding: '4px',
+                                minWidth: '24px',
+                            }}
+                        >
+                            <AddIcon fontSize="small" />
+                        </IconButton>
+                    </ButtonGroup>
+                </div>
+
+                {/* Price and Delete */}
+                <div className="flex items-center gap-4 flex-shrink-0">
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            width: '100px', // Fixed width for price
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            textAlign: 'right',
+                        }}
+                    >
+                        {(price).toLocaleString()}đ
+                    </Typography>
+                    <Typography
+                        sx={{
+                            fontWeight: 'bold',
+                            width: '100px', // Fixed width for price
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            textAlign: 'right',
+                        }}
+                    >
+                        {(quantity * price).toLocaleString()}đ
+                    </Typography>
+                    <IconButton
+                        size="small"
+                        onClick={onDelete}
+                        color="error"
+                        sx={{
+                            flexShrink: 0,
+                        }}
+                    >
+                        <DeleteOutlineIcon fontSize="small" />
+                    </IconButton>
+                </div>
+            </div>
+        </div>
+    );
+};
