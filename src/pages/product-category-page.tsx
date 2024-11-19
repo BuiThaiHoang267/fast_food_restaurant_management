@@ -10,11 +10,14 @@ import {
     Paper,
     Button,
     Typography, Checkbox,
-    TablePagination
+    TablePagination, Menu, MenuItem,
 } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import ListIcon from '@mui/icons-material/List';
-import {success_600, success_700} from "../common/constant.ts";
+import { color_black, color_white, success_600, success_700} from "../common/constant.ts";
+import {Link} from "react-router-dom";
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
+import DialogAddProduct from "../components/dialog-add-product.tsx";
 
 const ProductCategoryPage = () => {
     const [categoryOptions, setCategoryOptions] = useState([
@@ -42,9 +45,12 @@ const ProductCategoryPage = () => {
     ];
 
     const [radioSelectedValue, setRadioSelectedValue] = useState('all');
+    const [openFilterTable, setOpenFilterTable] = useState<null | HTMLElement>(null);
+    const [openDialogAdd, setOpenDialogAdd] = useState(false);
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
+
 
     const handleRadioChange = (value: string) => {
         setRadioSelectedValue(value);
@@ -91,6 +97,18 @@ const ProductCategoryPage = () => {
         setPage(0); // Reset to first page
     };
 
+    const handleFilterTableOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setOpenFilterTable(event.currentTarget);
+    }
+
+    const handleFilterTableClose = () => {
+        setOpenFilterTable(null);
+    }
+
+    const handleDialogAddClose = () => {
+        setOpenDialogAdd(false);
+    }
+
     // Determine rows to display on the current page
     const displayedRows = data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
@@ -99,7 +117,7 @@ const ProductCategoryPage = () => {
             <div className="w-3/12 flex-col pl-10 pr-5 py-5 space-y-4">
                 <SearchCard title="Tìm kiếm" placeholder="Theo mã, tên hàng" onSearch={handleSearch}/>
                 <CheckBoxCard title="Loại hàng" options={categoryOptions} onChange={handleCategoryCardChange} />
-                <RadioBoxCard title="Tồn kho" options={radioOptionsData} selectedValue={radioSelectedValue} onChange={handleRadioChange}/>
+                {/*<RadioBoxCard title="Tồn kho" options={radioOptionsData} selectedValue={radioSelectedValue} onChange={handleRadioChange}/>*/}
             </div>
             <div className="flex-grow flex-col pl-5 pr-10 py-5 space-y-2">
                 <div className="flex items-center justify-between">
@@ -111,6 +129,7 @@ const ProductCategoryPage = () => {
                             variant="contained"
                             color="primary"
                             startIcon={<AddIcon />}
+                            onClick={() => setOpenDialogAdd(true)}
                             sx={{
                                 backgroundColor: success_600,
                                 '&:hover': {
@@ -120,9 +139,11 @@ const ProductCategoryPage = () => {
                         >
                             Thêm mới
                         </Button>
+                        <DialogAddProduct open={openDialogAdd} onClose={handleDialogAddClose}></DialogAddProduct>
                         <Button
                             variant="contained"
                             color="primary"
+                            onClick={handleFilterTableOpen}
                             sx={{
                                 backgroundColor: success_600,
                                 '&:hover': {
@@ -130,12 +151,46 @@ const ProductCategoryPage = () => {
                                 },
                             }}
                         >
-                            <ListIcon />
+                            <ListIcon/>
                         </Button>
+                        <Menu
+                            anchorEl={openFilterTable}
+                            open={Boolean(openFilterTable)}
+                            onClose={handleFilterTableClose}
+                            MenuListProps={{
+                                onAuxClick: handleFilterTableClose,
+                            }}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            sx={{
+                                '& .MuiPaper-root': {
+                                    backgroundColor: color_white,
+                                    color: color_black,
+                                },
+                            }}>
+                            <MenuItem>
+                                <Link to="/product-category" className="flex w-full gap-2">
+                                    <ListIcon fontSize="small"/>
+                                    <div>Category</div>
+                                </Link>
+                            </MenuItem>
+                            <MenuItem>
+                                <Link to="/product-price" className="flex w-full gap-2">
+                                    <LocalOfferIcon fontSize="small"/>
+                                    <div>Price Setting</div>
+                                </Link>
+                            </MenuItem>
+                        </Menu>
                     </div>
                 </div>
 
-                <TableContainer component={Paper} sx={{ maxWidth: 850, maxHeight: 500, overflow: 'auto' }}>
+                <TableContainer component={Paper} sx={{ overflow: 'auto' }}>
                     <Table
                         stickyHeader
                         aria-label="scrollable product table"
