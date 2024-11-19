@@ -284,12 +284,7 @@ const SalesPage = () => {
             {/* Right Section */}
             <div className="flex flex-col flex-1 bg-white">
                 {/* Tabs for Orders */}
-                <div
-                    className="flex items-end justify-between px-4 h-12"
-                    style={{
-                        backgroundColor: bg_blue_800,
-                    }}
-                >
+                <div className="flex items-end justify-between px-4 h-12 bg-blue-800">
                     <div className="flex items-center gap-2 flex-1">
                         <Tabs
                             value={tabValue}
@@ -423,6 +418,7 @@ const SalesPage = () => {
                     {orders[tabValue]?.map((product, index) => (
                         <React.Fragment key={index}>
                             <OrderProductCard
+                                index={index}
                                 name={product.name}
                                 childNames={product.childNames || []}
                                 quantity={product.quantity || 1} // Pass quantity from parent state
@@ -477,8 +473,8 @@ const SalesPage = () => {
                             variant="outlined"
                             sx={{
                                 flex: 1,
-                                color: '#1565C0',
-                                borderColor: '#1565C0',
+                                color: bg_blue_600,
+                                borderColor: bg_blue_600,
                                 borderRadius: '12px', // Increased border radius for a larger look
                                 textTransform: 'none', // Keep the text normal case
                                 fontSize: '1rem', // Larger font size
@@ -488,7 +484,7 @@ const SalesPage = () => {
                                 fontWeight: 600, // Bolder text
                                 padding: '12px 16px', // Larger padding for a bigger button
                                 '&:hover': {
-                                    borderColor: '#0D47A1',
+                                    borderColor: bg_blue_800,
                                     backgroundColor: 'rgba(21, 101, 192, 0.1)', // Slight blue background on hover
                                 },
                             }}
@@ -502,7 +498,7 @@ const SalesPage = () => {
                             variant="contained"
                             sx={{
                                 flex: 3,
-                                backgroundColor: '#1565C0',
+                                backgroundColor: bg_blue_600,
                                 color: '#fff',
                                 borderRadius: '12px', // Increased border radius for a larger look
                                 textTransform: 'none', // Keep the text normal case
@@ -513,7 +509,7 @@ const SalesPage = () => {
                                 fontWeight: 600, // Bolder text
                                 padding: '12px 16px', // Larger padding for a bigger button
                                 '&:hover': {
-                                    backgroundColor: '#0D47A1', // Darker blue on hover
+                                    backgroundColor: '', // Darker blue on hover
                                 },
                             }}
                             onClick={handleCheckout}

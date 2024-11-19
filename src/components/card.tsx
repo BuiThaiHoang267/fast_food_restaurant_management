@@ -163,7 +163,7 @@ interface ProductCardProps {
     img?: string;
     onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
-export const SalesProductCard: React.FC<ProductCardProps> = ({ name, price, img, onClick }) => {
+export const SalesProductCard: React.FC<ProductCardProps> = ({name, price, img, onClick }) => {
     return (
         <Card
             onClick={onClick}
@@ -254,6 +254,7 @@ export const SalesProductCard: React.FC<ProductCardProps> = ({ name, price, img,
 }
 
 interface OrderProductCardProps {
+    index: number
     name: string;
     childNames: string[];
     quantity: number; // Controlled by parent
@@ -261,7 +262,7 @@ interface OrderProductCardProps {
     onQuantityChange: (newQuantity: number) => void;
     onDelete: () => void;
 }
-export const OrderProductCard: React.FC<OrderProductCardProps> = ({name, childNames, quantity, price, onQuantityChange, onDelete,}) => {
+export const OrderProductCard: React.FC<OrderProductCardProps> = ({index, name, childNames, quantity, price, onQuantityChange, onDelete,}) => {
     const handleIncrement = () => {
         onQuantityChange(quantity + 1); // Notify parent of increment
     };
@@ -301,7 +302,7 @@ export const OrderProductCard: React.FC<OrderProductCardProps> = ({name, childNa
                             textOverflow: 'ellipsis',
                         }}
                     >
-                        {name}
+                        {index + 1}. {name}
                     </Typography>
                     <div>
                         {childNames.map((child, index) => (
