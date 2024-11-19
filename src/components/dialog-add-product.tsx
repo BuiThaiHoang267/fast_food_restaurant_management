@@ -8,10 +8,10 @@ import {
     TableRow,
     Typography
 } from "@mui/material";
-import {InputDropdown, InputNumber, InputQuantity, InputText} from "./input.tsx";
+import {InputDropdown, InputNumber, InputQuantity, InputSearchProduct, InputText} from "./input.tsx";
 import {
     bg_blue_300,
-    bg_blue_500,
+    bg_blue_500, bg_blue_600,
     color_black,
     Error600,
     success_600,
@@ -19,6 +19,8 @@ import {
 } from "../common/constant.ts";
 import ClearIcon from '@mui/icons-material/Clear';
 import {useState, useEffect} from "react";
+import ProductDTO from "../dtos/ProductDTO.ts";
+import {productService} from "../services/ProductService.ts";
 
 interface DialogAddProductProps {
     open: boolean;
@@ -32,9 +34,26 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
         {id: "3", name: "Cơm thịt kho", quantity: 1, cost: 20000, price: 25000},
     ]);
 
+    const sampleRecommendations = ["Pizza", "Burger", "Fries", "Coke", "Salad", "Poco", "Pasta", "Noodles", "Rice", "Biryani", "Gà giòn vui vẻ"];
+
     const [testText, setTestText] = useState("");
     const [testNumber, setTestNumber] = useState(0);
     const [isCombo, setIsCombo] = useState(false);
+    const [product, setProduct] = useState<ProductDTO[]>([]);
+
+    useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                const allProducts = await productService.getAllProduct();
+                setProduct(allProducts);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
+
+        fetchProduct();
+    },[]);
 
     useEffect(() => {
         setTestNumber(0);
@@ -93,7 +112,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
             }}
         >
             <div className="p-5">
-                <Typography variant="h6" component="div" gutterBottom sx={{fontWeight: 'bold'}}>
+                <Typography variant="h6" component="div" gutterBottom sx={{fontWeight: 'bold', color: bg_blue_600}}>
                     Thêm Món ăn - Combo
                 </Typography>
                 <div className={"flex flex-row gap-14"}>
@@ -115,9 +134,12 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
                 </div>
                 {isCombo && (
                     <div className={"mt-6 flex flex-col"}>
-                        <div style={{width: '560px',}}>
-                            <InputText label={"Chọn món ăn"} placeholder={""} value={testText}
-                                       onChange={setTestText}/>
+                        <div style={{width: '400px',}}>
+                            <InputSearchProduct
+                                value={testText}
+                                onChange={setTestText}
+                                recommendations={product.map((item) => item.name)}
+                            ></InputSearchProduct>
                         </div>
                         <Table
                             stickyHeader
