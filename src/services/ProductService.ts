@@ -8,7 +8,23 @@ export const productService = {
         try{
             const response = await axiosInstance.get(PRODUCT_API.GET_ALL_PRODUCT);
             console.log(response);
-            return response.data.data.map(ProductDTO.fromJSON);
+            const data = response.data.data.map(ProductDTO.fromJSON)
+            console.log(data);
+            return data;
+        }
+        catch (error){
+            console.error(error);
+            throw error;
+        }
+    },
+
+    getByTypeProduct: async (): Promise<ProductDTO[]> => {
+        try{
+            const response = await axiosInstance.get(PRODUCT_API.GET_PRODUCT_BY_TYPE_PRODUCT);
+            console.log(response);
+            const data = response.data.data.map(ProductDTO.fromJSON)
+            console.log(data);
+            return data;
         }
         catch (error){
             console.error(error);

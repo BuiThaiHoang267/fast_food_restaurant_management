@@ -2,6 +2,7 @@ import {IconButton, InputAdornment, Menu, MenuItem, TextField} from "@mui/materi
 import {bg_green_500, bg_green_600, color_black, color_white} from "../common/constant.ts";
 import SearchIcon from "@mui/icons-material/Search";
 import React, {useState} from "react";
+import ProductDTO from "../dtos/ProductDTO.ts";
 
 interface InputTextProps {
     label: string;
@@ -156,10 +157,11 @@ export const InputQuantity: React.FC<InputQuantityProps> = ({value, onChange }) 
 interface InputSearchProductProps {
     value: string;
     onChange: (value: string) => void;
-    recommendations: string[];
+    recommendations: ProductDTO[];
+    onClickItem?: (value: ProductDTO) => void;
 }
 
-export const InputSearchProduct: React.FC<InputSearchProductProps> = ({ value, onChange, recommendations}) => {
+export const InputSearchProduct: React.FC<InputSearchProductProps> = ({ value, onChange, recommendations, onClickItem}) => {
     const [showSuggestions, setShowSuggestions] = useState(false);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,9 +169,12 @@ export const InputSearchProduct: React.FC<InputSearchProductProps> = ({ value, o
         setShowSuggestions(e.target.value.length > 0);
     };
 
-    const handleSelectSuggestion = (suggestion: string) => {
-        onChange(suggestion);
-        setShowSuggestions(false); // Ẩn danh sách khi người dùng chọn
+    const handleSelectSuggestion = (suggestion: ProductDTO) => {
+        onChange(suggestion.name);
+        setShowSuggestions(false);
+        if(onClickItem) {
+            onClickItem(suggestion);
+        }
     };
 
     return (
@@ -213,10 +218,10 @@ export const InputSearchProduct: React.FC<InputSearchProductProps> = ({ value, o
                 }}
             />
             {showSuggestions && (
-                <ul className="absolute overflow-y-auto bg-white shadow-lg z-10" style={{width: "400px"}}>
+                <ul className="absolute overflow-y-auto bg-white shadow-lg z-10" style={{width: "400px", maxHeight:"260px"}}>
                     {recommendations
                         .filter((item) =>
-                            item.toLowerCase().includes(value.toLowerCase())
+                            item.name.toLowerCase().includes(value.toLowerCase())
                         )
                         .map((item, index) => (
                             <li
@@ -224,7 +229,7 @@ export const InputSearchProduct: React.FC<InputSearchProductProps> = ({ value, o
                                 className="px-4 py-2 cursor-pointer hover:bg-gray-100"
                                 onClick={() => handleSelectSuggestion(item)}
                             >
-                                {item}
+                                {item.name}
                             </li>
                         ))}
                 </ul>

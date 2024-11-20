@@ -21,6 +21,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import {useState, useEffect} from "react";
 import ProductDTO from "../dtos/ProductDTO.ts";
 import {productService} from "../services/ProductService.ts";
+import ComboItemDTO from "../dtos/ComboItemDTO.ts";
 
 interface DialogAddProductProps {
     open: boolean;
@@ -28,23 +29,16 @@ interface DialogAddProductProps {
 }
 
 const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
-    const [data,setData] = useState([
-        {id: "1", name: "Cơm gà", quantity: 1, cost: 10000, price: 15000},
-        {id: "2", name: "Cơm sườn", quantity: 1, cost: 15000, price: 20000},
-        {id: "3", name: "Cơm thịt kho", quantity: 1, cost: 20000, price: 25000},
-    ]);
-
-    const sampleRecommendations = ["Pizza", "Burger", "Fries", "Coke", "Salad", "Poco", "Pasta", "Noodles", "Rice", "Biryani", "Gà giòn vui vẻ"];
-
     const [testText, setTestText] = useState("");
     const [testNumber, setTestNumber] = useState(0);
     const [isCombo, setIsCombo] = useState(false);
     const [product, setProduct] = useState<ProductDTO[]>([]);
+    const [comboItems, setComboItems] = useState<ComboItemDTO[]>([]);
 
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const allProducts = await productService.getAllProduct();
+                const allProducts = await productService.getByTypeProduct();
                 setProduct(allProducts);
             }
             catch (error) {
@@ -59,6 +53,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
         setTestNumber(0);
         setTestText("");
         setIsCombo(false);
+        setComboItems([]);
     },[open]);
 
     const handleDialogClose = () => {
@@ -74,29 +69,37 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
         }
     }
 
-    const handleDeleteProductInCombo = (id: string) => {
-        setData((prevData) => {
-            return prevData.filter((item) => item.id !== id);
-        })
+    const handleAddProductToCombo = (product: ProductDTO) => {
+        const comboItem = new ComboItemDTO(0,0,0,0,0,0,"","");
+        comboItem.fromProductDTO(product);
+        setComboItems((prevData) => {
+            return [...prevData, comboItem];
+        });
     }
 
-    const handleEditQuantity = (id: string, quantity: number) => {
-        setData((prevData) => {
+    const handleDeleteProductInCombo = (comboItem: ComboItemDTO) => {
+        setComboItems((prevData) => {
+            return prevData.filter((item) => item.productId !== comboItem.productId);
+        });
+    }
+
+    const handleEditQuantity = (comboItem: ComboItemDTO, quantity: number) => {
+        setComboItems((prevData) => {
             return prevData.map((item) => {
-                if(item.id === id) {
-                    return {
-                        ...item,
-                        quantity: quantity,
-                        price: item.cost * quantity,
-                    }
+                if(item.productId === comboItem.productId) {
+                    item.quantity = quantity;
                 }
                 return item;
-            })
-        })
+            });
+        });
     }
 
     function getSumCost(): number {
-        return data.reduce((sum, item) => sum + item.cost*item.quantity , 0);
+        return comboItems.reduce((sum, item) => sum + item.getCost(), 0);
+    }
+
+    function getSumPrice(): number {
+        return comboItems.reduce((sum, item) => sum + item.getPrice(), 0);
     }
 
     return (
@@ -138,7 +141,8 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
                             <InputSearchProduct
                                 value={testText}
                                 onChange={setTestText}
-                                recommendations={product.map((item) => item.name)}
+                                recommendations={product}
+                                onClickItem={(product) => {handleAddProductToCombo(product)}}
                             ></InputSearchProduct>
                         </div>
                         <Table
@@ -169,21 +173,21 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
                                 </TableCell>
                             </TableHead>
                             <TableBody>
-                                {data.map((row) => (
+                                {comboItems.map((item,index) => (
                                     <TableRow
-                                        key={row.id}
+                                        key={index}
                                     >
-                                        <TableCell>{row.id}</TableCell>
-                                        <TableCell>{row.name}</TableCell>
+                                        <TableCell>{item.productId}</TableCell>
+                                        <TableCell>{item.name}</TableCell>
                                         <TableCell>
                                             <InputQuantity
-                                                value={row.quantity}
+                                                value={item.quantity}
                                                 onChange={(quantity) => {
-                                                    handleEditQuantity(row.id, quantity);
+                                                    handleEditQuantity(item, quantity);
                                                 }}/>
                                         </TableCell>
-                                        <TableCell>{row.cost}</TableCell>
-                                        <TableCell>{row.price}</TableCell>
+                                        <TableCell>{item.costPrice}</TableCell>
+                                        <TableCell>{item.getCost()}</TableCell>
                                         <TableCell>
                                             <ClearIcon
                                                 sx={{
@@ -191,7 +195,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
                                                     color: Error600,
                                                 }}
                                                 onClick={() => {
-                                                    handleDeleteProductInCombo(row.id);
+                                                    handleDeleteProductInCombo(item);
                                                 }}></ClearIcon>
                                         </TableCell>
                                     </TableRow>
@@ -205,7 +209,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
                             </div>
                             <div className={"flex flex-row"}>
                                 <label className={"text-sm font-bold"}>Tổng giá trị bán:</label>
-                                <label className={"text-sm ml-2"}>{getSumCost()}</label>
+                                <label className={"text-sm ml-2"}>{getSumPrice()}</label>
                             </div>
                         </div>
                     </div>
