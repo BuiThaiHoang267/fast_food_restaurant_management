@@ -1,33 +1,29 @@
 import ProductDTO from "./ProductDTO.ts";
 
 class ComboItemDTO {
-    public id: number;
-    public comboId: number;
-    public productId: number;
-    public quantity: number;
-    public price: number;
-    public costPrice: number;
-    public name: string;
-    public image: string;
-
     constructor(
-        id: number,
-        comboId: number,
-        productId: number,
-        quantity: number,
-        price: number,
-        costPrice: number,
-        name: string,
-        image: string
-    ) {
-        this.id = id;
-        this.comboId = comboId;
-        this.productId = productId;
-        this.quantity = quantity;
-        this.price = price;
-        this.costPrice = costPrice;
-        this.name = name;
-        this.image = image;
+        public id: number,
+        public comboId: number,
+        public productId: number,
+        public quantity: number,
+        public price: number,
+        public costPrice: number,
+        public name: string,
+        public image: string,
+    ) {}
+
+    // Parse dữ liệu từ JSON sang ComboItemDTO
+    static fromJSON(data: any): ComboItemDTO {
+        return new ComboItemDTO(
+            data.id,
+            data.comboId,
+            data.productId,
+            data.quantity,
+            data.price,
+            data.costPrice,
+            data.name,
+            data.image
+        );
     }
 
     // Parse dữ liệu từ ProductDTO sang ComboItemDTO

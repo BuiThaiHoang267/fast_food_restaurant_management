@@ -1,3 +1,5 @@
+import ComboItemDTO from "./ComboItemDTO.ts";
+
 class ProductDTO{
     constructor(
         public id: number,
@@ -7,7 +9,9 @@ class ProductDTO{
         public price: number,
         public costPrice: number,
         public image: string,
-        public categoryId: number
+        public categoryId: number,
+        public categoryName: string,
+        public comboItems: ComboItemDTO[] = []
     ) {}
 
     // Factory method để tạo ProductDTO từ dữ liệu JSON
@@ -20,7 +24,9 @@ class ProductDTO{
             data.price,
             data.costPrice,
             data.image,
-            data.categoryId
+            data.categoryId,
+            data.categoryName,
+            data.comboItems.map(ComboItemDTO.fromJSON)
         );
     }
 }

@@ -22,6 +22,8 @@ import {useState, useEffect} from "react";
 import ProductDTO from "../dtos/ProductDTO.ts";
 import {productService} from "../services/ProductService.ts";
 import ComboItemDTO from "../dtos/ComboItemDTO.ts";
+import CategoryDTO from "../dtos/CategoryDTO.ts";
+import {CategoryService} from "../services/CategoryService.ts";
 
 interface DialogAddProductProps {
     open: boolean;
@@ -29,11 +31,11 @@ interface DialogAddProductProps {
 }
 
 const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
-    const [testText, setTestText] = useState("");
-    const [testNumber, setTestNumber] = useState(0);
     const [isCombo, setIsCombo] = useState(false);
     const [product, setProduct] = useState<ProductDTO[]>([]);
-    const [comboItems, setComboItems] = useState<ComboItemDTO[]>([]);
+    const [productAdd, setProductAdd] = useState<ProductDTO>(new ProductDTO(0,"","","",0,0,"",0,"",[]));
+    const [textSearch, setTextSearch] = useState("");
+    const [category, setCategory] = useState<CategoryDTO[]>([]);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -46,17 +48,36 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
             }
         }
 
+        const fetchCategory = async () => {
+            try {
+                const allCategory = await CategoryService.getAllCategory();
+                setCategory(allCategory);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
+
         fetchProduct();
+        fetchCategory();
     },[]);
 
     useEffect(() => {
-        setTestNumber(0);
-        setTestText("");
-        setIsCombo(false);
-        setComboItems([]);
+        if(open)
+        {
+            setProductAdd(new ProductDTO(0,"","","",0,0,"",0,"",[]));
+            setIsCombo(false);
+            setTextSearch("");
+        }
     },[open]);
 
     const handleDialogClose = () => {
+        console.log(productAdd);
+        onClose();
+    }
+
+    const handleSaveProduct = () => {
+        console.log(productAdd);
         onClose();
     }
 
@@ -72,34 +93,47 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
     const handleAddProductToCombo = (product: ProductDTO) => {
         const comboItem = new ComboItemDTO(0,0,0,0,0,0,"","");
         comboItem.fromProductDTO(product);
-        setComboItems((prevData) => {
-            return [...prevData, comboItem];
+        setProductAdd((prevData) => {
+            return {...prevData, comboItems: [...prevData.comboItems, comboItem]};
         });
     }
 
     const handleDeleteProductInCombo = (comboItem: ComboItemDTO) => {
-        setComboItems((prevData) => {
-            return prevData.filter((item) => item.productId !== comboItem.productId);
+        setProductAdd((prevData) => {
+            return {...prevData, comboItems: prevData.comboItems.filter((item) => item.productId !== comboItem.productId)};
         });
     }
 
     const handleEditQuantity = (comboItem: ComboItemDTO, quantity: number) => {
-        setComboItems((prevData) => {
-            return prevData.map((item) => {
-                if(item.productId === comboItem.productId) {
-                    item.quantity = quantity;
-                }
-                return item;
-            });
+        setProductAdd((prevData) => {
+            return {...prevData, comboItems: prevData.comboItems.map((item) => {
+                    if(item.productId === comboItem.productId) {
+                        item.quantity = quantity;
+                    }
+                    return item;
+                })};
+        });
+    }
+
+    const handleSelectCategory = (categoryName: string) => {
+        const categoryId = category.find((item) => item.name === categoryName)?.id;
+        setProductAdd((prevData) => {
+            return {...prevData, categoryName: categoryName, categoryId: categoryId?categoryId:category[0].id};
+        });
+    }
+
+    const handleChangeBaseFieldOfProduct = (field: string, value: any) => {
+        setProductAdd((prevData) => {
+            return {...prevData, [field]: value};
         });
     }
 
     function getSumCost(): number {
-        return comboItems.reduce((sum, item) => sum + item.getCost(), 0);
+        return productAdd.comboItems.reduce((sum, item) => sum + item.getCost(), 0);
     }
 
     function getSumPrice(): number {
-        return comboItems.reduce((sum, item) => sum + item.getPrice(), 0);
+        return productAdd.comboItems.reduce((sum, item) => sum + item.getPrice(), 0);
     }
 
     return (
@@ -120,27 +154,27 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
                 </Typography>
                 <div className={"flex flex-row gap-14"}>
                     <div className={"flex-[7] flex flex-col gap-2"}>
-                        <InputText label={"Tên món ăn"} placeholder={""} value={testText}
-                                   onChange={setTestText}/>
-                        <InputDropdown label={"Danh mục món ăn"} value={testText} options={["Cơm", "Đồ Uống", "Tráng Miệng"]}
-                                       onChange={setTestText}/>
-                        <InputText label={"Link ảnh"} placeholder={""} value={testText}
-                                   onChange={setTestText}/>
-                        <InputDropdown label={"Món ăn/Combo"} value={testText} options={["Product", "Combo"]}
-                                       onChange={setTestText}
+                        <InputText label={"Tên món ăn"} placeholder={""} value={productAdd.name}
+                                   onChange={(value) => handleChangeBaseFieldOfProduct("name",value)}/>
+                        <InputDropdown label={"Danh mục món ăn"} value={productAdd.categoryName} options={category.map((item) => item.name)}
+                                       onChange={(value) => {handleSelectCategory(value)}}/>
+                        <InputText label={"Link ảnh"} placeholder={""} value={productAdd.image}
+                                   onChange={(value) => handleChangeBaseFieldOfProduct("image",value)}/>
+                        <InputDropdown label={"Món ăn/Combo"} value={productAdd.type} options={["Product", "Combo"]}
+                                       onChange={(value) => handleChangeBaseFieldOfProduct("type",value)}
                                         onClickItem={handleChooseCombo}/>
                     </div>
                     <div className={"flex-[3] flex flex-col gap-2"}>
-                        <InputNumber label={"Giá vốn"} value={testNumber} onChange={setTestNumber}/>
-                        <InputNumber label={"Giá bán"} value={testNumber} onChange={setTestNumber}/>
+                        <InputNumber label={"Giá vốn"} value={productAdd.costPrice} onChange={(value) => handleChangeBaseFieldOfProduct("costPrice",value)}/>
+                        <InputNumber label={"Giá bán"} value={productAdd.price} onChange={(value) => handleChangeBaseFieldOfProduct("price",value)}/>
                     </div>
                 </div>
                 {isCombo && (
                     <div className={"mt-6 flex flex-col"}>
                         <div style={{width: '400px',}}>
                             <InputSearchProduct
-                                value={testText}
-                                onChange={setTestText}
+                                value={textSearch}
+                                onChange={setTextSearch}
                                 recommendations={product}
                                 onClickItem={(product) => {handleAddProductToCombo(product)}}
                             ></InputSearchProduct>
@@ -173,7 +207,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
                                 </TableCell>
                             </TableHead>
                             <TableBody>
-                                {comboItems.map((item,index) => (
+                                {productAdd.comboItems.map((item,index) => (
                                     <TableRow
                                         key={index}
                                     >
@@ -220,7 +254,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={handleDialogClose}
+                        onClick={handleSaveProduct}
                         sx={{
                             backgroundColor: success_600,
                             '&:hover': {
