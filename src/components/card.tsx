@@ -2,7 +2,7 @@
     ButtonGroup,
     Card,
     CardContent,
-    Checkbox,
+    Checkbox, Collapse,
     FormControl,
     FormControlLabel,
     FormGroup,
@@ -17,8 +17,17 @@ import RestaurantIcon from '@mui/icons-material/Restaurant';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import {useState} from "react";
-import {bg_blue_800} from "../common/constant.ts";
+import {
+    bg_blue_600,
+    bg_blue_800,
+    bg_grey_600,
+    Error600,
+    success_600
+} from "../common/constant.ts";
+import formatElapsedTime from "../utils/TimeElapsedConverter.ts";
 
 interface SearchCardProps {
     title: string;
@@ -262,7 +271,14 @@ interface OrderProductCardProps {
     onQuantityChange: (newQuantity: number) => void;
     onDelete: () => void;
 }
-export const OrderProductCard: React.FC<OrderProductCardProps> = ({index, name, childNames, quantity, price, onQuantityChange, onDelete,}) => {
+export const OrderProductCard: React.FC<OrderProductCardProps> = ({
+                                                                      index,
+                                                                      name,
+                                                                      childNames,
+                                                                      quantity,
+                                                                      price,
+                                                                      onQuantityChange,
+                                                                      onDelete,}) => {
     const handleIncrement = () => {
         onQuantityChange(quantity + 1); // Notify parent of increment
     };
@@ -425,3 +441,343 @@ export const OrderProductCard: React.FC<OrderProductCardProps> = ({index, name, 
         </div>
     );
 };
+
+interface CookingProductCardProps {
+    index: number;
+    order: {
+        orderNumber: string;
+        time: Date;
+        products: {
+            name: string;
+            quantity: number;
+            time: Date;
+            subOrders?: {
+                name: string;
+                quantity: number;
+            }[];
+            deletedAt?: Date;
+        }[];
+    }
+    onProcessProduct: (productIndex: number) => void;
+    onProcessOrder: () => void;
+    onDelete: (productIndex: number) => void;
+}
+export const CookingProductCard: React.FC<CookingProductCardProps> = ({
+                                                                          index,
+                                                                          order,
+                                                                          onProcessProduct,
+                                                                          onProcessOrder,
+                                                                          onDelete}) => {
+    const [collapsed, setCollapsed] = useState(true);
+
+    const toggleCollapse = () => {
+        setCollapsed((prev) => !prev);
+    };
+
+    // Check if all products are deleted
+    const allProductsDeleted = order.products.every((product) => product.deletedAt);
+
+    return (
+        <div
+            className={`p-2 border ${
+                (index % 2 == 1) ? "bg-blue-50" : "bg-white"
+            }`}
+        >
+            <div className="flex items-center">
+                {/* Collapse Button */}
+                <IconButton
+                    onClick={toggleCollapse}
+                    sx={{
+                        transition: "transform 0.2s",
+                        transform: collapsed ? "rotate(90deg)" : "rotate(0deg)",
+                    }}
+                >
+                    <KeyboardArrowRightIcon/>
+                </IconButton>
+
+                {/* Order Number and Time Elapsed */}
+                <div className="flex flex-col ml-2 flex-shrink-0" style={{width: "100px"}}>
+                    <Typography
+                        variant="subtitle1"
+                        sx={{
+                            fontWeight: "bold",
+                            color: bg_blue_600,
+                            fontSize: "0.875rem",
+                        }}
+                    >
+                        {order.orderNumber}
+                    </Typography>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: bg_grey_600,
+                            fontSize: "0.75rem", // Smaller text size for time elapsed
+                        }}
+                    >
+                        {formatElapsedTime(order.time)}
+                    </Typography>
+                </div>
+
+                {/* Total Quantity */}
+                <div
+                    className="flex items-center justify-center ml-auto flex-shrink-0"
+                    style={{
+                        textAlign: "center",
+                        width: "40px",
+                    }}
+                >
+                    <Typography
+                        variant="subtitle1"
+                        sx={{
+                            color: bg_blue_600,
+                            fontSize: "0.875rem",
+                        }}
+                    >
+                        {order.products.reduce((acc, product) => acc + product.quantity, 0)}
+                    </Typography>
+                </div>
+
+                {/* Process Button */}
+                <div
+                    className="flex items-end justify-end ml-4 flex-shrink-0"
+                    style={{
+                        width: "200px",
+                    }}
+                >
+                    {!allProductsDeleted && (
+                        <IconButton
+                            size="large"
+                            sx={{
+                                color: Error600,
+                            }}
+                            onClick={onProcessOrder}
+                        >
+                            <KeyboardDoubleArrowRightIcon/>
+                        </IconButton>
+                    )}
+                </div>
+
+            </div>
+
+            {/* Collapsible Product List */}
+            <Collapse in={collapsed}>
+                <div className="mt-2">
+                    {order.products.map((product, index) => (
+                        <div
+                            key={index}
+                            className={`py-2 ml-16 rounded flex justify-between items-center`}
+                        >
+                            <div className="flex flex-col flex-grow">
+                                <Typography
+                                    variant="subtitle1"
+                                    sx={{
+                                        fontWeight: "bold",
+                                        fontSize: "0.875rem",
+                                    }}
+                                >
+                                    {product.name}
+                                </Typography>
+                                {product.subOrders && (
+                                    <div className="mt-1">
+                                        {product.subOrders.map((subOrder, subIndex) => (
+                                            <Typography
+                                                key={subIndex}
+                                                variant="body2"
+                                                sx={{
+                                                    color: success_600,
+                                                }}
+                                            >
+                                                {subOrder.quantity} {subOrder.name}
+                                            </Typography>
+                                        ))}
+                                    </div>
+                                )}
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        marginTop: '4px',
+                                        color: bg_grey_600,
+                                        fontSize: "0.75rem", // Smaller text size for time elapsed
+                                    }}
+                                >
+                                    {formatElapsedTime(order.time)}
+                                </Typography>
+                            </div>
+                            <div
+                                className="flex items-center justify-center ml-auto flex-shrink-0"
+                                style={{
+                                    textAlign: "center",
+                                    width: "40px",
+                                }}
+                            >
+                                <Typography
+                                    variant="subtitle1"
+                                    sx={{
+                                        fontSize: "0.875rem",
+                                    }}
+                                >
+                                    {product.quantity}
+                                </Typography>
+                            </div>
+
+                            <div
+                                className="flex items-end justify-end ml-4 flex-shrink-0"
+                                style={{
+                                    width: "200px",
+                                }}
+                            >
+                                {product.deletedAt ? (
+                                    <div className="flex flex-row items-center">
+                                        <Typography
+                                            variant="body2"
+                                            sx={{
+                                                color: bg_grey_600,
+                                                fontSize: "0.75rem", // Smaller text size for time elapsed
+                                            }}
+                                        >
+                                            Huỷ vào {formatElapsedTime(product.deletedAt)}
+                                        </Typography>
+                                        <IconButton
+                                            size="large"
+                                            onClick={() => onDelete(index)}
+                                            color="default"
+                                        >
+                                            <DeleteOutlineIcon fontSize="small"/>
+                                        </IconButton>
+                                    </div>
+                                ) : (
+                                    <IconButton
+                                        size="large"
+                                        onClick={() => onProcessProduct(index)}
+                                    >
+                                        <KeyboardDoubleArrowRightIcon sx={{color: Error600}}/>
+                                    </IconButton>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </Collapse>
+        </div>
+    );
+};
+
+interface CookedProductCardProps {
+    orderNumber: string;
+    name: string;
+    quantity: number;
+    time: Date;
+    subOrders?: {
+        name: string;
+        quantity: number;
+    }[];
+    deletedAt?: Date;
+    onProcessProduct: () => void;
+    onDelete: () => void;
+}
+
+export const CookedProductCard: React.FC<CookedProductCardProps> = ({
+                                                                        orderNumber,
+                                                                        name,
+                                                                        quantity,
+                                                                        time,
+                                                                        subOrders,
+                                                                        deletedAt,
+                                                                        onProcessProduct,
+                                                                        onDelete
+                                                                    }) => {
+    return (
+        <div>
+            <div
+                className="py-2 px-4 rounded flex justify-between items-center"
+            >
+                <div className="flex flex-col flex-grow">
+                    <Typography
+                        variant="subtitle1"
+                        sx={{
+                            fontWeight: "bold",
+                            fontSize: "0.875rem",
+                        }}
+                    >
+                        {name}
+                    </Typography>
+                    {subOrders && (
+                        <div className="mt-1">
+                            {subOrders.map((subOrder, subIndex) => (
+                                <Typography
+                                    key={subIndex}
+                                    variant="body2"
+                                    sx={{
+                                        color: success_600,
+                                    }}
+                                >
+                                    {subOrder.quantity} {subOrder.name}
+                                </Typography>
+                            ))}
+                        </div>
+                    )}
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            marginTop: '4px',
+                            color: bg_grey_600,
+                            fontSize: "0.75rem",
+                        }}
+                    >
+                        {orderNumber} - {formatElapsedTime(time)}
+                    </Typography>
+                </div>
+                <div
+                    className="flex items-center justify-center ml-auto flex-shrink-0"
+                    style={{
+                        textAlign: "center",
+                        width: "40px",
+                    }}
+                >
+                    <Typography
+                        variant="subtitle1"
+                        sx={{
+                            fontSize: "0.875rem",
+                        }}
+                    >
+                        {quantity}
+                    </Typography>
+                </div>
+                <div
+                    className="flex items-end justify-end ml-4 flex-shrink-0"
+                    style={{
+                        width: "200px",
+                    }}
+                >
+                    {deletedAt ? (
+                        <div className="flex flex-row items-center">
+                            <Typography
+                                variant="body2"
+                                sx={{
+                                    color: bg_grey_600,
+                                    fontSize: "0.75rem", // Smaller text size for time elapsed
+                                }}
+                            >
+                                Huỷ vào {formatElapsedTime(deletedAt)}
+                            </Typography>
+                            <IconButton
+                                size="large"
+                                onClick={() => onDelete()}
+                                color="default"
+                            >
+                                <DeleteOutlineIcon fontSize="small"/>
+                            </IconButton>
+                        </div>
+                    ) : (
+                        <IconButton
+                            size="large"
+                            onClick={onProcessProduct}
+                        >
+                            <KeyboardDoubleArrowRightIcon sx={{color: success_600}}/>
+                        </IconButton>
+                    )}
+                </div>
+            </div>
+        </div>
+    )
+}
