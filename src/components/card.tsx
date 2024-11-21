@@ -468,7 +468,7 @@ export const CookingProductCard: React.FC<CookingProductCardProps> = ({
                                                                           onProcessProduct,
                                                                           onProcessOrder,
                                                                           onDelete}) => {
-    const [collapsed, setCollapsed] = useState(false);
+    const [collapsed, setCollapsed] = useState(true);
 
     const toggleCollapse = () => {
         setCollapsed((prev) => !prev);
