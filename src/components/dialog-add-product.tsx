@@ -78,6 +78,15 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
 
     const handleSaveProduct = () => {
         console.log(productAdd);
+        const saveProduct = async () => {
+            try {
+                await productService.createProduct(productAdd);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
+        saveProduct();
         onClose();
     }
 

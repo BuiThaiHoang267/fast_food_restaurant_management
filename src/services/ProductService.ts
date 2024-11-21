@@ -30,5 +30,16 @@ export const productService = {
             console.error(error);
             throw error;
         }
-    }
+    },
+
+    createProduct: async (product: ProductDTO) => {
+        try {
+            const response = await axiosInstance.post(PRODUCT_API.CREATE_PRODUCT, product);
+            console.log(response);
+        }
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
+    },
 }
