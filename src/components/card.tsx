@@ -474,6 +474,9 @@ export const CookingProductCard: React.FC<CookingProductCardProps> = ({
         setCollapsed((prev) => !prev);
     };
 
+    // Check if all products are deleted
+    const allProductsDeleted = order.products.every((product) => product.deletedAt);
+
     return (
         <div
             className={`p-2 border ${
@@ -541,16 +544,19 @@ export const CookingProductCard: React.FC<CookingProductCardProps> = ({
                         width: "200px",
                     }}
                 >
-                    <IconButton
-                        size="large"
-                        sx={{
-                            color: Error600,
-                        }}
-                        onClick={onProcessOrder}
-                    >
-                        <KeyboardDoubleArrowRightIcon />
-                    </IconButton>
+                    {!allProductsDeleted && (
+                        <IconButton
+                            size="large"
+                            sx={{
+                                color: Error600,
+                            }}
+                            onClick={onProcessOrder}
+                        >
+                            <KeyboardDoubleArrowRightIcon/>
+                        </IconButton>
+                    )}
                 </div>
+
             </div>
 
             {/* Collapsible Product List */}
