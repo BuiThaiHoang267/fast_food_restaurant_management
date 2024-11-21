@@ -1,4 +1,8 @@
-import {MenuItem, TextField} from "@mui/material";
+import {IconButton, InputAdornment, Menu, MenuItem, TextField} from "@mui/material";
+import {bg_green_500, bg_green_600, color_black, color_white} from "../common/constant.ts";
+import SearchIcon from "@mui/icons-material/Search";
+import React, {useState} from "react";
+import ProductDTO from "../dtos/ProductDTO.ts";
 
 interface InputTextProps {
     label: string;
@@ -150,3 +154,86 @@ export const InputQuantity: React.FC<InputQuantityProps> = ({value, onChange }) 
     );
 }
 
+interface InputSearchProductProps {
+    value: string;
+    onChange: (value: string) => void;
+    recommendations: ProductDTO[];
+    onClickItem?: (value: ProductDTO) => void;
+}
+
+export const InputSearchProduct: React.FC<InputSearchProductProps> = ({ value, onChange, recommendations, onClickItem}) => {
+    const [showSuggestions, setShowSuggestions] = useState(false);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        onChange(e.target.value);
+        setShowSuggestions(e.target.value.length > 0);
+    };
+
+    const handleSelectSuggestion = (suggestion: ProductDTO) => {
+        onChange(suggestion.name);
+        setShowSuggestions(false);
+        if(onClickItem) {
+            onClickItem(suggestion);
+        }
+    };
+
+    return (
+        <div>
+            <TextField
+                variant="standard"
+                value={value}
+                onChange={handleInputChange}
+                placeholder="Tìm món"
+                slotProps={{
+                    input: {
+                        sx: {
+                            color: color_black,
+                            fontSize: '0.875rem',
+                        },
+                        endAdornment: ( // Move the icon to the end of the input
+                            <InputAdornment position="end">
+                                <IconButton onClick={() => console.log('Search clicked')} edge="end">
+                                    <SearchIcon sx={{color: color_black}} fontSize="small"/>
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    },
+                }}
+                sx={{
+                    backgroundColor: 'transparent',
+                    color: '#fff',
+                    borderRadius: '4px',
+                    paddingLeft: '8px',
+                    paddingRight: '8px',
+                    width: '100%',
+                    '& .MuiInput-underline:before': {
+                        borderBottomColor: color_black,
+                    },
+                    '& .MuiInput-underline:after': {
+                        borderBottomColor: bg_green_600,
+                    },
+                    '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                        borderBottomColor: color_black,
+                    },
+                }}
+            />
+            {showSuggestions && (
+                <ul className="absolute overflow-y-auto bg-white shadow-lg z-10" style={{width: "400px", maxHeight:"260px"}}>
+                    {recommendations
+                        .filter((item) =>
+                            item.name.toLowerCase().includes(value.toLowerCase())
+                        )
+                        .map((item, index) => (
+                            <li
+                                key={index}
+                                className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                                onClick={() => handleSelectSuggestion(item)}
+                            >
+                                {item.name}
+                            </li>
+                        ))}
+                </ul>
+            )}
+        </div>
+    );
+}
