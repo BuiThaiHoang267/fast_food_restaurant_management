@@ -1,4 +1,4 @@
-﻿import {CheckBoxCard, RadioBoxCard, SearchCard} from '../components/card';
+﻿import {CheckBoxCard, SearchCard} from '../components/card';
 import {useState} from "react";
 import {
     Table,
@@ -10,14 +10,13 @@ import {
     Paper,
     Button,
     Typography, Checkbox,
-    TablePagination, Menu, MenuItem,
+    TablePagination, Menu,
 } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import ListIcon from '@mui/icons-material/List';
 import { color_black, color_white, success_600, success_700} from "../common/constant.ts";
-import {Link} from "react-router-dom";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import DialogAddProduct from "../components/dialog-add-product.tsx";
+import MenuFieldTable, {MenuFieldProps} from "../components/menu-field.tsx";
 
 const ProductCategoryPage = () => {
     const [categoryOptions, setCategoryOptions] = useState([
@@ -25,13 +24,7 @@ const ProductCategoryPage = () => {
         { label: 'Đồ uống', checked: false },
         { label: 'Khác', checked: false },
     ]);
-    const radioOptionsData = [
-        { label: 'Tất cả', value: 'all' },
-        { label: 'Dưới định mức tồn', value: 'below' },
-        { label: 'Vượt định mức tồn', value: 'above' },
-        { label: 'Còn hàng trong kho', value: 'inStock' },
-        { label: 'Hết hàng trong kho', value: 'outOfStock' },
-    ];
+
     const data = [
         { id: 'SP000020', name: 'Lemon Juice', category: 'Beverages', costPrice: 7000, lastPrice: 7000, newPrice: 15000 },
         { id: 'SP000021', name: 'Bia Heineken', category: 'Beverages', costPrice: 20500, lastPrice: 20500, newPrice: 30000 },
@@ -50,11 +43,16 @@ const ProductCategoryPage = () => {
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [fields, setFields] = useState<MenuFieldProps[]>([
+        { label: 'Mã hàng', name: 'id', visible: true },
+        { label: 'Tên hàng', name: 'name', visible: true },
+        { label: 'Loại hàng', name: 'category', visible: true },
+        { label: 'Giá vốn', name: 'costPrice', visible: true },
+        { label: 'Giá cuối', name: 'lastPrice', visible: true },
+        { label: 'Giá mới', name: 'newPrice', visible: true },
+    ]);
 
 
-    const handleRadioChange = (value: string) => {
-        setRadioSelectedValue(value);
-    };
 
     const handleSearch = () => {
         console.log('searching...');
@@ -107,6 +105,14 @@ const ProductCategoryPage = () => {
 
     const handleDialogAddClose = () => {
         setOpenDialogAdd(false);
+    }
+
+    const handleCheckField = (name: string, visible: boolean) => {
+        setFields((prevFields) =>
+            prevFields.map((field) =>
+                field.name === name ? { ...field, visible } : field
+            )
+        );
     }
 
     // Determine rows to display on the current page
@@ -174,18 +180,7 @@ const ProductCategoryPage = () => {
                                     color: color_black,
                                 },
                             }}>
-                            <MenuItem>
-                                <Link to="/product-category" className="flex w-full gap-2">
-                                    <ListIcon fontSize="small"/>
-                                    <div>Category</div>
-                                </Link>
-                            </MenuItem>
-                            <MenuItem>
-                                <Link to="/product-price" className="flex w-full gap-2">
-                                    <LocalOfferIcon fontSize="small"/>
-                                    <div>Price Setting</div>
-                                </Link>
-                            </MenuItem>
+                            <MenuFieldTable menuFields={fields} onCheck={(name, visible) => handleCheckField(name, visible)} />
                         </Menu>
                     </div>
                 </div>
@@ -207,14 +202,9 @@ const ProductCategoryPage = () => {
                                         onChange={handleSelectAll}
                                     />
                                 </TableCell>
-                                <TableCell sx={{ minWidth: 100 }}>Mã hàng hóa</TableCell>
-                                <TableCell sx={{ minWidth: 200 }}>Tên hàng</TableCell>
-                                <TableCell sx={{ minWidth: 150 }}>Loại hàng</TableCell>
-                                <TableCell sx={{ minWidth: 100 }}>Giá vốn</TableCell>
-                                <TableCell sx={{ minWidth: 100 }}>Đơn giá nhập cuối</TableCell>
-                                <TableCell sx={{ minWidth: 100 }}>Giá mới</TableCell>
-                                <TableCell sx={{ minWidth: 100 }}>Giá mới</TableCell>
-                                <TableCell sx={{ minWidth: 100 }}>Giá mới</TableCell>
+                                {fields.map((field, index) => (
+                                    field.visible && <TableCell key={index}>{field.label}</TableCell>
+                                ))}
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -232,14 +222,9 @@ const ProductCategoryPage = () => {
                                             onChange={() => toggleRowSelection(row.id)}
                                         />
                                     </TableCell>
-                                    <TableCell>{row.id}</TableCell>
-                                    <TableCell>{row.name}</TableCell>
-                                    <TableCell>{row.category}</TableCell>
-                                    <TableCell>{row.costPrice.toLocaleString()}</TableCell>
-                                    <TableCell>{row.lastPrice.toLocaleString()}</TableCell>
-                                    <TableCell>{row.newPrice.toLocaleString()}</TableCell>
-                                    <TableCell>{row.newPrice.toLocaleString()}</TableCell>
-                                    <TableCell>{row.newPrice.toLocaleString()}</TableCell>
+                                    {fields.map((field, index) => (
+                                        field.visible && <TableCell key={index}>{row[field.name]}</TableCell>
+                                    ))}
                                 </TableRow>
                             ))}
                         </TableBody>
