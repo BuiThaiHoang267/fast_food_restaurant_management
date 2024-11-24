@@ -38,28 +38,8 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
     const [category, setCategory] = useState<CategoryDTO[]>([]);
 
     useEffect(() => {
-        const fetchProduct = async () => {
-            try {
-                const allProducts = await productService.getByTypeProduct();
-                setProduct(allProducts);
-            }
-            catch (error) {
-                console.error(error);
-            }
-        }
-
-        const fetchCategory = async () => {
-            try {
-                const allCategory = await CategoryService.getAllCategory();
-                setCategory(allCategory);
-            }
-            catch (error) {
-                console.error(error);
-            }
-        }
-
         fetchProduct();
-        fetchCategory();
+        fetchAllCategory();
     },[]);
 
     useEffect(() => {
@@ -70,6 +50,32 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
             setTextSearch("");
         }
     },[open]);
+
+    const fetchProduct = async () => {
+        try {
+            const allProducts = await productService.getByTypeProduct();
+            setProduct(allProducts);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    const fetchAllCategory = async () => {
+        try {
+            if(sessionStorage.getItem("categories") !== null) {
+                const data = JSON.parse(sessionStorage.getItem("categories") || "");
+                console.log("Hello",data);
+                setCategory(data);
+                return;
+            }
+            const allCategory = await CategoryService.getAllCategory();
+            setCategory(allCategory);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
 
     const handleDialogClose = () => {
         console.log(productAdd);

@@ -1,5 +1,5 @@
 ﻿import {CheckBoxCard, SearchCard} from '../components/card';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {
     Table,
     TableBody,
@@ -17,76 +17,99 @@ import ListIcon from '@mui/icons-material/List';
 import { color_black, color_white, success_600, success_700} from "../common/constant.ts";
 import DialogAddProduct from "../components/dialog-add-product.tsx";
 import MenuFieldTable, {MenuFieldProps} from "../components/menu-field.tsx";
+import {CategoryService} from "../services/CategoryService.ts";
+import CategoryDTO from "../dtos/CategoryDTO.ts";
+import {productService} from "../services/ProductService.ts";
+import ProductDTO from "../dtos/ProductDTO.ts";
 
 const ProductCategoryPage = () => {
-    const [categoryOptions, setCategoryOptions] = useState([
-        { label: 'Đồ ăn', checked: false },
-        { label: 'Đồ uống', checked: false },
-        { label: 'Khác', checked: false },
-    ]);
-
-    const data = [
-        { id: 'SP000020', name: 'Lemon Juice', category: 'Beverages', costPrice: 7000, lastPrice: 7000, newPrice: 15000 },
-        { id: 'SP000021', name: 'Bia Heineken', category: 'Beverages', costPrice: 20500, lastPrice: 20500, newPrice: 30000 },
-        { id: 'SP000022', name: 'Bia Hà Nội', category: 'Beverages', costPrice: 20500, lastPrice: 20500, newPrice: 30000 },
-        { id: 'SP000023', name: 'Thuốc lá Vinataba', category: 'Cigarettes', costPrice: 20500, lastPrice: 20500, newPrice: 30000 },
-        { id: 'SP000024', name: 'Thuốc lá Marlboro', category: 'Cigarettes', costPrice: 20500, lastPrice: 20500, newPrice: 30000 },
-        { id: 'SP000025', name: 'Thuốc lá Kent HD', category: 'Cigarettes', costPrice: 20500, lastPrice: 20500, newPrice: 30000 },
-        { id: 'SP000010', name: 'Xúc xích Đức nướng mu tạt vàng', category: 'Snacks', costPrice: 100500, lastPrice: 100500, newPrice: 125000 },
-        { id: 'SP000011', name: 'Súp kem rau 4 mùa', category: 'Soup', costPrice: 100500, lastPrice: 100500, newPrice: 125000 },
-        { id: 'SP000012', name: 'Súp kem gà nấm hoàng', category: 'Soup', costPrice: 100500, lastPrice: 100500, newPrice: 125000 },
-    ];
-
-    const [radioSelectedValue, setRadioSelectedValue] = useState('all');
     const [openFilterTable, setOpenFilterTable] = useState<null | HTMLElement>(null);
     const [openDialogAdd, setOpenDialogAdd] = useState(false);
-    const [selectedRows, setSelectedRows] = useState<string[]>([]);
+    const [selectedRows, setSelectedRows] = useState<ProductDTO[]>([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [fields, setFields] = useState<MenuFieldProps[]>([
-        { label: 'Mã hàng', name: 'id', visible: true },
+        { label: '', name: 'image', visible: true },
+        { label: 'Mã hàng', name: 'id', visible: false },
         { label: 'Tên hàng', name: 'name', visible: true },
-        { label: 'Loại hàng', name: 'category', visible: true },
+        { label: 'Loại hàng', name: 'categoryId', visible: true },
         { label: 'Giá vốn', name: 'costPrice', visible: true },
-        { label: 'Giá cuối', name: 'lastPrice', visible: true },
-        { label: 'Giá mới', name: 'newPrice', visible: true },
+        { label: 'Giá bán', name: 'price', visible: true },
     ]);
+    const [categories, setCategories] = useState<CategoryDTO[]>([]);
+    const [categoryFilter, setCategoryFilter] = useState<{label: string, checked: boolean}[]>([]);
+    const [products, setProducts] = useState<ProductDTO[]>([]);
 
+    useEffect(() => {
+        fetchAllCategory();
+        fetchAllProduct();
+    }, []);
 
+    useEffect(() => {
+        setCategoryFilter(categories.map((category) => ({label: category.name, checked: false})));
+    }, [categories]);
+
+    const fetchAllProduct = async () => {
+        try {
+            const data = await productService.getAllProduct();
+            setProducts(data);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    const fetchAllCategory = async () => {
+        try {
+            if(sessionStorage.getItem("categories") !== null) {
+                const data = JSON.parse(sessionStorage.getItem("categories") || "");
+                console.log("Hello",data);
+                setCategories(data);
+                return;
+            }
+            const allCategory = await CategoryService.getAllCategory();
+            setCategories(allCategory);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
 
     const handleSearch = () => {
         console.log('searching...');
     }
     const handleCategoryCardChange = (label: string, checked: boolean) => {
-        setCategoryOptions((prevOptions) =>
-            prevOptions.map((option) =>
-                option.label === label ? { ...option, checked } : option
+        setCategoryFilter((prevCategoryFilter) =>
+            prevCategoryFilter.map((category) =>
+                category.label === label ? { label, checked } : category
             )
         );
     };
     // Handler for "Select All" checkbox
     const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
-            setSelectedRows(data.map((row) => row.id)); // Select all row IDs
+            setSelectedRows(products);
         } else {
-            setSelectedRows([]); // Deselect all rows
+            setSelectedRows([]);
         }
     };
     // Handler for row selection (checkbox and row click)
-    const toggleRowSelection = (id: string) => {
-        setSelectedRows((prevSelected) =>
-            prevSelected.includes(id)
-                ? prevSelected.filter((rowId) => rowId !== id)
-                : [...prevSelected, id]
-        );
+    const toggleRowSelection = (product: ProductDTO) => {
+        setSelectedRows((prevSelectedRows) => {
+            if (prevSelectedRows.includes(product)) {
+                return prevSelectedRows.filter((row) => row !== product);
+            } else {
+                return [...prevSelectedRows, product];
+            }
+        });
     };
     // Custom action when clicking on a row (other than the checkbox)
-    const handleRowClick = (id: string) => {
+    const handleRowClick = (product: ProductDTO) => {
         // Replace this with your custom action, like opening a detail view
-        console.log(`Row clicked with ID: ${id}`);
+        console.log(`Row clicked with ID: ${product}`);
     };
     // Handler for pagination change
-    const handleChangePage = (event: unknown, newPage: number) => {
+    const handleChangePage = (e: unknown, newPage: number) => {
         setPage(newPage);
     };
 
@@ -116,14 +139,13 @@ const ProductCategoryPage = () => {
     }
 
     // Determine rows to display on the current page
-    const displayedRows = data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    const displayedRows = products.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     return (
         <div className="flex-row flex">
             <div className="w-3/12 flex-col pl-10 pr-5 py-5 space-y-4">
                 <SearchCard title="Tìm kiếm" placeholder="Theo mã, tên hàng" onSearch={handleSearch}/>
-                <CheckBoxCard title="Loại hàng" options={categoryOptions} onChange={handleCategoryCardChange} />
-                {/*<RadioBoxCard title="Tồn kho" options={radioOptionsData} selectedValue={radioSelectedValue} onChange={handleRadioChange}/>*/}
+                <CheckBoxCard title="Loại hàng" options={categoryFilter} onChange={handleCategoryCardChange} />
             </div>
             <div className="flex-grow flex-col pl-5 pr-10 py-5 space-y-2">
                 <div className="flex items-center justify-between">
@@ -196,14 +218,15 @@ const ProductCategoryPage = () => {
                                 <TableCell padding="checkbox">
                                     <Checkbox
                                         indeterminate={
-                                            selectedRows.length > 0 && selectedRows.length < data.length
+                                            selectedRows.length > 0 && selectedRows.length < products.length
                                         }
-                                        checked={selectedRows.length === data.length}
+                                        checked={selectedRows.length === products.length}
                                         onChange={handleSelectAll}
                                     />
                                 </TableCell>
+                                {fields[0].visible && <TableCell style={{width: 50}}></TableCell>}
                                 {fields.map((field, index) => (
-                                    field.visible && <TableCell key={index}>{field.label}</TableCell>
+                                    (field.visible && field.name != "image") && <TableCell key={index}>{field.label}</TableCell>
                                 ))}
                             </TableRow>
                         </TableHead>
@@ -212,18 +235,19 @@ const ProductCategoryPage = () => {
                                 <TableRow
                                     key={row.id}
                                     hover
-                                    onClick={() => handleRowClick(row.id)}
-                                    selected={selectedRows.includes(row.id)}
+                                    onClick={() => handleRowClick(row)}
+                                    selected={selectedRows.includes(row)}
                                     sx={{ cursor: 'pointer' }}
                                 >
                                     <TableCell padding="checkbox" onClick={(e) => e.stopPropagation()}>
                                         <Checkbox
-                                            checked={selectedRows.includes(row.id)}
-                                            onChange={() => toggleRowSelection(row.id)}
+                                            checked={selectedRows.includes(row)}
+                                            onChange={() => toggleRowSelection(row)}
                                         />
                                     </TableCell>
+                                    {fields[0].visible && <TableCell style={{padding: "5px 0"}}><img src={row.image} alt={row.name} width={40} height={40}/></TableCell>}
                                     {fields.map((field, index) => (
-                                        field.visible && <TableCell key={index}>{row[field.name]}</TableCell>
+                                        (field.visible && field.name != "image") && <TableCell key={index}>{row[field.name]}</TableCell>
                                     ))}
                                 </TableRow>
                             ))}
@@ -233,7 +257,7 @@ const ProductCategoryPage = () => {
                 {/* Pagination Component */}
                 <TablePagination
                     component="div"
-                    count={data.length}
+                    count={products.length}
                     page={page}
                     onPageChange={handleChangePage}
                     rowsPerPage={rowsPerPage}

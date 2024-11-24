@@ -9,6 +9,8 @@ export const CategoryService = {
             console.log(response);
             const data = response.data.data.map(CategoryDTO.fromJSON)
             console.log(data);
+            // Luu data vao session storage
+            sessionStorage.setItem("categories", JSON.stringify(data));
             return data;
         }
         catch (error){
