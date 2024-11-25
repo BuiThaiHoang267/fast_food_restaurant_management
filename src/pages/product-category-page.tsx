@@ -19,7 +19,7 @@ import DialogAddProduct from "../components/dialog-add-product.tsx";
 import MenuFieldTable, {MenuFieldProps} from "../components/menu-field.tsx";
 import {CategoryService} from "../services/CategoryService.ts";
 import CategoryDTO from "../dtos/CategoryDTO.ts";
-import {productService} from "../services/ProductService.ts";
+import {ProductFilter, productService} from "../services/ProductService.ts";
 import ProductDTO from "../dtos/ProductDTO.ts";
 
 const ProductCategoryPage = () => {
@@ -29,35 +29,33 @@ const ProductCategoryPage = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [fields, setFields] = useState<MenuFieldProps[]>([
-        { label: '', name: 'image', visible: true },
+        { label: 'Hình ảnh', name: 'image', visible: true },
         { label: 'Mã hàng', name: 'id', visible: false },
-        { label: 'Tên hàng', name: 'name', visible: true },
-        { label: 'Loại hàng', name: 'categoryId', visible: true },
+        { label: 'Tên món ăn', name: 'name', visible: true },
+        { label: 'Danh mục', name: 'categoryName', visible: true },
         { label: 'Giá vốn', name: 'costPrice', visible: true },
         { label: 'Giá bán', name: 'price', visible: true },
     ]);
     const [categories, setCategories] = useState<CategoryDTO[]>([]);
-    const [categoryFilter, setCategoryFilter] = useState<{label: string, checked: boolean}[]>([]);
+    const [categoryFilter, setCategoryFilter] = useState<{id: number, label: string, checked: boolean}[]>([]);
     const [products, setProducts] = useState<ProductDTO[]>([]);
+    const [productFilter, setProductFilter] = useState<ProductFilter>({
+        name: "",
+        categories: []
+    });
 
     useEffect(() => {
         fetchAllCategory();
-        fetchAllProduct();
+        fetchProductByFilter();
     }, []);
 
     useEffect(() => {
-        setCategoryFilter(categories.map((category) => ({label: category.name, checked: false})));
+        setCategoryFilter(categories.map((category) => ({id: category.id,label: category.name, checked: false})));
     }, [categories]);
 
-    const fetchAllProduct = async () => {
-        try {
-            const data = await productService.getAllProduct();
-            setProducts(data);
-        }
-        catch (error) {
-            console.error(error);
-        }
-    }
+    useEffect(() => {
+        fetchProductByFilter();
+    }, [productFilter]);
 
     const fetchAllCategory = async () => {
         try {
@@ -75,15 +73,32 @@ const ProductCategoryPage = () => {
         }
     }
 
-    const handleSearch = () => {
-        console.log('searching...');
+    const fetchProductByFilter = async () => {
+        try {
+            const data = await productService.getProductByFilter(productFilter);
+            setProducts(data);
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
-    const handleCategoryCardChange = (label: string, checked: boolean) => {
+
+    const handleSearch = (value: string) => {
+        setProductFilter((prevProductFilter) => ({ ...prevProductFilter, name: value }));
+    }
+    const handleCategoryCardChange = (id: number, label: string, checked: boolean) => {
         setCategoryFilter((prevCategoryFilter) =>
             prevCategoryFilter.map((category) =>
-                category.label === label ? { label, checked } : category
+                category.id === id ? { id, label , checked } : category
             )
         );
+        setProductFilter((prevProductFilter) => {
+            if (checked) {
+                return { ...prevProductFilter, categories: [...prevProductFilter.categories, id] };
+            } else {
+                return { ...prevProductFilter, categories: prevProductFilter.categories.filter((category) => category !== id) };
+            }
+        });
     };
     // Handler for "Select All" checkbox
     const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,7 +159,7 @@ const ProductCategoryPage = () => {
     return (
         <div className="flex-row flex">
             <div className="w-3/12 flex-col pl-10 pr-5 py-5 space-y-4">
-                <SearchCard title="Tìm kiếm" placeholder="Theo mã, tên hàng" onSearch={handleSearch}/>
+                <SearchCard title="Tìm kiếm" placeholder="Theo tên món ăn" onSearch={handleSearch}/>
                 <CheckBoxCard title="Loại hàng" options={categoryFilter} onChange={handleCategoryCardChange} />
             </div>
             <div className="flex-grow flex-col pl-5 pr-10 py-5 space-y-2">

@@ -32,9 +32,11 @@ import formatElapsedTime from "../utils/TimeElapsedConverter.ts";
 interface SearchCardProps {
     title: string;
     placeholder: string;
-    onSearch: () => void;
+    onSearch: (value: string) => void;
 }
 export const SearchCard: React.FC<SearchCardProps> = ({ title, placeholder, onSearch }) => {
+    const [searchValue, setSearchValue] = useState('');
+
     return (
         <Card sx={{ minWidth: 200, padding: 0.5, borderRadius: 1, boxShadow: 1 }}>
             <CardContent sx={{ padding: '4px 8px' }} className="space-y-2">
@@ -44,13 +46,15 @@ export const SearchCard: React.FC<SearchCardProps> = ({ title, placeholder, onSe
                 <TextField
                     variant="standard"
                     placeholder={placeholder}
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
                     fullWidth
                     slotProps={{
                         input: {
                             sx: { fontSize: '0.8rem' },
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    <IconButton onClick={onSearch} edge="end">
+                                    <IconButton onClick={() => onSearch(searchValue)} edge="end">
                                         <SearchIcon fontSize="small" />
                                     </IconButton>
                                 </InputAdornment>
@@ -65,8 +69,8 @@ export const SearchCard: React.FC<SearchCardProps> = ({ title, placeholder, onSe
 
 interface CheckBoxCardProps {
     title: string;
-    options: { label: string; checked: boolean }[];
-    onChange: (label: string, checked: boolean) => void;
+    options: {id:number; label: string; checked: boolean }[];
+    onChange: (id:number, label: string, checked: boolean) => void;
 }
 export const CheckBoxCard: React.FC<CheckBoxCardProps> = ({ title, options, onChange }) => {
     const [expanded, setExpanded] = useState(false);
@@ -100,7 +104,7 @@ export const CheckBoxCard: React.FC<CheckBoxCardProps> = ({ title, options, onCh
                                 control={
                                     <Checkbox
                                         checked={option.checked}
-                                        onChange={(e) => onChange(option.label, e.target.checked)}
+                                        onChange={(e) => onChange(option.id, option.label, e.target.checked)}
                                         size="small"
                                     />
                                 }
