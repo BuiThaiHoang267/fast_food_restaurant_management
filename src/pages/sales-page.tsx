@@ -8,32 +8,19 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import {OrderProductCard, SalesProductCard} from "../components/card.tsx";
 import {bg_blue_600, bg_blue_700, bg_blue_800, bg_grey_600, color_white} from "../common/constant.ts";
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import React from "react";
+import CategoryDTO from "../dtos/CategoryDTO.ts";
+import {CategoryService} from "../services/CategoryService.ts";
+import ProductDTO from "../dtos/ProductDTO.ts";
+import {productService} from "../services/ProductService.ts";
+import {OrderItemDTO} from "../dtos/OrderItemDTO.ts";
 
-interface Product {
-    id: number;
-    name: string;
-    price: number;
-    quantity?: number; // Optional for orders
-    childNames?: string[]; // Optional for combos
-}
-type Orders = Product[][]; // Array of product arrays for each tab
+type Orders = OrderItemDTO[][]; // Array of product arrays for each tab
 
 const SalesPage = () => {
-    const categories = ['Tất cả', 'Classic Cocktails', 'Tea'];
-    const products = [
-        { id: 1, name: "Cơm xúc xích", price: 90000 },
-        { id: 2, name: "Bánh mì gà", price: 50000 },
-        { id: 3, name: "Phở bò đặc biệt", price: 120000 },
-        { id: 4, name: "Combo 1", price: 150000, childNames: ["Trà sữa trân châu", "Bánh mì ngọt", "Khoai tây chiên"] },
-        { id: 5, name: "Bún chả Hà Nội", price: 85000 },
-        { id: 6, name: "Mì quảng Đà Nẵng", price: 75000 },
-        { id: 7, name: "Gỏi cuốn tôm thịt", price: 60000 },
-        { id: 8, name: "Trà sữa trân châu", price: 45000 },
-    ];
 
-    const [selectedCategory, setSelectedCategory] = useState<string>('Tất cả');
+    const [selectedCategory, setSelectedCategory] = useState<CategoryDTO>();
     const [currentPage, setCurrentPage] = useState(1);
     const [tabValue, setTabValue] = useState(0); // Track selected tab
     const [tabNames, setTabNames] = useState(['00']);
@@ -43,15 +30,48 @@ const SalesPage = () => {
     const totals = useMemo(() => {
         const currentTabProducts = orders[tabValue] || [];
         const totalQuantity = currentTabProducts.reduce((sum, product) => sum + (product.quantity || 1), 0);
-        const totalPrice = currentTabProducts.reduce((sum, product) => sum + (product.price * (product.quantity || 1)), 0);
+        const totalPrice = currentTabProducts.reduce((sum, product) => sum + (product.productPrice * (product.quantity || 1)), 0);
 
         return { totalQuantity, totalPrice };
     }, [orders, tabValue]);
+    const [categories, setCategories] = useState<CategoryDTO[]>([]);
+    const [products, setProducts] = useState<ProductDTO[]>([]);
 
-    const handleCategoryClick = (category: string) => {
-        setSelectedCategory(category);
+    useEffect(() => {
+        fetchAllCategory();
+        fetchProductByCategoryId(0);
+    }, []);
+
+    useEffect(() => {
+        setSelectedCategory(categories[0]);
+    }, [categories]);
+
+    const fetchAllCategory = async () => {
+        try {
+            const allCategory = await CategoryService.getAllCategory();
+            const all = new CategoryDTO(0,"Tất cả","");
+            setCategories([all, ...allCategory]);
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
-    const handleProductClick = (product: Product) => {
+
+    const fetchProductByCategoryId = async (categoryId: number) => {
+        try {
+            const products = await productService.getProductByCategoryId(categoryId);
+            setProducts(products);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    const handleCategoryClick = (category: CategoryDTO) => {
+        setSelectedCategory(category);
+        fetchProductByCategoryId(category.id);
+    }
+    const handleProductClick = (product: ProductDTO) => {
         setOrders((prevOrders) => {
             const updatedOrders = [...prevOrders];
             const currentTabProducts = updatedOrders[tabValue] || [];
@@ -66,7 +86,8 @@ const SalesPage = () => {
                 currentTabProducts[existingProductIndex].quantity! += 1;
             } else {
                 // Add the product with quantity 1 if it doesn't exist
-                currentTabProducts.push({ ...product, quantity: 1 });
+                const newOrderItem = new OrderItemDTO(0, 0, product.id, 1, "", product.price, product.name, product.image, product.comboItems);
+                currentTabProducts.push(newOrderItem);
             }
 
             updatedOrders[tabValue] = currentTabProducts; // Update the current tab
@@ -201,16 +222,17 @@ const SalesPage = () => {
                     </div>
                 </div>
                 <div className="flex flex-col flex-1 border-r border-gray-300 h-full">
-                    <div className="flex gap-2 bg-white p-3 ">
+                    <div className="flex gap-2 bg-white p-3">
                         {categories.map((category) => (
                             <button
-                                key={category}
+                                key={category.id}
                                 onClick={() => handleCategoryClick(category)}
+                                style={{height: '50px', fontSize: "14px"}}
                                 className={`px-3 py-1 text-sm rounded-full ${
                                     selectedCategory === category ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
                                 }`}
                             >
-                                {category}
+                                {category.name}
                             </button>
                         ))}
                     </div>
@@ -224,8 +246,7 @@ const SalesPage = () => {
                         {products.map((product) => (
                             <SalesProductCard
                                 key={product.id}
-                                name={product.name}
-                                price={product.price}
+                                product={product}
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     handleProductClick(product);
@@ -419,10 +440,10 @@ const SalesPage = () => {
                         <React.Fragment key={index}>
                             <OrderProductCard
                                 index={index}
-                                name={product.name}
-                                childNames={product.childNames || []}
+                                name={product.productName}
+                                childNames={product.comboItems.map(item => item.productName) || []}
                                 quantity={product.quantity || 1} // Pass quantity from parent state
-                                price={product.price}
+                                price={product.productPrice}
                                 onQuantityChange={(newQuantity) => handleUpdateQuantity(index, newQuantity)} // Pass callback for quantity update
                                 onDelete={() => {
                                     setOrders((prevOrders) => {

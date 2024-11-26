@@ -6,10 +6,10 @@ class ComboItemDTO {
         public comboId: number,
         public productId: number,
         public quantity: number,
-        public price: number,
-        public costPrice: number,
-        public name: string,
-        public image: string,
+        public productPrice: number,
+        public productCostPrice: number,
+        public productName: string,
+        public productImage: string,
     ) {}
 
     // Parse dữ liệu từ JSON sang ComboItemDTO
@@ -19,10 +19,10 @@ class ComboItemDTO {
             data.comboId,
             data.productId,
             data.quantity,
-            data.price,
-            data.costPrice,
-            data.name,
-            data.image
+            data.productPrice,
+            data.productCostPrice,
+            data.productName,
+            data.productImage,
         );
     }
 
@@ -30,20 +30,20 @@ class ComboItemDTO {
     fromProductDTO(product: ProductDTO): ComboItemDTO {
         this.productId = product.id;
         this.quantity = 1;
-        this.price = product.price;
-        this.costPrice = product.costPrice;
-        this.name = product.name;
-        this.image = product.image;
+        this.productPrice = product.price;
+        this.productCostPrice = product.costPrice;
+        this.productName = product.name;
+        this.productImage = product.image;
         return this;
     }
 
     // Tính tổng giá trị vốn của sản phẩm trong combo
     getCost(): number {
-        return this.quantity * this.costPrice;
+        return this.quantity * this.productCostPrice;
     }
     // Tính tổng giá trị bán của sản phẩm trong combo
     getPrice(): number {
-        return this.quantity * this.price;
+        return this.quantity * this.productPrice;
     }
 }
 

@@ -227,7 +227,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
                                         key={index}
                                     >
                                         <TableCell>{item.productId}</TableCell>
-                                        <TableCell>{item.name}</TableCell>
+                                        <TableCell>{item.productName}</TableCell>
                                         <TableCell>
                                             <InputQuantity
                                                 value={item.quantity}
@@ -235,7 +235,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
                                                     handleEditQuantity(item, quantity);
                                                 }}/>
                                         </TableCell>
-                                        <TableCell>{item.costPrice}</TableCell>
+                                        <TableCell>{item.productCostPrice}</TableCell>
                                         <TableCell>{item.getCost()}</TableCell>
                                         <TableCell>
                                             <ClearIcon

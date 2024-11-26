@@ -28,6 +28,7 @@ import {
     success_600
 } from "../common/constant.ts";
 import formatElapsedTime from "../utils/TimeElapsedConverter.ts";
+import ProductDTO from "../dtos/ProductDTO.ts";
 
 interface SearchCardProps {
     title: string;
@@ -36,6 +37,13 @@ interface SearchCardProps {
 }
 export const SearchCard: React.FC<SearchCardProps> = ({ title, placeholder, onSearch }) => {
     const [searchValue, setSearchValue] = useState('');
+
+    const handleChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchValue(e.target.value);
+        if(e.target.value === '') {
+            onSearch('');
+        }
+    }
 
     return (
         <Card sx={{ minWidth: 200, padding: 0.5, borderRadius: 1, boxShadow: 1 }}>
@@ -47,7 +55,7 @@ export const SearchCard: React.FC<SearchCardProps> = ({ title, placeholder, onSe
                     variant="standard"
                     placeholder={placeholder}
                     value={searchValue}
-                    onChange={(e) => setSearchValue(e.target.value)}
+                    onChange={handleChanged}
                     fullWidth
                     slotProps={{
                         input: {
@@ -171,12 +179,10 @@ export const RadioBoxCard: React.FC<RadioBoxCardProps> = ({ title, options, sele
 }
 
 interface ProductCardProps {
-    name: string;
-    price: number
-    img?: string;
+    product: ProductDTO
     onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
-export const SalesProductCard: React.FC<ProductCardProps> = ({name, price, img, onClick }) => {
+export const SalesProductCard: React.FC<ProductCardProps> = ({product, onClick }) => {
     return (
         <Card
             onClick={onClick}
@@ -210,8 +216,8 @@ export const SalesProductCard: React.FC<ProductCardProps> = ({name, price, img, 
                     paddingBottom: '0px', // Add padding at the bottom for spacing
                 }}
             >
-                {img ? (
-                    <img src={img} alt={name} style={{ width: '50%', height: 'auto' }} />
+                {product.image ? (
+                    <img src={product.image} alt={""} style={{ width: '50%', height: 'auto' }} />
                 ) : (
                     <RestaurantIcon sx={{ fontSize: 30, color: '#90CAF9' }} />
                 )}
@@ -233,7 +239,7 @@ export const SalesProductCard: React.FC<ProductCardProps> = ({name, price, img, 
                             fontSize: '0.75rem', // 12px font size for smaller text
                         }}
                     >
-                        {price.toLocaleString()}
+                        {product.price.toLocaleString()}
                     </Typography>
                 </div>
             </div>
@@ -259,7 +265,7 @@ export const SalesProductCard: React.FC<ProductCardProps> = ({name, price, img, 
                         fontWeight: 'bold',
                     }}
                 >
-                    {name}
+                    {product.name}
                 </Typography>
             </div>
         </Card>
