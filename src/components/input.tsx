@@ -100,7 +100,52 @@ export const InputNumber: React.FC<InputNumberProps> = ({ label, value, onChange
                 value={value}
                 onChange={ handleChange}
                 sx={{
-                    width: '70%',
+                    width: '50%',
+                    fontSize: '0.8rem',
+                    textAlign: 'end',
+                    '& input': {
+                        textAlign: 'end',
+                    },
+                }}
+            />
+        </div>
+    );
+}
+
+interface InputNumberCustomProps {
+    label: string;
+    value: number;
+    onChange: (value: number) => void;
+    width?: string;
+}
+
+export const InputNumberCustom: React.FC<InputNumberCustomProps> = ({ label, value, onChange, width }) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+
+        // Nếu người dùng xóa hết thì set giá trị thành chuỗi rỗng
+        if (inputValue === '') {
+            onChange("");
+            return;
+        }
+
+        // Chỉ set giá trị nếu nó là số hợp lệ
+        const numericValue = Number(inputValue);
+        if (!isNaN(numericValue)) {
+            onChange(numericValue);
+        }
+    };
+
+    return (
+        <div className="flex items-center justify-between">
+            <div className="text-sm">{label}</div>
+            <TextField
+                type="text" // Dùng type="text" thay vì "number" để tránh tự động set về 0
+                variant="standard"
+                value={value}
+                onChange={ handleChange}
+                sx={{
+                    width: width?width:'50%',
                     fontSize: '0.8rem',
                     textAlign: 'end',
                     '& input': {
@@ -159,9 +204,10 @@ interface InputSearchProductProps {
     onChange: (value: string) => void;
     recommendations: ProductDTO[];
     onClickItem?: (value: ProductDTO) => void;
+    isBlack: boolean;
 }
 
-export const InputSearchProduct: React.FC<InputSearchProductProps> = ({ value, onChange, recommendations, onClickItem}) => {
+export const InputSearchProduct: React.FC<InputSearchProductProps> = ({ value, onChange, recommendations, onClickItem, isBlack = false}) => {
     const [showSuggestions, setShowSuggestions] = useState(false);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -187,13 +233,13 @@ export const InputSearchProduct: React.FC<InputSearchProductProps> = ({ value, o
                 slotProps={{
                     input: {
                         sx: {
-                            color: color_black,
+                            color:  isBlack?color_black:color_white,
                             fontSize: '0.875rem',
                         },
                         endAdornment: ( // Move the icon to the end of the input
                             <InputAdornment position="end">
                                 <IconButton onClick={() => console.log('Search clicked')} edge="end">
-                                    <SearchIcon sx={{color: color_black}} fontSize="small"/>
+                                    <SearchIcon sx={{color: isBlack?color_black:color_white }} fontSize="small"/>
                                 </IconButton>
                             </InputAdornment>
                         ),
@@ -201,19 +247,18 @@ export const InputSearchProduct: React.FC<InputSearchProductProps> = ({ value, o
                 }}
                 sx={{
                     backgroundColor: 'transparent',
-                    color: '#fff',
                     borderRadius: '4px',
                     paddingLeft: '8px',
                     paddingRight: '8px',
                     width: '100%',
                     '& .MuiInput-underline:before': {
-                        borderBottomColor: color_black,
+                        borderBottomColor: isBlack?color_black:color_white,
                     },
                     '& .MuiInput-underline:after': {
-                        borderBottomColor: bg_green_600,
+                        borderBottomColor: isBlack?color_black:color_white,
                     },
                     '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                        borderBottomColor: color_black,
+                        borderBottomColor: isBlack?color_black:color_white,
                     },
                 }}
             />
@@ -226,10 +271,11 @@ export const InputSearchProduct: React.FC<InputSearchProductProps> = ({ value, o
                         .map((item, index) => (
                             <li
                                 key={index}
-                                className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                                className="flex flex-row px-4 py-2 cursor-pointer hover:bg-gray-100"
                                 onClick={() => handleSelectSuggestion(item)}
                             >
-                                {item.name}
+                                <img src={item.image} alt="" className="w-8 h-8 object-cover rounded-full"/>
+                                <span>{item.name}</span>
                             </li>
                         ))}
                 </ul>

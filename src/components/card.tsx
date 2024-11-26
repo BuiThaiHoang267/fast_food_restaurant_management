@@ -23,7 +23,7 @@ import {useState} from "react";
 import {
     bg_blue_600,
     bg_blue_800,
-    bg_grey_600,
+    bg_grey_600, color_white,
     Error600,
     success_600
 } from "../common/constant.ts";
@@ -190,6 +190,7 @@ export const SalesProductCard: React.FC<ProductCardProps> = ({product, onClick }
                 width: 140,
                 height: 160,
                 borderRadius: 2,
+                border: '1px solid #ddd', // Light gray border
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -208,7 +209,7 @@ export const SalesProductCard: React.FC<ProductCardProps> = ({product, onClick }
                 style={{
                     width: '100%',
                     height: '60%',
-                    backgroundColor: '#E3F2FD', // Light blue background
+                    backgroundColor: color_white, // Light blue background
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',

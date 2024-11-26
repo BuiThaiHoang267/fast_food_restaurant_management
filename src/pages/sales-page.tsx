@@ -5,7 +5,6 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import {OrderProductCard, SalesProductCard} from "../components/card.tsx";
 import {bg_blue_600, bg_blue_700, bg_blue_800, bg_grey_600, color_white} from "../common/constant.ts";
 import {useEffect, useMemo, useState} from "react";
@@ -15,6 +14,9 @@ import {CategoryService} from "../services/CategoryService.ts";
 import ProductDTO from "../dtos/ProductDTO.ts";
 import {productService} from "../services/ProductService.ts";
 import {OrderItemDTO} from "../dtos/OrderItemDTO.ts";
+import {OrderDTO} from "../dtos/OrderDTO.ts";
+import {InputSearchProduct} from "../components/input.tsx";
+import DialogPayment from "../components/dialog-payment.tsx";
 
 type Orders = OrderItemDTO[][]; // Array of product arrays for each tab
 
@@ -23,7 +25,7 @@ const SalesPage = () => {
     const [selectedCategory, setSelectedCategory] = useState<CategoryDTO>();
     const [currentPage, setCurrentPage] = useState(1);
     const [tabValue, setTabValue] = useState(0); // Track selected tab
-    const [tabNames, setTabNames] = useState(['00']);
+    const [tabNames, setTabNames] = useState(["00"]);
     const [isEditing, setIsEditing] = useState<number | null>(null); // Track the tab being edited
     const [orders, setOrders] = useState<Orders>([[]]); // Initialize with an empty order for the first tab
     const totalPages = 3;
@@ -36,6 +38,12 @@ const SalesPage = () => {
     }, [orders, tabValue]);
     const [categories, setCategories] = useState<CategoryDTO[]>([]);
     const [products, setProducts] = useState<ProductDTO[]>([]);
+    const [orderRequest, setOrderRequest] = useState<OrderDTO>(
+        new OrderDTO(0, 0, 0, "PENDING", 0, 0, [])
+    );
+    const [textSearch, setTextSearch] = useState<string>("");
+    const [productSearch, setProductSearch] = useState<ProductDTO[]>([]);
+    const [openDialogPayment, setOpenDialogPayment] = useState(true);
 
     useEffect(() => {
         fetchAllCategory();
@@ -61,6 +69,9 @@ const SalesPage = () => {
         try {
             const products = await productService.getProductByCategoryId(categoryId);
             setProducts(products);
+            if(productSearch.length === 0 && categoryId === 0) {
+                setProductSearch(products);
+            }
         }
         catch (error) {
             console.error(error);
@@ -78,7 +89,7 @@ const SalesPage = () => {
 
             // Check if the product already exists in the current tab
             const existingProductIndex = currentTabProducts.findIndex(
-                (p) => p.id === product.id
+                (p) => p.productId === product.id
             );
 
             if (existingProductIndex !== -1) {
@@ -168,13 +179,22 @@ const SalesPage = () => {
         }
     };
 
-    const handleCheckout = () => {
+
+    const handleSetOrderRequest = () => {
         const currentOrder = orders[tabValue] || [];
         if (currentOrder.length > 0) {
-            console.log("Current Order:", currentOrder);
+            setOrderRequest((prevOrderRequest) => {
+                const updatedOrderRequest = { ...prevOrderRequest };
+                updatedOrderRequest.orderItems = currentOrder;
+                updatedOrderRequest.totalPrice = totals.totalPrice;
+                updatedOrderRequest.numberOrder = parseInt(tabNames[tabValue], 0); // Parse the tab name as the order number
+                console.log("Order Request:", updatedOrderRequest);
+                return updatedOrderRequest;
+            });
         } else {
             console.log("No items in the current order.");
         }
+        setOpenDialogPayment(true);
     };
 
     return (
@@ -183,42 +203,13 @@ const SalesPage = () => {
             <div className="flex flex-col flex-1">
                 <div className="pt-2 pb-3 bg-blue-800 h-12">
                     <div className="w-1/2 h-7 px-4">
-                        <TextField
-                            variant="standard"
-                            placeholder="Tìm món"
-                            slotProps={{
-                                input: {
-                                    sx: {
-                                        color: color_white,
-                                        fontSize: '0.875rem',
-                                    },
-                                    endAdornment: ( // Move the icon to the end of the input
-                                        <InputAdornment position="end">
-                                            <IconButton onClick={() => console.log('Search clicked')} edge="end">
-                                                <SearchIcon sx={{color: color_white}} fontSize="small"/>
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                },
-                            }}
-                            sx={{
-                                backgroundColor: 'transparent',
-                                color: '#fff',
-                                borderRadius: '4px',
-                                paddingLeft: '8px',
-                                paddingRight: '8px',
-                                width: '100%',
-                                '& .MuiInput-underline:before': {
-                                    borderBottomColor: color_white,
-                                },
-                                '& .MuiInput-underline:after': {
-                                    borderBottomColor: color_white,
-                                },
-                                '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                                    borderBottomColor: color_white,
-                                },
-                            }}
-                        />
+                        <InputSearchProduct
+                            value={textSearch}
+                            onChange={setTextSearch}
+                            recommendations={productSearch}
+                            onClickItem={(product) => {handleProductClick(product)}}
+                            isBlack={false}
+                        ></InputSearchProduct>
                     </div>
                 </div>
                 <div className="flex flex-col flex-1 border-r border-gray-300 h-full">
@@ -387,7 +378,7 @@ const SalesPage = () => {
                                                     }}
                                                 />
                                             ) : (
-                                                <span>{tab}</span>
+                                                <span style={{textTransform: "none", fontWeight: "bold"}}>{"Order " + tab}</span>
                                             )}
 
                                             {/* Delete Button for Selected Tab Only */}
@@ -490,29 +481,6 @@ const SalesPage = () => {
                         </div>
                     </div>
                     <div className="flex flex-row gap-4 p-2">
-                        <Button
-                            variant="outlined"
-                            sx={{
-                                flex: 1,
-                                color: bg_blue_600,
-                                borderColor: bg_blue_600,
-                                borderRadius: '12px', // Increased border radius for a larger look
-                                textTransform: 'none', // Keep the text normal case
-                                fontSize: '1rem', // Larger font size
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontWeight: 600, // Bolder text
-                                padding: '12px 16px', // Larger padding for a bigger button
-                                '&:hover': {
-                                    borderColor: bg_blue_800,
-                                    backgroundColor: 'rgba(21, 101, 192, 0.1)', // Slight blue background on hover
-                                },
-                            }}
-                        >
-                            <NotificationsIcon fontSize="medium" sx={{marginRight: '8px'}}/>
-                            Thông báo
-                        </Button>
 
                         {/* Right Button */}
                         <Button
@@ -533,11 +501,12 @@ const SalesPage = () => {
                                     backgroundColor: '', // Darker blue on hover
                                 },
                             }}
-                            onClick={handleCheckout}
+                            onClick={handleSetOrderRequest}
                         >
                             <AttachMoneyIcon fontSize="medium" sx={{marginRight: '8px'}}/>
                             Thanh toán
                         </Button>
+                        <DialogPayment open={openDialogPayment} onClose={() => setOpenDialogPayment(false)} order={orderRequest}></DialogPayment>
                     </div>
                 </div>
             </div>

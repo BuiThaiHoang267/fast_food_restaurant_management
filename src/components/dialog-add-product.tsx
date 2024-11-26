@@ -192,6 +192,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
                                 onChange={setTextSearch}
                                 recommendations={product}
                                 onClickItem={(product) => {handleAddProductToCombo(product)}}
+                                isBlack={true}
                             ></InputSearchProduct>
                         </div>
                         <Table
