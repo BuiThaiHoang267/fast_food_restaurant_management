@@ -3,7 +3,7 @@ import {
     Button,
     Dialog,
     IconButton,
-    Radio, RadioGroup,
+    Radio,
     Table,
     TableBody,
     TableCell,
@@ -12,12 +12,13 @@ import {
     Typography
 } from "@mui/material";
 import {
-    bg_blue_300, bg_blue_600, bg_grey_400, bg_grey_500,
+    bg_blue_200,
+    bg_blue_300, bg_blue_600, bg_grey_500,
     bg_grey_600, color_black,
     success_600,
 } from "../common/constant.ts";
 import CloseIcon from "@mui/icons-material/Close";
-import React from "react";
+import React, {useEffect} from "react";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -32,7 +33,26 @@ interface DialogPaymentProps {
 
 const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => {
     const [discount, setDiscount] = React.useState<number>(0);
-    const [paymentMethod, setPaymentMethod] = React.useState<Number>(1);
+    const [paymentMethod, setPaymentMethod] = React.useState<number>(1);
+    const [change, setChange] = React.useState<number>(0);
+    const [paymentMoney, setPaymentMoney] = React.useState<number>(0);
+
+    useEffect(() => {
+        if(open){
+            setPaymentMoney(order.totalPrice);
+            setChange(0);
+        }
+    }, [open]);
+
+    const handleChangePaymentMoney = (value: number) => {
+        setPaymentMoney(value);
+        setChange(value - (order.totalPrice - discount));
+    }
+
+    const handleChangeDiscount = (value: number) => {
+        setDiscount(value);
+        setChange(paymentMoney - (order.totalPrice - value));
+    }
 
     return (
         <Dialog
@@ -57,7 +77,7 @@ const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => 
                                 fontWeight: 'bold',
                             }}
                         >
-                            Phiếu thanh toán - 20
+                            Phiếu thanh toán - {order.numberOrder}
                         </Typography>
                     </div>
                     <div>
@@ -88,10 +108,13 @@ const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => 
                                     backgroundColor: bg_blue_300,
                                     color: color_black,
                                     fontWeight: 'bold',
-                                    height: 50,
+                                    height: 40,
+                                    "& th": {
+                                        backgroundColor: bg_blue_200,
+                                    }
                                 }}
                             >
-                                <TableCell sx={{minWidth: 60, padding: 0, fontWeight: 'bold'}}>Món ăn</TableCell>
+                                <TableCell sx={{minWidth: 70, padding: "0", paddingX: 1, fontWeight: 'bold'}}>Món ăn</TableCell>
                                 <TableCell sx={{minWidth: 300}}></TableCell>
                                 <TableCell sx={{minWidth: 100}}></TableCell>
                                 <TableCell sx={{width: 100}}></TableCell>
@@ -114,6 +137,7 @@ const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => 
                                             sx={{
                                                 fontWeight: 'bold',
                                                 fontSize: '0.8rem',
+                                                textAlign: 'right',
                                             }}
                                         >{item.productPrice.toLocaleString()}</TableCell>
                                     </TableRow>
@@ -132,14 +156,19 @@ const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => 
                             <span>{order.totalPrice.toLocaleString()}</span>
                         </div>
                         <div className={"mt-2"}>
-                            <InputNumberCustom label={"Giảm giá"} value={discount} onChange={(value) => setDiscount(value)} width={"30%"}/>
+                            <InputNumberCustom label={"Giảm giá"} value={discount}
+                                               onChange={(value) => handleChangeDiscount(value)} width={"30%"}/>
                         </div>
                         <div className={"flex flex-row justify-between mt-2"}>
                             <span>Khách cần trả</span>
-                            <span style={{color: bg_blue_600, fontWeight: 'bold'}}>{order.totalPrice.toLocaleString()}</span>
+                            <span style={{
+                                color: bg_blue_600,
+                                fontWeight: 'bold'
+                            }}>{order.totalPrice.toLocaleString()}</span>
                         </div>
                         <div className={"mt-2"}>
-                            <InputNumberCustom label={"Khách thanh toán"} value={discount} onChange={(value) => setDiscount(value)} width={"30%"}/>
+                            <InputNumberCustom label={"Khách thanh toán"} value={paymentMoney}
+                                               onChange={(value) => handleChangePaymentMoney(value)} width={"30%"}/>
                         </div>
                         <div className={"flex flex-row mt-2 items-center"}>
                             <Radio
@@ -164,6 +193,13 @@ const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => 
                                 color="primary"/>
                             <span>Quẹt thẻ</span>
                         </div>
+                        {(paymentMethod === 1) &&<div className={"flex flex-row justify-between mt-2"}>
+                            <span>Tiền thừa trả khách</span>
+                            <span style={{
+                                color: bg_blue_600,
+                                fontWeight: 'bold'
+                            }}>{change.toLocaleString()}</span>
+                        </div>}
                     </div>
                 </div>
                 <div className={"flex flex-row p-4"}>

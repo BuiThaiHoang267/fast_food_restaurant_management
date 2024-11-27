@@ -198,9 +198,9 @@ const SalesPage = () => {
     };
 
     return (
-        <div className="flex h-screen">
+        <div className="flex flex-row h-screen">
             {/* Left Section */}
-            <div className="flex flex-col flex-1">
+            <div className="flex flex-col" style={{flex: 5}}>
                 <div className="pt-2 pb-3 bg-blue-800 h-12">
                     <div className="w-1/2 h-7 px-4">
                         <InputSearchProduct
@@ -294,7 +294,7 @@ const SalesPage = () => {
             </div>
 
             {/* Right Section */}
-            <div className="flex flex-col flex-1 bg-white">
+            <div className="flex flex-col flex-1 bg-white" style={{flex: 4}}>
                 {/* Tabs for Orders */}
                 <div className="flex items-end justify-between px-4 h-12 bg-blue-800">
                     <div className="flex items-center gap-2 flex-1">

@@ -264,6 +264,10 @@ export const SalesProductCard: React.FC<ProductCardProps> = ({product, onClick }
                         color: '#424242',
                         fontSize: '0.75rem',
                         fontWeight: 'bold',
+                        textAlign: 'center',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                     }}
                 >
                     {product.name}

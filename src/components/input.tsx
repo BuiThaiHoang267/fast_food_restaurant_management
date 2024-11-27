@@ -138,7 +138,7 @@ export const InputNumberCustom: React.FC<InputNumberCustomProps> = ({ label, val
 
     return (
         <div className="flex items-center justify-between">
-            <div className="text-sm">{label}</div>
+            <div>{label}</div>
             <TextField
                 type="text" // Dùng type="text" thay vì "number" để tránh tự động set về 0
                 variant="standard"
@@ -146,7 +146,7 @@ export const InputNumberCustom: React.FC<InputNumberCustomProps> = ({ label, val
                 onChange={ handleChange}
                 sx={{
                     width: width?width:'50%',
-                    fontSize: '0.8rem',
+                    fontSize: '1rem',
                     textAlign: 'end',
                     '& input': {
                         textAlign: 'end',
