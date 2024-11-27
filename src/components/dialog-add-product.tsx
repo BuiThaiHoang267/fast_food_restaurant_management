@@ -28,9 +28,10 @@ import {CategoryService} from "../services/CategoryService.ts";
 interface DialogAddProductProps {
     open: boolean;
     onClose: () => void;
+    productParams?: ProductDTO;
 }
 
-const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
+const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose, productParams}) => {
     const [isCombo, setIsCombo] = useState(false);
     const [product, setProduct] = useState<ProductDTO[]>([]);
     const [productAdd, setProductAdd] = useState<ProductDTO>(new ProductDTO(0,"","","",0,0,"",0,"",[]));
@@ -40,6 +41,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
     useEffect(() => {
         fetchProduct();
         fetchAllCategory();
+
     },[]);
 
     useEffect(() => {
@@ -48,6 +50,10 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose}) => {
             setProductAdd(new ProductDTO(0,"","","",0,0,"",0,"",[]));
             setIsCombo(false);
             setTextSearch("");
+            if(productParams) {
+                setProductAdd(productParams);
+                setIsCombo(productParams.type === "Combo");
+            }
         }
     },[open]);
 

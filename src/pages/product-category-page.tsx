@@ -24,6 +24,7 @@ import ProductDTO from "../dtos/ProductDTO.ts";
 
 const ProductCategoryPage = () => {
     const [openFilterTable, setOpenFilterTable] = useState<null | HTMLElement>(null);
+    const [openDialogDetail, setOpenDialogDetail] = useState(false);
     const [openDialogAdd, setOpenDialogAdd] = useState(false);
     const [selectedRows, setSelectedRows] = useState<ProductDTO[]>([]);
     const [page, setPage] = useState(0);
@@ -39,6 +40,7 @@ const ProductCategoryPage = () => {
     const [categories, setCategories] = useState<CategoryDTO[]>([]);
     const [categoryFilter, setCategoryFilter] = useState<{id: number, label: string, checked: boolean}[]>([]);
     const [products, setProducts] = useState<ProductDTO[]>([]);
+    const [productDetail, setProductDetail] = useState<ProductDTO>(null);
     const [productFilter, setProductFilter] = useState<ProductFilter>({
         name: "",
         categories: []
@@ -120,8 +122,8 @@ const ProductCategoryPage = () => {
     };
     // Custom action when clicking on a row (other than the checkbox)
     const handleRowClick = (product: ProductDTO) => {
-        // Replace this with your custom action, like opening a detail view
-        console.log(`Row clicked with ID: ${product}`);
+        setProductDetail(product);
+        setOpenDialogDetail(true);
     };
     // Handler for pagination change
     const handleChangePage = (e: unknown, newPage: number) => {
@@ -143,6 +145,10 @@ const ProductCategoryPage = () => {
 
     const handleDialogAddClose = () => {
         setOpenDialogAdd(false);
+    }
+
+    const handleDialogDetailClose = () => {
+        setOpenDialogDetail(false);
     }
 
     const handleCheckField = (name: string, visible: boolean) => {
@@ -269,6 +275,7 @@ const ProductCategoryPage = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
+                <DialogAddProduct open={openDialogDetail} onClose={handleDialogDetailClose} productParams={productDetail}/>
                 {/* Pagination Component */}
                 <TablePagination
                     component="div"
