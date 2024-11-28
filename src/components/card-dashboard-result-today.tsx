@@ -9,7 +9,8 @@ import {
 import ArrowDownwardTwoToneIcon from '@mui/icons-material/ArrowDownwardTwoTone';
 import ArrowUpwardTwoToneIcon from '@mui/icons-material/ArrowUpwardTwoTone';
 import MovingIcon from '@mui/icons-material/Moving';
-import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
+import DescriptionIcon from '@mui/icons-material/Description';
+
 
 const CardDashboardResultToday = () => {
   return (
@@ -72,7 +73,7 @@ const CardDashboardResultToday = () => {
                       className={'flex flex-row items-center justify-center'}
                       style={{height: 36, width: 36, borderRadius: 36, backgroundColor: Error500}}
                   >
-                      <BorderColorOutlinedIcon fontSize="small" fontWeight='bold' sx={{color: 'white'}}/>
+                      <DescriptionIcon fontSize="small" fontWeight='bold' sx={{color: 'white'}}/>
                   </div>
                   <div className={'flex-1 flex flex-col pl-4'}>
                       <span style={{fontSize: "0.9rem", fontWeight: "bold", color: bg_grey_500}}>Hóa đơn</span>

@@ -6,6 +6,7 @@ import ProductCategoryPage from './pages/product-category-page.tsx';
 import ProductPricePage from "./pages/product-price-page.tsx";
 import KitchenPage from "./pages/kitchen-page.tsx";
 import SalesPage from "./pages/sales-page.tsx";
+import OrderPage from "./pages/order-page.tsx";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
               <Route path="/" element={<GeneralPage />} />
               <Route path="/product-category" element={<ProductCategoryPage />} />
               <Route path="/product-price" element={<ProductPricePage />} />
+              <Route path={"/orders"} element={<OrderPage />} />
           </Route>
           <Route path="/kitchen" element={<KitchenPage />} />
           <Route path="/sales" element={<SalesPage />}/>

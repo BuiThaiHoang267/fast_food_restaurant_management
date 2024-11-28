@@ -11,8 +11,8 @@ import {
 import {InputDropdown, InputNumber, InputQuantity, InputSearchProduct, InputText} from "./input.tsx";
 import {
     bg_blue_300,
-    bg_blue_500, bg_blue_600,
-    color_black,
+    bg_blue_600, bg_grey_500, bg_grey_600,
+    color_black, Error500,
     Error600,
     success_600,
     success_700
@@ -29,9 +29,10 @@ interface DialogAddProductProps {
     open: boolean;
     onClose: () => void;
     productParams?: ProductDTO;
+    isAdd: boolean;
 }
 
-const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose, productParams}) => {
+const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose, productParams, isAdd = false}) => {
     const [isCombo, setIsCombo] = useState(false);
     const [product, setProduct] = useState<ProductDTO[]>([]);
     const [productAdd, setProductAdd] = useState<ProductDTO>(new ProductDTO(0,"","","",0,0,"",0,"",[]));
@@ -171,7 +172,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose, produ
         >
             <div className="p-5">
                 <Typography variant="h6" component="div" gutterBottom sx={{fontWeight: 'bold', color: bg_blue_600}}>
-                    Thêm Món ăn - Combo
+                    {isAdd?"Thêm Món ăn - Combo":"Chỉnh sửa Món ăn - Combo"}
                 </Typography>
                 <div className={"flex flex-row gap-14"}>
                     <div className={"flex-[7] flex flex-col gap-2"}>
@@ -273,11 +274,14 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose, produ
 
 
                 <div className="flex justify-end gap-2 mt-6">
-                    <Button
+                    {isAdd && <Button
                         variant="contained"
                         color="primary"
                         onClick={handleSaveProduct}
                         sx={{
+                            textTransform: 'none',
+                            borderRadius: '8px',
+                            fontWeight: 'bold',
                             backgroundColor: success_600,
                             '&:hover': {
                                 backgroundColor: success_700,
@@ -285,19 +289,56 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose, produ
                         }}
                     >
                         Lưu
-                    </Button>
+                    </Button>}
+                    {!isAdd && <div className={'flex flex-row gap-2'}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleDialogClose}
+                            sx={{
+                                backgroundColor: success_600,
+                                textTransform: 'none',
+                                borderRadius: '8px',
+                                fontWeight: 'bold',
+                                '&:hover': {
+                                    backgroundColor: success_700,
+                                },
+                            }}
+                        >
+                            Cập Nhật
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleDialogClose}
+                            sx={{
+                                backgroundColor: Error500,
+                                textTransform: 'none',
+                                borderRadius: '8px',
+                                fontWeight: 'bold',
+                                '&:hover': {
+                                    backgroundColor: Error600,
+                                },
+                            }}
+                        >
+                            Xóa
+                        </Button>
+                    </div>}
                     <Button
                         variant="contained"
                         color="primary"
                         onClick={handleDialogClose}
                         sx={{
-                            backgroundColor: bg_blue_500,
+                            backgroundColor: bg_grey_500,
+                            textTransform: 'none',
+                            fontWeight: 'bold',
+                            borderRadius: '8px',
                             '&:hover': {
-                                backgroundColor: bg_blue_500,
+                                backgroundColor: bg_grey_600,
                             },
                         }}
                     >
-                        Hủy
+                        Bỏ qua
                     </Button>
                 </div>
             </div>

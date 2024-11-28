@@ -1,4 +1,4 @@
-﻿import {CheckBoxCard, SearchCard} from '../components/card';
+import {CheckBoxCard, SearchCard} from '../components/card';
 import {useEffect, useState} from "react";
 import {
     Table,
@@ -28,7 +28,7 @@ import CategoryDTO from "../dtos/CategoryDTO.ts";
 import {ProductFilter, productService} from "../services/ProductService.ts";
 import ProductDTO from "../dtos/ProductDTO.ts";
 
-const ProductCategoryPage = () => {
+const OrderPage = () => {
     const [openFilterTable, setOpenFilterTable] = useState<null | HTMLElement>(null);
     const [openDialogDetail, setOpenDialogDetail] = useState(false);
     const [openDialogAdd, setOpenDialogAdd] = useState(false);
@@ -193,7 +193,7 @@ const ProductCategoryPage = () => {
             <div className="flex-grow flex-col pl-5 pr-10 py-5 space-y-2">
                 <div className="flex items-center justify-between">
                     <Typography variant="h5" component="div" gutterBottom sx={{fontWeight: 'bold'}}>
-                        Hàng Hóa
+                        Hóa Đơn
                     </Typography>
                     <div className="flex space-x-2">
                         <Button
@@ -202,13 +202,16 @@ const ProductCategoryPage = () => {
                             startIcon={<AddIcon />}
                             onClick={() => setOpenDialogAdd(true)}
                             sx={{
+                                textTransform: 'none',
+                                fontWeight: 'bold',
+                                borderRadius: '8px',
                                 backgroundColor: success_600,
                                 '&:hover': {
                                     backgroundColor: success_700,
                                 },
                             }}
                         >
-                            Thêm mới
+                            Nhận gọi món
                         </Button>
                         <DialogAddProduct open={openDialogAdd} onClose={handleDialogAddClose} isAdd={true}></DialogAddProduct>
                         <Button
@@ -216,6 +219,8 @@ const ProductCategoryPage = () => {
                             color="primary"
                             onClick={handleFilterTableOpen}
                             sx={{
+                                textTransform: 'none',
+                                borderRadius: '8px',
                                 backgroundColor: success_600,
                                 '&:hover': {
                                     backgroundColor: success_700,
@@ -322,4 +327,4 @@ const ProductCategoryPage = () => {
     )
 }
 
-export default ProductCategoryPage;
+export default OrderPage;
