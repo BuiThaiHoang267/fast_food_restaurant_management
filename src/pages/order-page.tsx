@@ -16,135 +16,97 @@ import AddIcon from '@mui/icons-material/Add';
 import ListIcon from '@mui/icons-material/List';
 import {
     bg_grey_100,
-    color_black,
+    color_black, color_green_primary,
     color_white,
-    success_600,
     success_700
 } from "../common/constant.ts";
-import DialogAddProduct from "../components/dialog-add-product.tsx";
 import MenuFieldTable, {MenuFieldProps} from "../components/menu-field.tsx";
-import {CategoryService} from "../services/CategoryService.ts";
-import CategoryDTO from "../dtos/CategoryDTO.ts";
-import {ProductFilter, productService} from "../services/ProductService.ts";
-import ProductDTO from "../dtos/ProductDTO.ts";
+import {ProductFilter} from "../services/ProductService.ts";
+import {Link} from "react-router-dom";
+import {OrderDTO} from "../dtos/OrderDTO.ts";
+import CardTimeOrder from "../components/card-time-order.tsx";
 
 const OrderPage = () => {
     const [openFilterTable, setOpenFilterTable] = useState<null | HTMLElement>(null);
-    const [openDialogDetail, setOpenDialogDetail] = useState(false);
-    const [openDialogAdd, setOpenDialogAdd] = useState(false);
-    const [selectedRows, setSelectedRows] = useState<ProductDTO[]>([]);
+    const [selectedRows, setSelectedRows] = useState<OrderDTO[]>([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [fields, setFields] = useState<MenuFieldProps[]>([
-        { label: 'Hình ảnh', name: 'image', visible: true },
-        { label: 'Mã hàng', name: 'id', visible: false },
-        { label: 'Tên món ăn', name: 'name', visible: true },
-        { label: 'Danh mục', name: 'categoryName', visible: true },
-        { label: 'Giá vốn', name: 'costPrice', visible: true },
-        { label: 'Giá bán', name: 'price', visible: true },
+        { label: 'Mã hóa đơn', name: 'id', visible: false },
+        { label: 'Trạng thái', name: 'status', visible: true },
+        { label: 'Số phục vụ', name: 'numberOrder', visible: true },
+        { label: 'Chi nhánh', name: 'branchName', visible: true },
+        { label: 'PT thanh toán', name: 'branchName', visible: true },
+        { label: 'Ngày tạo', name: 'updateAt', visible: true },
+        { label: 'Tổng hóa đơn', name: 'price', visible: true },
     ]);
-    const [categories, setCategories] = useState<CategoryDTO[]>([]);
-    const [categoryFilter, setCategoryFilter] = useState<{id: number, label: string, checked: boolean}[]>([]);
-    const [typeFilter, setTypeFilter] = useState<{id: number, label: string, checked: boolean}[]>([{id: 1, label: "Combo", checked: false}, {id: 2, label: "Product", checked: false}]);
-    const [products, setProducts] = useState<ProductDTO[]>([]);
-    const [productDetail, setProductDetail] = useState<ProductDTO>();
+    const [paymentMethodFilter, setPaymentMethodFilter] = useState<{id: number, label: string, checked: boolean}[]>(
+        [
+            {id: 1, label: "Tiền mặt", checked: false},
+            {id: 2, label: "Chuyển khoản", checked: false},
+            {id: 3, label: "Quẹt thẻ", checked: false}
+        ]);
+    const [branchFilter, setBranchFilter] = useState<{id: number, label: string, checked: boolean}[]>(
+        [
+            {id: 1, label: "Chi nhánh 1", checked: false},
+            {id: 2, label: "Chi nhánh 2", checked: false},
+        ]);
+    const [orders, setOrders] = useState<OrderDTO[]>([]);
+    const [orderDetail, setOrderDetail] = useState<OrderDTO>();
     const [productFilter, setProductFilter] = useState<ProductFilter>({
         name: "",
         categories: []
     });
 
     useEffect(() => {
-        fetchAllCategory();
-        fetchProductByFilter();
-    }, []);
-
-    useEffect(() => {
-        setCategoryFilter(categories.map((category) => ({id: category.id,label: category.name, checked: false})));
-    }, [categories]);
-
-    useEffect(() => {
-        fetchProductByFilter();
     }, [productFilter]);
 
     useEffect(() => {
         setPage(0);
-    }, [products]);
-
-    const fetchAllCategory = async () => {
-        try {
-            if(sessionStorage.getItem("categories") !== null) {
-                const data = JSON.parse(sessionStorage.getItem("categories") || "");
-                console.log("Hello",data);
-                setCategories(data);
-                return;
-            }
-            const allCategory = await CategoryService.getAllCategory();
-            setCategories(allCategory);
-        }
-        catch (error) {
-            console.error(error);
-        }
-    }
-
-    const fetchProductByFilter = async () => {
-        try {
-            const data = await productService.getProductByFilter(productFilter);
-            setProducts(data);
-        }
-        catch (error) {
-            console.error(error);
-        }
-    }
+    }, [orders]);
 
     const handleSearch = (value: string) => {
         setProductFilter((prevProductFilter) => ({ ...prevProductFilter, name: value }));
     }
 
-    const handleTypeCardChange = (id: number, label: string, checked: boolean) => {
-        setTypeFilter((prevTypeFilter) =>
+    const handlePaymentMethodCardChange = (id: number, label: string, checked: boolean) => {
+        setPaymentMethodFilter((prevTypeFilter) =>
             prevTypeFilter.map((type) =>
                 type.id === id ? { id, label , checked } : type
             )
         );
     }
 
-    const handleCategoryCardChange = (id: number, label: string, checked: boolean) => {
-        setCategoryFilter((prevCategoryFilter) =>
-            prevCategoryFilter.map((category) =>
-                category.id === id ? { id, label , checked } : category
+    const handleBranchCardChange = (id: number, label: string, checked: boolean) => {
+        setBranchFilter((prevTypeFilter) =>
+            prevTypeFilter.map((type) =>
+                type.id === id ? { id, label , checked } : type
             )
         );
-        setProductFilter((prevProductFilter) => {
-            if (checked) {
-                return { ...prevProductFilter, categories: [...prevProductFilter.categories, id] };
-            } else {
-                return { ...prevProductFilter, categories: prevProductFilter.categories.filter((category) => category !== id) };
-            }
-        });
-    };
+    }
+
     // Handler for "Select All" checkbox
     const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
-            setSelectedRows(products);
+            setSelectedRows(orders);
         } else {
             setSelectedRows([]);
         }
     };
     // Handler for row selection (checkbox and row click)
-    const toggleRowSelection = (product: ProductDTO) => {
+    const toggleRowSelection = (order: OrderDTO) => {
         setSelectedRows((prevSelectedRows) => {
-            if (prevSelectedRows.includes(product)) {
-                return prevSelectedRows.filter((row) => row !== product);
+            if (prevSelectedRows.includes(order)) {
+                return prevSelectedRows.filter((row) => row !== order);
             } else {
-                return [...prevSelectedRows, product];
+                return [...prevSelectedRows, order];
             }
         });
     };
     // Custom action when clicking on a row (other than the checkbox)
-    const handleRowClick = (product: ProductDTO) => {
-        console.log(product);
-        setProductDetail(product);
-        setOpenDialogDetail(true);
+    const handleRowClick = (order: OrderDTO) => {
+        console.log(order);
+        setOrderDetail(order);
     };
     // Handler for pagination change
     const handleChangePage = (e: unknown, newPage: number) => {
@@ -164,13 +126,6 @@ const OrderPage = () => {
         setOpenFilterTable(null);
     }
 
-    const handleDialogAddClose = () => {
-        setOpenDialogAdd(false);
-    }
-
-    const handleDialogDetailClose = () => {
-        setOpenDialogDetail(false);
-    }
 
     const handleCheckField = (name: string, visible: boolean) => {
         setFields((prevFields) =>
@@ -181,14 +136,15 @@ const OrderPage = () => {
     }
 
     // Determine rows to display on the current page
-    const displayedRows = products.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    const displayedRows = orders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     return (
-        <div className="flex-row flex">
-            <div className="w-3/12 flex-col pl-10 pr-5 py-5 space-y-4">
+        <div className="flex flex-row justify-between">
+            <div className="w-3/12 flex-col pl-10 pr-5 py-5 space-y-4" style={{width: '25%'}}>
                 <SearchCard title="Tìm kiếm" placeholder="Theo tên món ăn" onSearch={handleSearch}/>
-                <CheckBoxCard title="Combo/Món ăn" options={typeFilter} onChange={handleTypeCardChange} />
-                <CheckBoxCard title="Danh mục" options={categoryFilter} onChange={handleCategoryCardChange} />
+                <CheckBoxCard title="Phương thức thanh toán" options={paymentMethodFilter} onChange={handlePaymentMethodCardChange} />
+                <CheckBoxCard title="Chi nhánh" options={branchFilter} onChange={handleBranchCardChange} />
+                <CardTimeOrder/>
             </div>
             <div className="flex-grow flex-col pl-5 pr-10 py-5 space-y-2">
                 <div className="flex items-center justify-between">
@@ -196,24 +152,24 @@ const OrderPage = () => {
                         Hóa Đơn
                     </Typography>
                     <div className="flex space-x-2">
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<AddIcon />}
-                            onClick={() => setOpenDialogAdd(true)}
-                            sx={{
-                                textTransform: 'none',
-                                fontWeight: 'bold',
-                                borderRadius: '8px',
-                                backgroundColor: success_600,
-                                '&:hover': {
-                                    backgroundColor: success_700,
-                                },
-                            }}
-                        >
-                            Nhận gọi món
-                        </Button>
-                        <DialogAddProduct open={openDialogAdd} onClose={handleDialogAddClose} isAdd={true}></DialogAddProduct>
+                        <Link to="/sales">
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                startIcon={<AddIcon />}
+                                sx={{
+                                    textTransform: 'none',
+                                    fontWeight: 'bold',
+                                    borderRadius: '8px',
+                                    backgroundColor: color_green_primary,
+                                    '&:hover': {
+                                        backgroundColor: success_700,
+                                    },
+                                }}
+                            >
+                                Nhận gọi món
+                            </Button>
+                        </Link>
                         <Button
                             variant="contained"
                             color="primary"
@@ -221,7 +177,7 @@ const OrderPage = () => {
                             sx={{
                                 textTransform: 'none',
                                 borderRadius: '8px',
-                                backgroundColor: success_600,
+                                backgroundColor: color_green_primary,
                                 '&:hover': {
                                     backgroundColor: success_700,
                                 },
@@ -274,13 +230,12 @@ const OrderPage = () => {
                                 <TableCell padding="checkbox">
                                     <Checkbox
                                         indeterminate={
-                                            selectedRows.length > 0 && selectedRows.length < products.length
+                                            selectedRows.length > 0 && selectedRows.length < orders.length
                                         }
-                                        checked={selectedRows.length === products.length}
+                                        checked={selectedRows.length === orders.length}
                                         onChange={handleSelectAll}
                                     />
                                 </TableCell>
-                                {fields[0].visible && <TableCell style={{width: 50}}></TableCell>}
                                 {fields.map((field, index) => (
                                     (field.visible && field.name != "image") && <TableCell key={index}>{field.label}</TableCell>
                                 ))}
@@ -301,7 +256,6 @@ const OrderPage = () => {
                                             onChange={() => toggleRowSelection(row)}
                                         />
                                     </TableCell>
-                                    {fields[0].visible && <TableCell style={{padding: "5px 0"}}><img src={row.image} alt={row.name} width={40} height={40}/></TableCell>}
                                     {fields.map((field, index) => (
                                         (field.visible && field.name != "image") && <TableCell key={index}>{row[field.name]}</TableCell>
                                     ))}
@@ -310,11 +264,10 @@ const OrderPage = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
-                <DialogAddProduct open={openDialogDetail} onClose={handleDialogDetailClose} productParams={productDetail} isAdd={false}/>
                 {/* Pagination Component */}
                 <TablePagination
                     component="div"
-                    count={products.length}
+                    count={orders.length}
                     page={page}
                     onPageChange={handleChangePage}
                     rowsPerPage={rowsPerPage}

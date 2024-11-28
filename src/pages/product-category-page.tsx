@@ -16,9 +16,8 @@ import AddIcon from '@mui/icons-material/Add';
 import ListIcon from '@mui/icons-material/List';
 import {
     bg_grey_100,
-    color_black,
+    color_black, color_green_primary,
     color_white,
-    success_600,
     success_700
 } from "../common/constant.ts";
 import DialogAddProduct from "../components/dialog-add-product.tsx";
@@ -185,7 +184,7 @@ const ProductCategoryPage = () => {
 
     return (
         <div className="flex-row flex">
-            <div className="w-3/12 flex-col pl-10 pr-5 py-5 space-y-4">
+            <div className="w-3/12 flex-col pl-10 pr-5 py-5 space-y-4" style={{width: '20%'}}>
                 <SearchCard title="Tìm kiếm" placeholder="Theo tên món ăn" onSearch={handleSearch}/>
                 <CheckBoxCard title="Combo/Món ăn" options={typeFilter} onChange={handleTypeCardChange} />
                 <CheckBoxCard title="Danh mục" options={categoryFilter} onChange={handleCategoryCardChange} />
@@ -202,7 +201,10 @@ const ProductCategoryPage = () => {
                             startIcon={<AddIcon />}
                             onClick={() => setOpenDialogAdd(true)}
                             sx={{
-                                backgroundColor: success_600,
+                                textTransform: 'none',
+                                fontWeight: 'bold',
+                                borderRadius: '8px',
+                                backgroundColor: color_green_primary,
                                 '&:hover': {
                                     backgroundColor: success_700,
                                 },
@@ -216,7 +218,10 @@ const ProductCategoryPage = () => {
                             color="primary"
                             onClick={handleFilterTableOpen}
                             sx={{
-                                backgroundColor: success_600,
+                                textTransform: 'none',
+                                fontWeight: 'bold',
+                                borderRadius: '8px',
+                                backgroundColor: color_green_primary,
                                 '&:hover': {
                                     backgroundColor: success_700,
                                 },

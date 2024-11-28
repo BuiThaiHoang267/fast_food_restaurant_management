@@ -38,11 +38,11 @@ const SalesPage = () => {
     const [categories, setCategories] = useState<CategoryDTO[]>([]);
     const [products, setProducts] = useState<ProductDTO[]>([]);
     const [orderRequest, setOrderRequest] = useState<OrderDTO>(
-        new OrderDTO(0, 0, 0, "PENDING", 0, 0, [])
+        OrderDTO.constructorOrderDTO()
     );
     const [textSearch, setTextSearch] = useState<string>("");
     const [productSearch, setProductSearch] = useState<ProductDTO[]>([]);
-    const [openDialogPayment, setOpenDialogPayment] = useState(true);
+    const [openDialogPayment, setOpenDialogPayment] = useState(false);
 
     useEffect(() => {
         fetchAllCategory();
@@ -96,7 +96,7 @@ const SalesPage = () => {
                 currentTabProducts[existingProductIndex].quantity! += 1;
             } else {
                 // Add the product with quantity 1 if it doesn't exist
-                const newOrderItem = new OrderItemDTO(0, 0, product.id, 1, "", product.price, product.name, product.image, product.comboItems);
+                const newOrderItem = new OrderItemDTO(0, 0, product.id, 1, product.price, "", product.price, product.name, product.image, product.comboItems);
                 currentTabProducts.push(newOrderItem);
             }
 

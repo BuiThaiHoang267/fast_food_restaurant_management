@@ -12,9 +12,8 @@ import {InputDropdown, InputNumber, InputQuantity, InputSearchProduct, InputText
 import {
     bg_blue_300,
     bg_blue_600, bg_grey_500, bg_grey_600,
-    color_black, Error500,
+    color_black, color_green_primary, Error500,
     Error600,
-    success_600,
     success_700
 } from "../common/constant.ts";
 import ClearIcon from '@mui/icons-material/Clear';
@@ -282,7 +281,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose, produ
                             textTransform: 'none',
                             borderRadius: '8px',
                             fontWeight: 'bold',
-                            backgroundColor: success_600,
+                            backgroundColor: color_green_primary,
                             '&:hover': {
                                 backgroundColor: success_700,
                             },
@@ -296,7 +295,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose, produ
                             color="primary"
                             onClick={handleDialogClose}
                             sx={{
-                                backgroundColor: success_600,
+                                backgroundColor: color_green_primary,
                                 textTransform: 'none',
                                 borderRadius: '8px',
                                 fontWeight: 'bold',

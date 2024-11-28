@@ -26,201 +26,203 @@ const Navbar = () => {
     const handleUserMenuClose = () => setOpenUserMenu(null);
 
     return (
-        <AppBar position="static" sx={{'--AppBar-background': bg_blue_600, flexDirection: 'row', padding: '0 40px 0 24px'}}>
-            <div className="flex-row w-fit bg-inherit p-2">
-                {/*General*/}
-                <Link to="/">
-                    <Button
-                        startIcon={<VisibilityIcon/>}
-                        color="inherit"
-                        sx={{
-                            textTransform: 'none',
-                            fontWeight: 'bold',
-                            padding: '0 10px',
-                            outline: 'none', // Remove outline
-                            '&:focus': {outline: 'none'},
-                        }}>
-                        Tổng quan
-                    </Button>
-                </Link>
-
-                {/*Product*/}
-                <Link to={'/product-category'}>
-                    <Button
-                        startIcon={<CategoryIcon/>}
-                        color="inherit"
-                        sx={{
-                            textTransform: 'none',
-                            fontWeight: 'bold',
-                            padding: '0 10px',
-                            outline: 'none', // Remove outline
-                            '&:focus': {outline: 'none'},
-                        }}>
-                        Hàng hóa
-                    </Button>
-                </Link>
-
-                <Link to={'/orders'}>
-                    <Button
-                        startIcon={<DescriptionIcon/>}
-                        color="inherit"
-                        sx={{
-                            textTransform: 'none',
-                            fontWeight: 'bold',
-                            padding: '0 10px',
-                            outline: 'none', // Remove outline
-                            '&:focus': {outline: 'none'},
-                        }}>
-                        Hóa đơn
-                    </Button>
-                </Link>
-
-                {/*Employee*/}
-                <Button
-                    startIcon={<PeopleIcon/>}
-                    color="inherit"
-                    sx={{
-                        textTransform: 'none',
-                        fontWeight: 'bold',
-                        padding: '0 10px',
-                        outline: 'none', // Remove outline
-                        '&:focus': {outline: 'none'},
-                    }}>
-                    Nhân viên
-                </Button>
-
-                {/*Report*/}
-                <Button
-                    startIcon={<AssessmentIcon/>}
-                    onMouseEnter={handleReportMenuOpen}
-                    color="inherit"
-                    sx={{
-                        textTransform: 'none',
-                        fontWeight: 'bold',
-                        padding: '0 10px',
-                        outline: 'none', // Remove outline
-                        '&:focus': {outline: 'none'},
-                    }}>
-                    Báo cáo
-                </Button>
-                <Menu
-                    anchorEl={openReport}
-                    open={Boolean(openReport)}
-                    onClose={handleReportMenuClose}
-                    MenuListProps={{
-                        onMouseLeave: handleReportMenuClose,
-                    }}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                    }}
-                    sx={{
-                        '& .MuiPaper-root': {
-                            backgroundColor: bg_blue_600,
-                            color: color_white,
-                            marginTop: '7px'
-                        },
-                    }}>
-                    <MenuItem className="flex w-full gap-2">
-                        <PieChartIcon fontSize="small"/>
-                        <div>Cuối ngày</div>
-                    </MenuItem>
-                    <MenuItem className="flex w-full gap-2">
-                        <CategoryIcon fontSize="small"/>
-                        <div>Bán hàng</div>
-                    </MenuItem>
-                    <MenuItem className="flex w-full gap-2">
-                        <FileCopyIcon fontSize="small"/>
-                        <div>Hàng hoá</div>
-                    </MenuItem>
-                    <MenuItem className="flex w-full gap-2">
-                        <TrendingUpIcon fontSize="small"/>
-                        <div>Tài chính</div>
-                    </MenuItem>
-                </Menu>
-            </div>
-            <div className="flex-row ml-auto w-fit content-center">
-                {/*Sales*/}
-                <Tooltip title="Sales">
-                    <Link to="/sales">
-                        <IconButton
-                            className="h-full"
+        <AppBar className={'flex flex-row justify-center items-center'} position="static" sx={{'--AppBar-background': bg_blue_600, flexDirection: 'row'}}>
+            <div className={'flex flex-row justify-between items-center'} style={{width: '95%'}}>
+                <div className="flex-row w-fit bg-inherit" style={{padding: '8px 0'}}>
+                    {/*General*/}
+                    <Link to="/">
+                        <Button
+                            startIcon={<VisibilityIcon/>}
                             color="inherit"
                             sx={{
-                                backgroundColor: bg_blue_700,
-                                borderRadius: '5%',
+                                textTransform: 'none',
+                                fontWeight: 'bold',
+                                padding: '0 10px',
+                                outline: 'none', // Remove outline
                                 '&:focus': {outline: 'none'},
-                                '&:hover': {
-                                    backgroundColor: bg_blue_800,
-                                },
-                            }}
-                        >
-                            <AttachMoneyIcon/>
-                        </IconButton>
+                            }}>
+                            Tổng quan
+                        </Button>
                     </Link>
-                </Tooltip>
 
-                {/*Kitchen*/}
-                <Tooltip title="Kitchen">
-                    <Link to="/kitchen">
-                        <IconButton
-                            className="h-full"
+                    {/*Product*/}
+                    <Link to={'/product-category'}>
+                        <Button
+                            startIcon={<CategoryIcon/>}
                             color="inherit"
                             sx={{
-                                backgroundColor: bg_blue_700,
-                                borderRadius: '5%',
+                                textTransform: 'none',
+                                fontWeight: 'bold',
+                                padding: '0 10px',
+                                outline: 'none', // Remove outline
                                 '&:focus': {outline: 'none'},
-                                '&:hover': {
-                                    backgroundColor: bg_blue_800,
-                                },
-                            }}
-                        >
-                            <LunchDiningIcon/>
-                        </IconButton>
+                            }}>
+                            Hàng hóa
+                        </Button>
                     </Link>
-                </Tooltip>
 
-                {/*User*/}
-                <Tooltip title="User">
-                    <IconButton
-                        onClick={handleUserMenuOpen}
+                    <Link to={'/orders'}>
+                        <Button
+                            startIcon={<DescriptionIcon/>}
+                            color="inherit"
+                            sx={{
+                                textTransform: 'none',
+                                fontWeight: 'bold',
+                                padding: '0 10px',
+                                outline: 'none', // Remove outline
+                                '&:focus': {outline: 'none'},
+                            }}>
+                            Hóa đơn
+                        </Button>
+                    </Link>
+
+                    {/*Employee*/}
+                    <Button
+                        startIcon={<PeopleIcon/>}
                         color="inherit"
                         sx={{
-                            ml: 2,
+                            textTransform: 'none',
+                            fontWeight: 'bold',
+                            padding: '0 10px',
+                            outline: 'none', // Remove outline
                             '&:focus': {outline: 'none'},
+                        }}>
+                        Nhân viên
+                    </Button>
+
+                    {/*Report*/}
+                    <Button
+                        startIcon={<AssessmentIcon/>}
+                        onMouseEnter={handleReportMenuOpen}
+                        color="inherit"
+                        sx={{
+                            textTransform: 'none',
+                            fontWeight: 'bold',
+                            padding: '0 10px',
+                            outline: 'none', // Remove outline
+                            '&:focus': {outline: 'none'},
+                        }}>
+                        Báo cáo
+                    </Button>
+                    <Menu
+                        anchorEl={openReport}
+                        open={Boolean(openReport)}
+                        onClose={handleReportMenuClose}
+                        MenuListProps={{
+                            onMouseLeave: handleReportMenuClose,
+                        }}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'left',
+                        }}
+                        sx={{
+                            '& .MuiPaper-root': {
+                                backgroundColor: bg_blue_600,
+                                color: color_white,
+                                marginTop: '7px'
+                            },
+                        }}>
+                        <MenuItem className="flex w-full gap-2">
+                            <PieChartIcon fontSize="small"/>
+                            <div>Cuối ngày</div>
+                        </MenuItem>
+                        <MenuItem className="flex w-full gap-2">
+                            <CategoryIcon fontSize="small"/>
+                            <div>Bán hàng</div>
+                        </MenuItem>
+                        <MenuItem className="flex w-full gap-2">
+                            <FileCopyIcon fontSize="small"/>
+                            <div>Hàng hoá</div>
+                        </MenuItem>
+                        <MenuItem className="flex w-full gap-2">
+                            <TrendingUpIcon fontSize="small"/>
+                            <div>Tài chính</div>
+                        </MenuItem>
+                    </Menu>
+                </div  >
+                <div className="flex-row ml-auto w-fit content-center">
+                    {/*Sales*/}
+                    <Tooltip title="Sales">
+                        <Link to="/sales">
+                            <IconButton
+                                className="h-full"
+                                color="inherit"
+                                sx={{
+                                    backgroundColor: bg_blue_700,
+                                    borderRadius: '5%',
+                                    '&:focus': {outline: 'none'},
+                                    '&:hover': {
+                                        backgroundColor: bg_blue_800,
+                                    },
+                                }}
+                            >
+                                <AttachMoneyIcon/>
+                            </IconButton>
+                        </Link>
+                    </Tooltip>
+
+                    {/*Kitchen*/}
+                    <Tooltip title="Kitchen">
+                        <Link to="/kitchen">
+                            <IconButton
+                                className="h-full"
+                                color="inherit"
+                                sx={{
+                                    backgroundColor: bg_blue_700,
+                                    borderRadius: '5%',
+                                    '&:focus': {outline: 'none'},
+                                    '&:hover': {
+                                        backgroundColor: bg_blue_800,
+                                    },
+                                }}
+                            >
+                                <LunchDiningIcon/>
+                            </IconButton>
+                        </Link>
+                    </Tooltip>
+
+                    {/*User*/}
+                    <Tooltip title="User">
+                        <IconButton
+                            onClick={handleUserMenuOpen}
+                            color="inherit"
+                            sx={{
+                                ml: 2,
+                                '&:focus': {outline: 'none'},
+                            }}
+                        >
+                            <AccountCircleIcon/>
+                        </IconButton>
+                    </Tooltip>
+                    {/* User Menu */}
+                    <Menu
+                        anchorEl={openUserMenu}
+                        open={Boolean(openUserMenu)}
+                        onClose={handleUserMenuClose}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        sx={{
+                            '& .MuiPaper-root': {
+                                backgroundColor: bg_blue_500,
+                                color: color_white,
+                            },
                         }}
                     >
-                        <AccountCircleIcon/>
-                    </IconButton>
-                </Tooltip>
-                {/* User Menu */}
-                <Menu
-                    anchorEl={openUserMenu}
-                    open={Boolean(openUserMenu)}
-                    onClose={handleUserMenuClose}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'right',
-                    }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                    }}
-                    sx={{
-                        '& .MuiPaper-root': {
-                            backgroundColor: bg_blue_500,
-                            color: color_white,
-                        },
-                    }}
-                >
-                    <MenuItem onClick={handleUserMenuClose}>Profile</MenuItem>
-                    <MenuItem onClick={handleUserMenuClose}>Settings</MenuItem>
-                    <MenuItem onClick={handleUserMenuClose}>Logout</MenuItem>
-                </Menu>
+                        <MenuItem onClick={handleUserMenuClose}>Profile</MenuItem>
+                        <MenuItem onClick={handleUserMenuClose}>Settings</MenuItem>
+                        <MenuItem onClick={handleUserMenuClose}>Logout</MenuItem>
+                    </Menu>
+                </div>
             </div>
         </AppBar>
     )

@@ -19,7 +19,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
-import {useState} from "react";
+import React, {useState} from "react";
 import {
     bg_blue_600,
     bg_blue_800,
@@ -81,7 +81,7 @@ interface CheckBoxCardProps {
     onChange: (id:number, label: string, checked: boolean) => void;
 }
 export const CheckBoxCard: React.FC<CheckBoxCardProps> = ({ title, options, onChange }) => {
-    const [expanded, setExpanded] = useState(false);
+    const [expanded, setExpanded] = useState(true);
 
     const handleExpandClick = () => {
         setExpanded((prevExpanded) => !prevExpanded);
@@ -796,3 +796,4 @@ export const CookedProductCard: React.FC<CookedProductCardProps> = ({
         </div>
     )
 }
+
