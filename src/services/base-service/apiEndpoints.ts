@@ -13,3 +13,7 @@ export const CATEGORY_API = {
 export const ORDER_API = {
     CREATE_ORDER: '/order/create',
 }
+
+export const PAYMENT_METHOD_API = {
+    GET_ALL_PAYMENT_METHOD: '/payment-method/all',
+}

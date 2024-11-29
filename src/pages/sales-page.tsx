@@ -78,6 +78,13 @@ const SalesPage = () => {
         }
     }
 
+    const handleCloseDialogPayment = (value: boolean) => {
+        setOpenDialogPayment(false);
+        if(value){
+            handleDeleteTab(tabValue);
+        }
+    }
+
     const handleCategoryClick = (category: CategoryDTO) => {
         setSelectedCategory(category);
         fetchProductByCategoryId(category.id);
@@ -508,7 +515,7 @@ const SalesPage = () => {
                             <AttachMoneyIcon fontSize="medium" sx={{marginRight: '8px'}}/>
                             Thanh toán
                         </Button>
-                        <DialogPayment open={openDialogPayment} onClose={() => setOpenDialogPayment(false)} order={orderRequest}></DialogPayment>
+                        <DialogPayment open={openDialogPayment} onClose={(value) => handleCloseDialogPayment(value)} order={orderRequest}></DialogPayment>
                     </div>
                 </div>
             </div>

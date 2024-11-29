@@ -24,11 +24,13 @@ import DateRangeIcon from '@mui/icons-material/DateRange';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import {InputNumberCustom} from "./input.tsx";
 import {OrderService} from "../services/OrderService.ts";
+import {PaymentMethodDTO} from "../dtos/PaymentMethodDTO.ts";
+import {PaymentMethodService} from "../services/PaymentMethodService.ts";
 
 
 interface DialogPaymentProps {
     open: boolean;
-    onClose: () => void;
+    onClose: (createSuccess: boolean) => void;
     order: OrderDTO;
 }
 
@@ -37,26 +39,55 @@ const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => 
     const [paymentMethod, setPaymentMethod] = React.useState<number>(1);
     const [change, setChange] = React.useState<number>(0);
     const [paymentMoney, setPaymentMoney] = React.useState<number>(0);
+    const [paymentMethods, setPaymentMethods] = React.useState<PaymentMethodDTO[]>([]);
+    const [orderRequest, setOrderRequest] = React.useState<OrderDTO>(order);
+
+    useEffect(() => {
+        getPaymentMethods();
+    }, []);
 
     useEffect(() => {
         if(open){
             setPaymentMoney(order.totalPrice);
             setChange(0);
+            setDiscount(0);
+            setPaymentMethod(1);
+            setOrderRequest(order);
         }
     }, [open]);
 
-    const createOrder = async (order: OrderDTO) => {
+    const createOrder = async (order: OrderDTO): Promise<boolean> => {
         try {
             await OrderService.createOrder(order);
+            return true;
+        }
+        catch (error) {
+            console.error(error);
+            return false;
+        }
+    }
+
+    const getPaymentMethods = async () => {
+        try {
+            const data = await PaymentMethodService.getAllPaymentMethod();
+            setPaymentMethods(data);
         }
         catch (error) {
             console.error(error);
         }
     }
 
-    const handleCallApiCreateOrder = () => {
-        createOrder(order);
-        onClose();
+    const handleChangePaymentMethod = (value: number) => {
+        setPaymentMethod(value);
+        setOrderRequest({
+            ...orderRequest,
+            paymentMethodId: value
+        });
+    }
+
+    const handleCallApiCreateOrder = async () => {
+        const createSuccess = await createOrder(orderRequest);
+        onClose(createSuccess);
     }
 
 
@@ -73,7 +104,6 @@ const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => 
     return (
         <Dialog
             open={open}
-            onClose={() => onClose()}
             maxWidth={false}
             sx={{
                 '& .MuiDialog-paper': {
@@ -99,7 +129,7 @@ const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => 
                     <div>
                         <IconButton
                             size="small"
-                            onClick={() => onClose()}
+                            onClick={() => onClose(false)}
                             sx={{
                                 padding: '0px',
                                 color: bg_grey_600,
@@ -187,27 +217,17 @@ const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => 
                                                onChange={(value) => handleChangePaymentMoney(value)} width={"30%"}/>
                         </div>
                         <div className={"flex flex-row mt-2 items-center"}>
-                            <Radio
-                                name={"payment-method"}
-                                value={1}
-                                checked={paymentMethod === 1}
-                                onChange={() => setPaymentMethod(1)}
-                                color="primary"/>
-                            <span>Tiền mặt</span>
-                            <Radio
-                                name={"payment-method"}
-                                value={2}
-                                checked={paymentMethod === 2}
-                                onChange={() => setPaymentMethod(2)}
-                                color="primary"/>
-                            <span>Chuyển khoản</span>
-                            <Radio
-                                name={"payment-method"}
-                                value={3}
-                                checked={paymentMethod === 3}
-                                onChange={() => setPaymentMethod(3)}
-                                color="primary"/>
-                            <span>Quẹt thẻ</span>
+                            {paymentMethods.map((item, index) => (
+                                <div key={index}>
+                                    <Radio
+                                        name={"payment-method"}
+                                        value={item.id}
+                                        checked={paymentMethod === item.id}
+                                        onChange={() => handleChangePaymentMethod(item.id)}
+                                        color="primary"/>
+                                    <span>{item.name}</span>
+                                </div>
+                            ))}
                         </div>
                         {(paymentMethod === 1) &&<div className={"flex flex-row justify-between mt-2"}>
                             <span>Tiền thừa trả khách</span>
