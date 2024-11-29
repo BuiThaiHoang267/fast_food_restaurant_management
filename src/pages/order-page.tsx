@@ -30,7 +30,7 @@ const OrderPage = () => {
     const [openFilterTable, setOpenFilterTable] = useState<null | HTMLElement>(null);
     const [selectedRows, setSelectedRows] = useState<OrderDTO[]>([]);
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [fields, setFields] = useState<MenuFieldProps[]>([
         { label: 'Mã hóa đơn', name: 'id', visible: false },
         { label: 'Trạng thái', name: 'status', visible: true },
@@ -143,8 +143,8 @@ const OrderPage = () => {
             <div className="w-3/12 flex-col pl-10 pr-5 py-5 space-y-4" style={{width: '25%'}}>
                 <SearchCard title="Tìm kiếm" placeholder="Theo tên món ăn" onSearch={handleSearch}/>
                 <CheckBoxCard title="Phương thức thanh toán" options={paymentMethodFilter} onChange={handlePaymentMethodCardChange} />
-                <CheckBoxCard title="Chi nhánh" options={branchFilter} onChange={handleBranchCardChange} />
                 <CardTimeOrder/>
+                <CheckBoxCard title="Chi nhánh" options={branchFilter} onChange={handleBranchCardChange} />
             </div>
             <div className="flex-grow flex-col pl-5 pr-10 py-5 space-y-2">
                 <div className="flex items-center justify-between">
