@@ -21,52 +21,94 @@ import {
     success_700
 } from "../common/constant.ts";
 import MenuFieldTable, {MenuFieldProps} from "../components/menu-field.tsx";
-import {ProductFilter} from "../services/ProductService.ts";
 import {Link} from "react-router-dom";
 import {OrderDTO} from "../dtos/OrderDTO.ts";
 import CardTimeOrder from "../components/card-time-order.tsx";
+import {BranchService} from "../services/BranchService.ts";
+import {PaymentMethodService} from "../services/PaymentMethodService.ts";
+import {OrderFilter, OrderService} from "../services/OrderService.ts";
+import dayjs, {Dayjs} from "dayjs";
 
 const OrderPage = () => {
     const [openFilterTable, setOpenFilterTable] = useState<null | HTMLElement>(null);
     const [selectedRows, setSelectedRows] = useState<OrderDTO[]>([]);
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
     const [fields, setFields] = useState<MenuFieldProps[]>([
         { label: 'Mã hóa đơn', name: 'id', visible: false },
         { label: 'Trạng thái', name: 'status', visible: true },
         { label: 'Số phục vụ', name: 'numberOrder', visible: true },
         { label: 'Chi nhánh', name: 'branchName', visible: true },
-        { label: 'PT thanh toán', name: 'branchName', visible: true },
+        { label: 'PT thanh toán', name: 'paymentMethodName', visible: true },
         { label: 'Ngày tạo', name: 'updateAt', visible: true },
-        { label: 'Tổng hóa đơn', name: 'price', visible: true },
+        { label: 'Tổng hóa đơn', name: 'totalPrice', visible: true },
     ]);
-    const [paymentMethodFilter, setPaymentMethodFilter] = useState<{id: number, label: string, checked: boolean}[]>(
-        [
-            {id: 1, label: "Tiền mặt", checked: false},
-            {id: 2, label: "Chuyển khoản", checked: false},
-            {id: 3, label: "Quẹt thẻ", checked: false}
-        ]);
-    const [branchFilter, setBranchFilter] = useState<{id: number, label: string, checked: boolean}[]>(
-        [
-            {id: 1, label: "Chi nhánh 1", checked: false},
-            {id: 2, label: "Chi nhánh 2", checked: false},
-        ]);
+    const [paymentMethodFilter, setPaymentMethodFilter] = useState<{id: number, label: string, checked: boolean}[]>([]);
+    const [branchFilter, setBranchFilter] = useState<{id: number, label: string, checked: boolean}[]>([]);
     const [orders, setOrders] = useState<OrderDTO[]>([]);
     const [orderDetail, setOrderDetail] = useState<OrderDTO>();
-    const [productFilter, setProductFilter] = useState<ProductFilter>({
-        name: "",
-        categories: []
-    });
+    const [orderFilter, setOrderFilter] = useState<OrderFilter>(
+        {
+            id: "",
+            paymentMethods: [],
+            branches: [],
+            startDate: dayjs().add(-1,'day').format('DD/MM/YYYY'),
+            endDate: dayjs().format('DD/MM/YYYY'),
+        }
+    );
 
     useEffect(() => {
-    }, [productFilter]);
+        fetchAllBranch()
+        fetchAllPaymentMethod()
+        fetchOrderByFilters()
+    }, []);
+
+    useEffect(() => {
+        fetchOrderByFilters()
+    }, [orderFilter]);
 
     useEffect(() => {
         setPage(0);
     }, [orders]);
 
+    const fetchOrderByFilters = async () => {
+        try{
+            const response = await OrderService.getOrderByFilters(orderFilter);
+            setOrders(response);
+        }
+        catch (error){
+            console.error(error);
+        }
+    }
+
+    const fetchAllBranch = async () => {
+        try{
+            const response = await BranchService.getAllBranch();
+            setBranchFilter(response.map((branch) => {
+                return {id: branch.id, label: branch.name, checked: false}
+            }));
+        }
+        catch (error){
+            console.error(error);
+        }
+    }
+
+    const fetchAllPaymentMethod = async () => {
+        try{
+            const response = await PaymentMethodService.getAllPaymentMethod();
+            setPaymentMethodFilter(response.map((payment) => {
+                return {id: payment.id, label: payment.name, checked: false}
+            }));
+        }
+        catch (error){
+            console.error(error);
+        }
+    }
+
     const handleSearch = (value: string) => {
-        setProductFilter((prevProductFilter) => ({ ...prevProductFilter, name: value }));
+        setOrderFilter((prevFilter) => {
+            return {...prevFilter, id: value}
+        });
     }
 
     const handlePaymentMethodCardChange = (id: number, label: string, checked: boolean) => {
@@ -75,6 +117,14 @@ const OrderPage = () => {
                 type.id === id ? { id, label , checked } : type
             )
         );
+        setOrderFilter((prevFilter) => {
+            if(checked){
+                return {...prevFilter, paymentMethods: [...prevFilter.paymentMethods, id]}
+            }
+            else{
+                return {...prevFilter, paymentMethods: prevFilter.paymentMethods.filter((payment) => payment !== id)}
+            }
+        });
     }
 
     const handleBranchCardChange = (id: number, label: string, checked: boolean) => {
@@ -83,6 +133,14 @@ const OrderPage = () => {
                 type.id === id ? { id, label , checked } : type
             )
         );
+        setOrderFilter((prevFilter) => {
+            if(checked){
+                return {...prevFilter, branches: [...prevFilter.branches, id]}
+            }
+            else{
+                return {...prevFilter, branches: prevFilter.branches.filter((branch) => branch !== id)}
+            }
+        });
     }
 
     // Handler for "Select All" checkbox
@@ -135,15 +193,21 @@ const OrderPage = () => {
         );
     }
 
+    const handleChangeDateInOrderFilter = (start: Dayjs, end: Dayjs) => {
+        setOrderFilter((prevFilter) => {
+            return {...prevFilter, startDate: start.format('DD/MM/YYYY'), endDate: end.format('DD/MM/YYYY')}
+        });
+    }
+
     // Determine rows to display on the current page
     const displayedRows = orders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     return (
         <div className="flex flex-row justify-between">
             <div className="w-3/12 flex-col pl-10 pr-5 py-5 space-y-4" style={{width: '25%'}}>
-                <SearchCard title="Tìm kiếm" placeholder="Theo tên món ăn" onSearch={handleSearch}/>
+                <SearchCard title="Tìm kiếm" placeholder="Theo mã hóa đơn" onSearch={handleSearch}/>
                 <CheckBoxCard title="Phương thức thanh toán" options={paymentMethodFilter} onChange={handlePaymentMethodCardChange} />
-                <CardTimeOrder/>
+                <CardTimeOrder onChangeDate={(start, end) => handleChangeDateInOrderFilter(start, end)}/>
                 <CheckBoxCard title="Chi nhánh" options={branchFilter} onChange={handleBranchCardChange} />
             </div>
             <div className="flex-grow flex-col pl-5 pr-10 py-5 space-y-2">

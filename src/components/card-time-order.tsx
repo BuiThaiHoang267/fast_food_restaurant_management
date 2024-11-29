@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, Card, CardContent, IconButton, Menu, Radio, Typography} from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
@@ -10,7 +10,11 @@ import dayjs from "dayjs";
 import {color_green_primary, success_700} from "../common/constant.ts";
 import {InputDurationDropdown} from "./input-duration-dropdown.tsx";
 
-const CardTimeOrder = () => {
+interface CardTimeOrderProps {
+    onChangeDate: (startDate: Dayjs, endDate: Dayjs) => void;
+}
+
+const CardTimeOrder : React.FC<CardTimeOrderProps> = ({onChangeDate}) => {
     const [startDate, setStartDate] = useState<Dayjs>(dayjs());
     const [endDate, setEndDate] = useState<Dayjs>(dayjs());
     const [durationStart, setDurationStart] = useState<Dayjs>(dayjs());
@@ -24,9 +28,8 @@ const CardTimeOrder = () => {
     };
 
     useEffect(() => {
-        if(checked) {
-            console.log('Call API with startDate:', formatDate(startDate), 'endDate:', formatDate(endDate));
-        }
+        setChecked(true);
+        onChangeDate(startDate, endDate);
     }, [startDate, endDate]);
 
     const formatDate = (date: Dayjs | null): string => {
@@ -39,7 +42,8 @@ const CardTimeOrder = () => {
     };
 
     const handleClickBtnFind = () => {
-        console.log('Call API with startDate:', formatDate(durationStart), 'endDate:', formatDate(durationEnd));
+        setChecked(false);
+        onChangeDate(durationStart, durationEnd);
         handleCalendarClose();
     }
 

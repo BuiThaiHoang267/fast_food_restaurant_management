@@ -22,6 +22,21 @@ export class OrderItemDTO
         return new OrderItemDTO(0, 0, 0, 0, 0, "", 0, "", "", []);
     }
 
+    static fromJSON(data: any): OrderItemDTO {
+        return new OrderItemDTO(
+            data.id,
+            data.orderId,
+            data.productId,
+            data.quantity,
+            data.unitPrice,
+            data.status,
+            data.productPrice,
+            data.productName,
+            data.productImage,
+            data.productComboItems.map(ComboItemDTO.fromJSON),
+        );
+    }
+
     // Parse dữ liệu từ ProductDTO sang OrderItemDTO
     fromProductDTO(product: ProductDTO): OrderItemDTO {
         this.productId = product.id;

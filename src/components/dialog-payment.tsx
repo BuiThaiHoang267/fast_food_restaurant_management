@@ -26,6 +26,7 @@ import {InputNumberCustom} from "./input.tsx";
 import {OrderService} from "../services/OrderService.ts";
 import {PaymentMethodDTO} from "../dtos/PaymentMethodDTO.ts";
 import {PaymentMethodService} from "../services/PaymentMethodService.ts";
+import dayjs from "dayjs";
 
 
 interface DialogPaymentProps {
@@ -193,7 +194,8 @@ const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => 
                     </div>
                     <div className={"flex-1 flex flex-col"}>
                         <div className={"flex flex-row justify-end mt-2"}>
-                            <span style={{color: bg_grey_500, fontSize: "0.9rem"}}>26/11/2024 22:43</span>
+                            <span style={{color: bg_grey_500, fontSize: "0.9rem"}}>{dayjs().format('DD/MM/YYYY HH:mm')
+                            }</span>
                             <DateRangeIcon fontSize="small" sx={{marginLeft: '4px', color: bg_grey_500}}/>
                             <AccessTimeIcon fontSize="small" sx={{marginLeft: '4px', color: bg_grey_500}}/>
                         </div>

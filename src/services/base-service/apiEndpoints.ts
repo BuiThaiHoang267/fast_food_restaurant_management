@@ -12,8 +12,14 @@ export const CATEGORY_API = {
 
 export const ORDER_API = {
     CREATE_ORDER: '/order/create',
+    GET_ORDER_BY_FILTERS: '/order',
 }
 
 export const PAYMENT_METHOD_API = {
     GET_ALL_PAYMENT_METHOD: '/payment-method/all',
 }
+
+export const BRANCH_API = {
+    GET_ALL_BRANCH: '/branch/all',
+}
+
