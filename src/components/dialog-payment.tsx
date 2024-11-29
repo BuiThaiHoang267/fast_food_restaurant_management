@@ -23,6 +23,7 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import {InputNumberCustom} from "./input.tsx";
+import {OrderService} from "../services/OrderService.ts";
 
 
 interface DialogPaymentProps {
@@ -43,6 +44,21 @@ const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => 
             setChange(0);
         }
     }, [open]);
+
+    const createOrder = async (order: OrderDTO) => {
+        try {
+            await OrderService.createOrder(order);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    const handleCallApiCreateOrder = () => {
+        createOrder(order);
+        onClose();
+    }
+
 
     const handleChangePaymentMoney = (value: number) => {
         setPaymentMoney(value);
@@ -222,7 +238,7 @@ const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => 
                                 backgroundColor: '', // Darker blue on hover
                             },
                         }}
-                        onClick={() => onClose()}
+                        onClick={handleCallApiCreateOrder}
                     >
                         <AttachMoneyIcon fontSize="small" sx={{marginRight: '2px'}}/>
                         Thanh toán

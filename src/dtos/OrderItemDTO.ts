@@ -13,7 +13,7 @@ export class OrderItemDTO
         public productPrice: number,
         public productName: string,
         public productImage: string,
-        public comboItems: ComboItemDTO[] = []
+        public productComboItems: ComboItemDTO[] = []
     ) {
     }
 
@@ -28,7 +28,7 @@ export class OrderItemDTO
         this.productPrice = product.price;
         this.productName = product.name;
         this.productImage = product.image;
-        this.comboItems = product.comboItems;
+        this.productComboItems = product.comboItems;
         return this;
     }
 }

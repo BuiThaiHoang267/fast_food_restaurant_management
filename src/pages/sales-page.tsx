@@ -64,6 +64,7 @@ const SalesPage = () => {
         }
     }
 
+
     const fetchProductByCategoryId = async (categoryId: number) => {
         try {
             const products = await productService.getProductByCategoryId(categoryId);
@@ -186,6 +187,8 @@ const SalesPage = () => {
                 const updatedOrderRequest = { ...prevOrderRequest };
                 updatedOrderRequest.orderItems = currentOrder;
                 updatedOrderRequest.totalPrice = totals.totalPrice;
+                updatedOrderRequest.paymentMethodId = 1;
+                updatedOrderRequest.branchId = 1;
                 updatedOrderRequest.numberOrder = parseInt(tabNames[tabValue], 0); // Parse the tab name as the order number
                 console.log("Order Request:", updatedOrderRequest);
                 return updatedOrderRequest;
@@ -431,7 +434,7 @@ const SalesPage = () => {
                             <OrderProductCard
                                 index={index}
                                 name={product.productName}
-                                childNames={product.comboItems.map(item => item.productName) || []}
+                                childNames={product.productComboItems.map(item => item.productName) || []}
                                 quantity={product.quantity || 1} // Pass quantity from parent state
                                 price={product.productPrice}
                                 onQuantityChange={(newQuantity) => handleUpdateQuantity(index, newQuantity)} // Pass callback for quantity update

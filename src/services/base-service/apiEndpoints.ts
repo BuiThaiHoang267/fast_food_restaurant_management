@@ -9,3 +9,7 @@ export const PRODUCT_API = {
 export const CATEGORY_API = {
     GET_ALL_CATEGORY: '/category/all',
 }
+
+export const ORDER_API = {
+    CREATE_ORDER: '/order/create',
+}
