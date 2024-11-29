@@ -10,7 +10,7 @@ class CategoryDTO {
         return new CategoryDTO(
             data.id,
             data.name,
-            data.image
+            data.image,
         );
     }
 }

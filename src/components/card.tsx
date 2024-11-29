@@ -19,22 +19,32 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
-import {useState} from "react";
+import React, {useState} from "react";
 import {
     bg_blue_600,
     bg_blue_800,
-    bg_grey_600,
+    bg_grey_600, color_white,
     Error600,
     success_600
 } from "../common/constant.ts";
 import formatElapsedTime from "../utils/TimeElapsedConverter.ts";
+import ProductDTO from "../dtos/ProductDTO.ts";
 
 interface SearchCardProps {
     title: string;
     placeholder: string;
-    onSearch: () => void;
+    onSearch: (value: string) => void;
 }
 export const SearchCard: React.FC<SearchCardProps> = ({ title, placeholder, onSearch }) => {
+    const [searchValue, setSearchValue] = useState('');
+
+    const handleChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchValue(e.target.value);
+        if(e.target.value === '') {
+            onSearch('');
+        }
+    }
+
     return (
         <Card sx={{ minWidth: 200, padding: 0.5, borderRadius: 1, boxShadow: 1 }}>
             <CardContent sx={{ padding: '4px 8px' }} className="space-y-2">
@@ -44,13 +54,15 @@ export const SearchCard: React.FC<SearchCardProps> = ({ title, placeholder, onSe
                 <TextField
                     variant="standard"
                     placeholder={placeholder}
+                    value={searchValue}
+                    onChange={handleChanged}
                     fullWidth
                     slotProps={{
                         input: {
                             sx: { fontSize: '0.8rem' },
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    <IconButton onClick={onSearch} edge="end">
+                                    <IconButton onClick={() => onSearch(searchValue)} edge="end">
                                         <SearchIcon fontSize="small" />
                                     </IconButton>
                                 </InputAdornment>
@@ -65,11 +77,11 @@ export const SearchCard: React.FC<SearchCardProps> = ({ title, placeholder, onSe
 
 interface CheckBoxCardProps {
     title: string;
-    options: { label: string; checked: boolean }[];
-    onChange: (label: string, checked: boolean) => void;
+    options: {id:number; label: string; checked: boolean }[];
+    onChange: (id:number, label: string, checked: boolean) => void;
 }
 export const CheckBoxCard: React.FC<CheckBoxCardProps> = ({ title, options, onChange }) => {
-    const [expanded, setExpanded] = useState(false);
+    const [expanded, setExpanded] = useState(true);
 
     const handleExpandClick = () => {
         setExpanded((prevExpanded) => !prevExpanded);
@@ -100,7 +112,7 @@ export const CheckBoxCard: React.FC<CheckBoxCardProps> = ({ title, options, onCh
                                 control={
                                     <Checkbox
                                         checked={option.checked}
-                                        onChange={(e) => onChange(option.label, e.target.checked)}
+                                        onChange={(e) => onChange(option.id, option.label, e.target.checked)}
                                         size="small"
                                     />
                                 }
@@ -167,12 +179,10 @@ export const RadioBoxCard: React.FC<RadioBoxCardProps> = ({ title, options, sele
 }
 
 interface ProductCardProps {
-    name: string;
-    price: number
-    img?: string;
+    product: ProductDTO
     onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
-export const SalesProductCard: React.FC<ProductCardProps> = ({name, price, img, onClick }) => {
+export const SalesProductCard: React.FC<ProductCardProps> = ({product, onClick }) => {
     return (
         <Card
             onClick={onClick}
@@ -180,6 +190,7 @@ export const SalesProductCard: React.FC<ProductCardProps> = ({name, price, img, 
                 width: 140,
                 height: 160,
                 borderRadius: 2,
+                border: '1px solid #ddd', // Light gray border
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -198,7 +209,7 @@ export const SalesProductCard: React.FC<ProductCardProps> = ({name, price, img, 
                 style={{
                     width: '100%',
                     height: '60%',
-                    backgroundColor: '#E3F2FD', // Light blue background
+                    backgroundColor: color_white, // Light blue background
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -206,8 +217,8 @@ export const SalesProductCard: React.FC<ProductCardProps> = ({name, price, img, 
                     paddingBottom: '0px', // Add padding at the bottom for spacing
                 }}
             >
-                {img ? (
-                    <img src={img} alt={name} style={{ width: '50%', height: 'auto' }} />
+                {product.image ? (
+                    <img src={product.image} alt={""} style={{ width: '50%', height: 'auto' }} />
                 ) : (
                     <RestaurantIcon sx={{ fontSize: 30, color: '#90CAF9' }} />
                 )}
@@ -229,7 +240,7 @@ export const SalesProductCard: React.FC<ProductCardProps> = ({name, price, img, 
                             fontSize: '0.75rem', // 12px font size for smaller text
                         }}
                     >
-                        {price.toLocaleString()}
+                        {product.price.toLocaleString()}
                     </Typography>
                 </div>
             </div>
@@ -253,9 +264,13 @@ export const SalesProductCard: React.FC<ProductCardProps> = ({name, price, img, 
                         color: '#424242',
                         fontSize: '0.75rem',
                         fontWeight: 'bold',
+                        textAlign: 'center',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                     }}
                 >
-                    {name}
+                    {product.name}
                 </Typography>
             </div>
         </Card>
@@ -781,3 +796,4 @@ export const CookedProductCard: React.FC<CookedProductCardProps> = ({
         </div>
     )
 }
+

@@ -6,20 +6,26 @@ import ProductCategoryPage from './pages/product-category-page.tsx';
 import ProductPricePage from "./pages/product-price-page.tsx";
 import KitchenPage from "./pages/kitchen-page.tsx";
 import SalesPage from "./pages/sales-page.tsx";
+import OrderPage from "./pages/order-page.tsx";
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-          <Route element={<LayoutMain />}>
-              <Route path="/" element={<GeneralPage />} />
-              <Route path="/product-category" element={<ProductCategoryPage />} />
-              <Route path="/product-price" element={<ProductPricePage />} />
-          </Route>
-          <Route path="/kitchen" element={<KitchenPage />} />
-          <Route path="/sales" element={<SalesPage />}/>
-      </Routes>
-    </BrowserRouter>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <BrowserRouter>
+          <Routes>
+              <Route element={<LayoutMain />}>
+                  <Route path="/" element={<GeneralPage />} />
+                  <Route path="/product-category" element={<ProductCategoryPage />} />
+                  <Route path="/product-price" element={<ProductPricePage />} />
+                  <Route path={"/orders"} element={<OrderPage />} />
+              </Route>
+              <Route path="/kitchen" element={<KitchenPage />} />
+              <Route path="/sales" element={<SalesPage />}/>
+          </Routes>
+        </BrowserRouter>
+      </LocalizationProvider>
   )
 }
 
