@@ -13,6 +13,10 @@ export const CATEGORY_API = {
 export const ORDER_API = {
     CREATE_ORDER: '/order/create',
     GET_ORDER_BY_FILTERS: '/order',
+    GET_ORDER_STATUS_PENDING: '/order/status-pending',
+    GET_ORDER_ITEM_BY_STATUS_COOKED: '/order/item/status-cooked',
+
+    UPDATE_ORDER_ITEM:(id: number) => `/order/item/update/${id}`,
 }
 
 export const PAYMENT_METHOD_API = {

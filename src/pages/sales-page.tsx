@@ -104,7 +104,7 @@ const SalesPage = () => {
                 currentTabProducts[existingProductIndex].quantity! += 1;
             } else {
                 // Add the product with quantity 1 if it doesn't exist
-                const newOrderItem = new OrderItemDTO(0, 0, product.id, 1, product.price, "", product.price, product.name, product.image, product.comboItems);
+                const newOrderItem = new OrderItemDTO(0, 0, product.id, 1, product.price, "", product.price, product.name, product.image, 0,product.comboItems);
                 currentTabProducts.push(newOrderItem);
             }
 

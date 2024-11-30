@@ -13,13 +13,14 @@ export class OrderItemDTO
         public productPrice: number,
         public productName: string,
         public productImage: string,
+        public orderNumberOrder: number,
         public productComboItems: ComboItemDTO[] = []
     ) {
     }
 
     static constructorOrderItemDTO ()
     {
-        return new OrderItemDTO(0, 0, 0, 0, 0, "", 0, "", "", []);
+        return new OrderItemDTO(0, 0, 0, 0, 0, "", 0, "", "", 0,[]);
     }
 
     static fromJSON(data: any): OrderItemDTO {
@@ -33,6 +34,7 @@ export class OrderItemDTO
             data.productPrice,
             data.productName,
             data.productImage,
+            data.orderNumberOrder,
             data.productComboItems.map(ComboItemDTO.fromJSON),
         );
     }

@@ -40,7 +40,7 @@ const OrderPage = () => {
         { label: 'Số phục vụ', name: 'numberOrder', visible: true },
         { label: 'Chi nhánh', name: 'branchName', visible: true },
         { label: 'PT thanh toán', name: 'paymentMethodName', visible: true },
-        { label: 'Ngày tạo', name: 'updateAt', visible: true },
+        { label: 'Ngày tạo', name: 'updatedAt', visible: true },
         { label: 'Tổng hóa đơn', name: 'totalPrice', visible: true },
     ]);
     const [paymentMethodFilter, setPaymentMethodFilter] = useState<{id: number, label: string, checked: boolean}[]>([]);
@@ -321,7 +321,9 @@ const OrderPage = () => {
                                         />
                                     </TableCell>
                                     {fields.map((field, index) => (
-                                        (field.visible && field.name != "image") && <TableCell key={index}>{row[field.name]}</TableCell>
+                                        (field.visible && field.name != "image") && <TableCell key={index}>
+                                            {field.name === 'updatedAt' ? row[field.name].format('DD/MM/YYYY HH:mm') : row[field.name]}
+                                        </TableCell>
                                     ))}
                                 </TableRow>
                             ))}

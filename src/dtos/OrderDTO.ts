@@ -11,13 +11,13 @@ export class OrderDTO {
         public branchName: string,
         public paymentMethodId: number,
         public paymentMethodName: string,
-        public updateAt: string,
+        public updatedAt: Dayjs,
         public orderItems: OrderItemDTO[],
     ) {}
 
     static constructorOrderDTO ()
     {
-        return new OrderDTO(0, 0, 0, "", 0, "", 0, "", "", []);
+        return new OrderDTO(0, 0, 0, "", 0, "", 0, "", dayjs(), []);
     }
 
     static fromJSON(data: any): OrderDTO {
@@ -30,7 +30,7 @@ export class OrderDTO {
             data.branchName,
             data.paymentMethodId,
             data.paymentMethodName,
-            dayjs(data.updateAt).format('YYYY-MM-DD HH:mm'),
+            dayjs(data.updatedAt),
             data.orderItems.map(OrderItemDTO.fromJSON),
         );
     }
