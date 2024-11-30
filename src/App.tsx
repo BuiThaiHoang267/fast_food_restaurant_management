@@ -9,6 +9,7 @@ import SalesPage from "./pages/sales-page.tsx";
 import OrderPage from "./pages/order-page.tsx";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import LoginPage from "./pages/login-page.tsx";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
               </Route>
               <Route path="/kitchen" element={<KitchenPage />} />
               <Route path="/sales" element={<SalesPage />}/>
+              <Route path="/login" element={<LoginPage />} />
           </Routes>
         </BrowserRouter>
       </LocalizationProvider>
