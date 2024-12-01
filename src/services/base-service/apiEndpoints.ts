@@ -10,6 +10,11 @@ export const CATEGORY_API = {
     GET_ALL_CATEGORY: '/category/all',
 }
 
+export const USER_API = {
+    LOGIN: '/user/login',
+    REGISTER: '/user/register',
+}
+
 export const ORDER_API = {
     CREATE_ORDER: '/order/create',
     GET_ORDER_BY_FILTERS: '/order',
@@ -27,4 +32,3 @@ export const PAYMENT_METHOD_API = {
 export const BRANCH_API = {
     GET_ALL_BRANCH: '/branch/all',
 }
-
