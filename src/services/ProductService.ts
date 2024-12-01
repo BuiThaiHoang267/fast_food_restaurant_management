@@ -81,4 +81,5 @@ export const productService = {
 export interface ProductFilter {
     name: string;
     categories: number[];
+    types: string[];
 }

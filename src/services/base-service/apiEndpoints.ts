@@ -9,3 +9,22 @@ export const PRODUCT_API = {
 export const CATEGORY_API = {
     GET_ALL_CATEGORY: '/category/all',
 }
+
+export const ORDER_API = {
+    CREATE_ORDER: '/order/create',
+    GET_ORDER_BY_FILTERS: '/order',
+    GET_ORDER_STATUS_PENDING: '/order/status-pending',
+    GET_ORDER_ITEM_BY_STATUS_COOKED: '/order/item/status-cooked',
+
+    UPDATE_ORDER_ITEM:(id: number) => `/order/item/update/${id}`,
+    UPDATE_ORDER:(id: number) => `/order/update/${id}`,
+}
+
+export const PAYMENT_METHOD_API = {
+    GET_ALL_PAYMENT_METHOD: '/payment-method/all',
+}
+
+export const BRANCH_API = {
+    GET_ALL_BRANCH: '/branch/all',
+}
+

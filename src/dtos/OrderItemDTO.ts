@@ -13,13 +13,30 @@ export class OrderItemDTO
         public productPrice: number,
         public productName: string,
         public productImage: string,
-        public comboItems: ComboItemDTO[] = []
+        public orderNumberOrder: number,
+        public productComboItems: ComboItemDTO[] = []
     ) {
     }
 
     static constructorOrderItemDTO ()
     {
-        return new OrderItemDTO(0, 0, 0, 0, 0, "", 0, "", "", []);
+        return new OrderItemDTO(0, 0, 0, 0, 0, "", 0, "", "", 0,[]);
+    }
+
+    static fromJSON(data: any): OrderItemDTO {
+        return new OrderItemDTO(
+            data.id,
+            data.orderId,
+            data.productId,
+            data.quantity,
+            data.unitPrice,
+            data.status,
+            data.productPrice,
+            data.productName,
+            data.productImage,
+            data.orderNumberOrder,
+            data.productComboItems.map(ComboItemDTO.fromJSON),
+        );
     }
 
     // Parse dữ liệu từ ProductDTO sang OrderItemDTO
@@ -28,7 +45,7 @@ export class OrderItemDTO
         this.productPrice = product.price;
         this.productName = product.name;
         this.productImage = product.image;
-        this.comboItems = product.comboItems;
+        this.productComboItems = product.comboItems;
         return this;
     }
 }
