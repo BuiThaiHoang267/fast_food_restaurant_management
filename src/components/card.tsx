@@ -23,12 +23,15 @@ import React, {useState} from "react";
 import {
     bg_blue_600,
     bg_blue_800,
-    bg_grey_600, color_white,
+    bg_grey_600, color_green_primary, color_white,
     Error600,
     success_600
 } from "../common/constant.ts";
-import formatElapsedTime from "../utils/TimeElapsedConverter.ts";
 import ProductDTO from "../dtos/ProductDTO.ts";
+import {OrderDTO} from "../dtos/OrderDTO.ts";
+import {OrderItemDTO} from "../dtos/OrderItemDTO.ts";
+import dayjs from "dayjs";
+import {OrderItemStatus} from "../common/order-status.ts";
 
 interface SearchCardProps {
     title: string;
@@ -459,20 +462,7 @@ export const OrderProductCard: React.FC<OrderProductCardProps> = ({
 
 interface CookingProductCardProps {
     index: number;
-    order: {
-        orderNumber: string;
-        time: Date;
-        products: {
-            name: string;
-            quantity: number;
-            time: Date;
-            subOrders?: {
-                name: string;
-                quantity: number;
-            }[];
-            deletedAt?: Date;
-        }[];
-    }
+    order: OrderDTO;
     onProcessProduct: (productIndex: number) => void;
     onProcessOrder: () => void;
     onDelete: (productIndex: number) => void;
@@ -490,7 +480,7 @@ export const CookingProductCard: React.FC<CookingProductCardProps> = ({
     };
 
     // Check if all products are deleted
-    const allProductsDeleted = order.products.every((product) => product.deletedAt);
+    const allProductsDeleted = order.orderItems.every((product) => product.status === 'Canceled');
 
     return (
         <div
@@ -520,7 +510,7 @@ export const CookingProductCard: React.FC<CookingProductCardProps> = ({
                             fontSize: "0.875rem",
                         }}
                     >
-                        {order.orderNumber}
+                        Order {order.numberOrder}
                     </Typography>
                     <Typography
                         variant="body2"
@@ -529,7 +519,7 @@ export const CookingProductCard: React.FC<CookingProductCardProps> = ({
                             fontSize: "0.75rem", // Smaller text size for time elapsed
                         }}
                     >
-                        {formatElapsedTime(order.time)}
+                        {order.updatedAt.format('DD/MM/YYYY')}
                     </Typography>
                 </div>
 
@@ -548,7 +538,7 @@ export const CookingProductCard: React.FC<CookingProductCardProps> = ({
                             fontSize: "0.875rem",
                         }}
                     >
-                        {order.products.reduce((acc, product) => acc + product.quantity, 0)}
+                        {order.orderItems.reduce((acc, product) => acc + product.quantity, 0)}
                     </Typography>
                 </div>
 
@@ -577,7 +567,7 @@ export const CookingProductCard: React.FC<CookingProductCardProps> = ({
             {/* Collapsible Product List */}
             <Collapse in={collapsed}>
                 <div className="mt-2">
-                    {order.products.map((product, index) => (
+                    {order.orderItems.map((orderItem, index) => (
                         <div
                             key={index}
                             className={`py-2 ml-16 rounded flex justify-between items-center`}
@@ -590,11 +580,19 @@ export const CookingProductCard: React.FC<CookingProductCardProps> = ({
                                         fontSize: "0.875rem",
                                     }}
                                 >
-                                    {product.name}
+                                    <img
+                                        src={orderItem.productImage}
+                                        alt={orderItem.productName}
+                                        style={{
+                                            width: "40px",
+                                            height: "40px",
+                                            marginRight: "4px",
+                                        }}/>
+                                    <span>{orderItem.productName}</span>
                                 </Typography>
-                                {product.subOrders && (
+                                {orderItem.productComboItems && (
                                     <div className="mt-1">
-                                        {product.subOrders.map((subOrder, subIndex) => (
+                                        {orderItem.productComboItems.map((comboItem, subIndex) => (
                                             <Typography
                                                 key={subIndex}
                                                 variant="body2"
@@ -602,7 +600,7 @@ export const CookingProductCard: React.FC<CookingProductCardProps> = ({
                                                     color: success_600,
                                                 }}
                                             >
-                                                {subOrder.quantity} {subOrder.name}
+                                                {comboItem.quantity} {comboItem.productName}
                                             </Typography>
                                         ))}
                                     </div>
@@ -615,7 +613,7 @@ export const CookingProductCard: React.FC<CookingProductCardProps> = ({
                                         fontSize: "0.75rem", // Smaller text size for time elapsed
                                     }}
                                 >
-                                    {formatElapsedTime(order.time)}
+                                    {order.updatedAt.format('DD/MM/YYYY HH:mm')}
                                 </Typography>
                             </div>
                             <div
@@ -631,7 +629,7 @@ export const CookingProductCard: React.FC<CookingProductCardProps> = ({
                                         fontSize: "0.875rem",
                                     }}
                                 >
-                                    {product.quantity}
+                                    {orderItem.quantity}
                                 </Typography>
                             </div>
 
@@ -641,7 +639,7 @@ export const CookingProductCard: React.FC<CookingProductCardProps> = ({
                                     width: "200px",
                                 }}
                             >
-                                {product.deletedAt ? (
+                                {(orderItem.status === 'Canceled') ? (
                                     <div className="flex flex-row items-center">
                                         <Typography
                                             variant="body2"
@@ -650,7 +648,7 @@ export const CookingProductCard: React.FC<CookingProductCardProps> = ({
                                                 fontSize: "0.75rem", // Smaller text size for time elapsed
                                             }}
                                         >
-                                            Huỷ vào {formatElapsedTime(product.deletedAt)}
+                                            Huỷ vào {order.updatedAt.format('DD/MM/YYYY HH:mm')}
                                         </Typography>
                                         <IconButton
                                             size="large"
@@ -678,29 +676,12 @@ export const CookingProductCard: React.FC<CookingProductCardProps> = ({
 };
 
 interface CookedProductCardProps {
-    orderNumber: string;
-    name: string;
-    quantity: number;
-    time: Date;
-    subOrders?: {
-        name: string;
-        quantity: number;
-    }[];
-    deletedAt?: Date;
+    orderItem: OrderItemDTO;
     onProcessProduct: () => void;
     onDelete: () => void;
 }
 
-export const CookedProductCard: React.FC<CookedProductCardProps> = ({
-                                                                        orderNumber,
-                                                                        name,
-                                                                        quantity,
-                                                                        time,
-                                                                        subOrders,
-                                                                        deletedAt,
-                                                                        onProcessProduct,
-                                                                        onDelete
-                                                                    }) => {
+export const CookedProductCard: React.FC<CookedProductCardProps> = ({orderItem, onProcessProduct, onDelete}) => {
     return (
         <div>
             <div
@@ -714,33 +695,53 @@ export const CookedProductCard: React.FC<CookedProductCardProps> = ({
                             fontSize: "0.875rem",
                         }}
                     >
-                        {name}
+                        <img
+                            src={orderItem.productImage}
+                            alt={orderItem.productName}
+                            style={{
+                                width: "40px",
+                                height: "40px",
+                                marginRight: "4px",
+                            }}/>
+                        {orderItem.productName}
                     </Typography>
-                    {subOrders && (
+                    {orderItem.productComboItems && (
                         <div className="mt-1">
-                            {subOrders.map((subOrder, subIndex) => (
+                            {orderItem.productComboItems.map((comboItem, subIndex) => (
                                 <Typography
                                     key={subIndex}
                                     variant="body2"
                                     sx={{
-                                        color: success_600,
+                                        color: color_green_primary,
                                     }}
                                 >
-                                    {subOrder.quantity} {subOrder.name}
+                                    {comboItem.quantity} {comboItem.productName}
                                 </Typography>
                             ))}
                         </div>
                     )}
-                    <Typography
-                        variant="body2"
-                        sx={{
-                            marginTop: '4px',
-                            color: bg_grey_600,
-                            fontSize: "0.75rem",
-                        }}
-                    >
-                        {orderNumber} - {formatElapsedTime(time)}
-                    </Typography>
+                    <div className={'flex flex-row justify-start items-end'}>
+                        <span
+                            style={{
+                                color: color_green_primary,
+                                fontSize: "0.9rem",
+                                lineHeight: "0.9rem",
+                                fontWeight: "700",
+                            }}
+                        >
+                            Order {orderItem.orderNumberOrder}
+                        </span>
+                        <span
+                            style={{
+                                color: bg_grey_600,
+                                fontSize: "0.75rem",
+                                lineHeight: "0.75rem",
+                                marginLeft: 12,
+                            }}
+                        >
+                            {dayjs().format('DD/MM/YYYY HH:mm')}
+                        </span>
+                    </div>
                 </div>
                 <div
                     className="flex items-center justify-center ml-auto flex-shrink-0"
@@ -755,16 +756,17 @@ export const CookedProductCard: React.FC<CookedProductCardProps> = ({
                             fontSize: "0.875rem",
                         }}
                     >
-                        {quantity}
+                        {orderItem.quantity}
                     </Typography>
                 </div>
+
                 <div
                     className="flex items-end justify-end ml-4 flex-shrink-0"
                     style={{
                         width: "200px",
                     }}
                 >
-                    {deletedAt ? (
+                    {(orderItem.status == OrderItemStatus.CANCELLED) ? (
                         <div className="flex flex-row items-center">
                             <Typography
                                 variant="body2"
@@ -773,7 +775,7 @@ export const CookedProductCard: React.FC<CookedProductCardProps> = ({
                                     fontSize: "0.75rem", // Smaller text size for time elapsed
                                 }}
                             >
-                                Huỷ vào {formatElapsedTime(deletedAt)}
+                                Huỷ vào {dayjs().format('DD/MM/YYYY')}
                             </Typography>
                             <IconButton
                                 size="large"

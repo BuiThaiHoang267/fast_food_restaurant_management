@@ -64,6 +64,7 @@ const SalesPage = () => {
         }
     }
 
+
     const fetchProductByCategoryId = async (categoryId: number) => {
         try {
             const products = await productService.getProductByCategoryId(categoryId);
@@ -74,6 +75,13 @@ const SalesPage = () => {
         }
         catch (error) {
             console.error(error);
+        }
+    }
+
+    const handleCloseDialogPayment = (value: boolean) => {
+        setOpenDialogPayment(false);
+        if(value){
+            handleDeleteTab(tabValue);
         }
     }
 
@@ -96,7 +104,7 @@ const SalesPage = () => {
                 currentTabProducts[existingProductIndex].quantity! += 1;
             } else {
                 // Add the product with quantity 1 if it doesn't exist
-                const newOrderItem = new OrderItemDTO(0, 0, product.id, 1, product.price, "", product.price, product.name, product.image, product.comboItems);
+                const newOrderItem = new OrderItemDTO(0, 0, product.id, 1, product.price, "", product.price, product.name, product.image, 0,product.comboItems);
                 currentTabProducts.push(newOrderItem);
             }
 
@@ -186,6 +194,8 @@ const SalesPage = () => {
                 const updatedOrderRequest = { ...prevOrderRequest };
                 updatedOrderRequest.orderItems = currentOrder;
                 updatedOrderRequest.totalPrice = totals.totalPrice;
+                updatedOrderRequest.paymentMethodId = 1;
+                updatedOrderRequest.branchId = 1;
                 updatedOrderRequest.numberOrder = parseInt(tabNames[tabValue], 0); // Parse the tab name as the order number
                 console.log("Order Request:", updatedOrderRequest);
                 return updatedOrderRequest;
@@ -431,7 +441,7 @@ const SalesPage = () => {
                             <OrderProductCard
                                 index={index}
                                 name={product.productName}
-                                childNames={product.comboItems.map(item => item.productName) || []}
+                                childNames={product.productComboItems.map(item => item.productName) || []}
                                 quantity={product.quantity || 1} // Pass quantity from parent state
                                 price={product.productPrice}
                                 onQuantityChange={(newQuantity) => handleUpdateQuantity(index, newQuantity)} // Pass callback for quantity update
@@ -505,7 +515,7 @@ const SalesPage = () => {
                             <AttachMoneyIcon fontSize="medium" sx={{marginRight: '8px'}}/>
                             Thanh toán
                         </Button>
-                        <DialogPayment open={openDialogPayment} onClose={() => setOpenDialogPayment(false)} order={orderRequest}></DialogPayment>
+                        <DialogPayment open={openDialogPayment} onClose={(value) => handleCloseDialogPayment(value)} order={orderRequest}></DialogPayment>
                     </div>
                 </div>
             </div>

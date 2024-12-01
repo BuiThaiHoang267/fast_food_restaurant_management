@@ -49,7 +49,8 @@ const ProductCategoryPage = () => {
     const [productDetail, setProductDetail] = useState<ProductDTO>();
     const [productFilter, setProductFilter] = useState<ProductFilter>({
         name: "",
-        categories: []
+        categories: [],
+        types: [],
     });
 
     useEffect(() => {
@@ -105,6 +106,13 @@ const ProductCategoryPage = () => {
                 type.id === id ? { id, label , checked } : type
             )
         );
+        setProductFilter((prevProductFilter) => {
+            if (checked) {
+                return { ...prevProductFilter, types: [...prevProductFilter.types, label] };
+            } else {
+                return {...prevProductFilter, types: prevProductFilter.types.filter((type) => type !== label)};
+            }
+        });
     }
 
     const handleCategoryCardChange = (id: number, label: string, checked: boolean) => {
