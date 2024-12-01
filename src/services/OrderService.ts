@@ -73,6 +73,17 @@ export const OrderService = {
             console.error(error);
             throw error;
         }
+    },
+
+    updateOrder: async (order: OrderDTO) => {
+        try{
+            const response = await axiosInstance.patch(ORDER_API.UPDATE_ORDER(order.id), order);
+            console.log(response);
+        }
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
     }
 }
 

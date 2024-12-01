@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import {OrderDTO} from "../dtos/OrderDTO.ts";
 import {OrderService} from "../services/OrderService.ts";
 import {OrderItemDTO} from "../dtos/OrderItemDTO.ts";
-import {OrderItemStatus} from "../common/order-status.ts";
+import {OrderItemStatus, OrderStatus} from "../common/order-status.ts";
 
 const KitchenPage = () => {
     const [orderItemCompleted, setOrderItemCompleted] = useState<OrderItemDTO[]>([]);
@@ -46,6 +46,16 @@ const KitchenPage = () => {
         }
     }
 
+    const updateOrderStatus = async (order: OrderDTO) => {
+        try {
+            const response = await OrderService.updateOrder(order);
+            console.log(response);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
     const handleProductComplete = (orderIndex: number, productIndex: number) => {
         setOrderPending((prevOrders) => {
             const updatedOrders = [...prevOrders];
@@ -75,20 +85,33 @@ const KitchenPage = () => {
         });
     };
     const handleOrderComplete = (orderIndex: number) => {
-        setOrderPending((prevOrders) => {
-            const updatedOrders = [...prevOrders];
-            const [completedOrder] = updatedOrders.splice(orderIndex, 1);
+        // Update the status of the order in the database
+        const completedOrder = orderPending[orderIndex];
+        completedOrder.status = OrderStatus.COMPLETED;
+        updateOrderStatus(completedOrder)
+            .then(() => {
+                setOrderPending((prevOrders) => {
+                    const updatedOrders = [...prevOrders];
+                    const [completedOrder] = updatedOrders.splice(orderIndex, 1);
 
-            // Add all products from the completed order to `completedOrders`
-            setOrderItemCompleted((prevCompleted) => [
-                ...prevCompleted,
-                ...completedOrder.orderItems,
-            ]);
+                    // Add all products from the completed order to `completedOrders`
+                    setOrderItemCompleted((prevCompleted) => [
+                        ...prevCompleted,
+                        ...completedOrder.orderItems,
+                    ]);
 
-            return updatedOrders;
-        });
+                    return updatedOrders;
+                });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     };
     const handleRemoveCompleted = (productIndex: number) => {
+        //update status of product
+        const updatedProduct = orderItemCompleted[productIndex];
+        updatedProduct.status = OrderItemStatus.COMPLETED;
+        updateOrderItemStatus(updatedProduct);
         setOrderItemCompleted((prevCompleted) => prevCompleted.filter((_, i) => i !== productIndex));
     };
 

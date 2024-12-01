@@ -17,6 +17,7 @@ export const ORDER_API = {
     GET_ORDER_ITEM_BY_STATUS_COOKED: '/order/item/status-cooked',
 
     UPDATE_ORDER_ITEM:(id: number) => `/order/item/update/${id}`,
+    UPDATE_ORDER:(id: number) => `/order/update/${id}`,
 }
 
 export const PAYMENT_METHOD_API = {
