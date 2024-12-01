@@ -191,7 +191,7 @@ const KitchenPage = () => {
                             fontWeight: 'bold',
                         }}
                     >
-                        Đã xong/ Chờ cung ứng
+                        Đã xong / Chờ phục vụ
                     </Typography>
                 </div>
                 <div

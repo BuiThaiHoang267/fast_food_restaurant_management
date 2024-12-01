@@ -23,7 +23,7 @@ import React, {useState} from "react";
 import {
     bg_blue_600,
     bg_blue_800,
-    bg_grey_600, color_white,
+    bg_grey_600, color_green_primary, color_white,
     Error600,
     success_600
 } from "../common/constant.ts";
@@ -712,7 +712,7 @@ export const CookedProductCard: React.FC<CookedProductCardProps> = ({orderItem, 
                                     key={subIndex}
                                     variant="body2"
                                     sx={{
-                                        color: success_600,
+                                        color: color_green_primary,
                                     }}
                                 >
                                     {comboItem.quantity} {comboItem.productName}
@@ -720,16 +720,28 @@ export const CookedProductCard: React.FC<CookedProductCardProps> = ({orderItem, 
                             ))}
                         </div>
                     )}
-                    <Typography
-                        variant="body2"
-                        sx={{
-                            marginTop: '4px',
-                            color: bg_grey_600,
-                            fontSize: "0.75rem",
-                        }}
-                    >
-                        {orderItem.orderNumberOrder} - {dayjs().format('DD/MM/YYYY HH:mm')}
-                    </Typography>
+                    <div className={'flex flex-row justify-start items-end'}>
+                        <span
+                            style={{
+                                color: color_green_primary,
+                                fontSize: "0.9rem",
+                                lineHeight: "0.9rem",
+                                fontWeight: "700",
+                            }}
+                        >
+                            Order {orderItem.orderNumberOrder}
+                        </span>
+                        <span
+                            style={{
+                                color: bg_grey_600,
+                                fontSize: "0.75rem",
+                                lineHeight: "0.75rem",
+                                marginLeft: 12,
+                            }}
+                        >
+                            {dayjs().format('DD/MM/YYYY HH:mm')}
+                        </span>
+                    </div>
                 </div>
                 <div
                     className="flex items-center justify-center ml-auto flex-shrink-0"
@@ -747,6 +759,7 @@ export const CookedProductCard: React.FC<CookedProductCardProps> = ({orderItem, 
                         {orderItem.quantity}
                     </Typography>
                 </div>
+
                 <div
                     className="flex items-end justify-end ml-4 flex-shrink-0"
                     style={{
