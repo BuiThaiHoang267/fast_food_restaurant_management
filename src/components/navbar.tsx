@@ -77,18 +77,20 @@ const Navbar = () => {
                     </Link>
 
                     {/*Employee*/}
-                    <Button
-                        startIcon={<PeopleIcon/>}
-                        color="inherit"
-                        sx={{
-                            textTransform: 'none',
-                            fontWeight: 'bold',
-                            padding: '0 10px',
-                            outline: 'none', // Remove outline
-                            '&:focus': {outline: 'none'},
-                        }}>
-                        Nhân viên
-                    </Button>
+                    <Link to={'/account-management'}>
+                        <Button
+                            startIcon={<PeopleIcon/>}
+                            color="inherit"
+                            sx={{
+                                textTransform: 'none',
+                                fontWeight: 'bold',
+                                padding: '0 10px',
+                                outline: 'none', // Remove outline
+                                '&:focus': {outline: 'none'},
+                            }}>
+                            Tài khoản
+                        </Button>
+                    </Link>
 
                     {/*Report*/}
                     <Button

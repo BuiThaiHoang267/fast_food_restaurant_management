@@ -10,10 +10,29 @@ import ArrowDownwardTwoToneIcon from '@mui/icons-material/ArrowDownwardTwoTone';
 import ArrowUpwardTwoToneIcon from '@mui/icons-material/ArrowUpwardTwoTone';
 import MovingIcon from '@mui/icons-material/Moving';
 import DescriptionIcon from '@mui/icons-material/Description';
+import {ResultSaleTodayDTO} from "../dtos/Order/ResultSaleTodayDTO.ts";
+import {useEffect, useState} from "react";
+import {StatisticService} from "../services/StatisticService.ts";
 
 
 const CardDashboardResultToday = () => {
-  return (
+    const [data, setData] = useState<ResultSaleTodayDTO>(new ResultSaleTodayDTO(0, 0, 0, 0, 0, 0, 0, 0, 0));
+
+    useEffect(() => {
+        fetchResultSaleToday();
+    }, []);
+
+    const fetchResultSaleToday = async () => {
+        try {
+            const response = await StatisticService.getResultSaleToday();
+            setData(response);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    return (
       <div className={'flex flex-col'} style={{height: "100%"}}>
           <span style={{fontSize: "1rem", fontWeight: "bold"}}>KẾT QUẢ BÁN HÀNG HÔM NAY</span>
           <div
@@ -29,12 +48,14 @@ const CardDashboardResultToday = () => {
                   <div className={'flex-1 flex flex-col pl-4'}>
                       <span style={{fontSize: "0.9rem", fontWeight: "bold" , color: bg_grey_500}}>Doanh số</span>
                       <div className={'flex flex-row items-center'}>
-                          <div style={{fontSize: "1.3rem", color: bg_blue_600}}>1,109,000</div>
-                          <ArrowDownwardTwoToneIcon fontSize="small" sx={{color: 'red', marginLeft: 2}}/>
-                          <ArrowUpwardTwoToneIcon fontSize="small" sx={{color: success_500, marginLeft: 2}}/>
-                          <div style={{fontSize: "0.9rem", color: bg_grey_500}}>90%</div>
+                          <div style={{fontSize: "1.3rem", color: bg_blue_600}}>{data.totalRevenueToday.toLocaleString()}</div>
+                          {(data.percentRevenueChange > 0) ?
+                              <ArrowUpwardTwoToneIcon fontSize="small" sx={{color: success_500, marginLeft: 2}}/>:
+                              <ArrowDownwardTwoToneIcon fontSize="small" sx={{color: 'red', marginLeft: 2}}/>
+                          }
+                          <div style={{fontSize: "0.9rem", color: bg_grey_500}}>{Math.abs(data.percentRevenueChange)}%</div>
                       </div>
-                      <span style={{fontSize: "0.9rem", color: bg_grey_500}}>Hôm qua: 1,509,000</span>
+                      <span style={{fontSize: "0.9rem", color: bg_grey_500}}>Hôm qua: {data.totalRevenueYesterday.toLocaleString()}</span>
                   </div>
               </div>
 
@@ -54,11 +75,14 @@ const CardDashboardResultToday = () => {
                   <div className={'flex-1 flex flex-col pl-4'}>
                       <span style={{fontSize: "0.9rem", fontWeight: "bold", color: bg_grey_500}}>Lợi nhuận</span>
                       <div className={'flex flex-row items-center'}>
-                          <div style={{fontSize: "1.3rem", color: success_500}}>1,109,000</div>
-                          <ArrowDownwardTwoToneIcon fontSize="small" sx={{color: 'red', marginLeft: 2}}/>
-                          <div style={{fontSize: "0.9rem", color: bg_grey_500}}>90%</div>
+                          <div style={{fontSize: "1.3rem", color: success_500}}>{data.totalProfitToday.toLocaleString()}</div>
+                          {(data.percentRevenueChange > 0) ?
+                              <ArrowUpwardTwoToneIcon fontSize="small" sx={{color: success_500, marginLeft: 2}}/>:
+                              <ArrowDownwardTwoToneIcon fontSize="small" sx={{color: 'red', marginLeft: 2}}/>
+                          }
+                          <div style={{fontSize: "0.9rem", color: bg_grey_500}}>{Math.abs(data.percentProfitChange)}%</div>
                       </div>
-                      <span style={{fontSize: "0.9rem", color: bg_grey_500}}>Hôm qua: 1,509,000</span>
+                      <span style={{fontSize: "0.9rem", color: bg_grey_500}}>Hôm qua: {data.totalProfitYesterday.toLocaleString()}</span>
                   </div>
               </div>
 
@@ -78,16 +102,19 @@ const CardDashboardResultToday = () => {
                   <div className={'flex-1 flex flex-col pl-4'}>
                       <span style={{fontSize: "0.9rem", fontWeight: "bold", color: bg_grey_500}}>Hóa đơn</span>
                       <div className={'flex flex-row items-center'}>
-                          <div style={{fontSize: "1.3rem", color: Error500}}>1,109,000</div>
-                          <ArrowUpwardTwoToneIcon fontSize="small" sx={{color: success_500, marginLeft: 2}}/>
-                          <div style={{fontSize: "0.9rem", color: bg_grey_500}}>90%</div>
+                          <div style={{fontSize: "1.3rem", color: Error500}}>{data.totalOrdersToday}</div>
+                          {(data.percentRevenueChange > 0) ?
+                              <ArrowUpwardTwoToneIcon fontSize="small" sx={{color: success_500, marginLeft: 2}}/>:
+                              <ArrowDownwardTwoToneIcon fontSize="small" sx={{color: 'red', marginLeft: 2}}/>
+                          }
+                          <div style={{fontSize: "0.9rem", color: bg_grey_500}}>{Math.abs(data.percentOrdersChange)}%</div>
                       </div>
-                      <span style={{fontSize: "0.9rem", color: bg_grey_500}}>Hôm qua: 1,509,000</span>
+                      <span style={{fontSize: "0.9rem", color: bg_grey_500}}>Hôm qua: {data.totalOrdersYesterday.toLocaleString()}</span>
                   </div>
               </div>
           </div>
       </div>
-  );
+    );
 }
 
 export default CardDashboardResultToday;
