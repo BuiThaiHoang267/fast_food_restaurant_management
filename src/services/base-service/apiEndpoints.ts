@@ -9,3 +9,8 @@ export const PRODUCT_API = {
 export const CATEGORY_API = {
     GET_ALL_CATEGORY: '/category/all',
 }
+
+export const USER_API = {
+    LOGIN: '/user/login',
+    REGISTER: '/user/register',
+}

@@ -1,17 +1,23 @@
 ﻿import React, {useState} from "react";
 import {Box, Button, Container, TextField, Typography} from "@mui/material";
 import {bg_blue_600, bg_blue_800} from "../common/constant.ts";
+import {UserService} from "../services/UserService.ts";
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         // Handle login logic here
+        try {
+            await UserService.login(username, password);
+        }
+        catch (error) {
+            console.error(error);
+        }
         console.log('Logging in with:', username, password);
     };
-
 
     return (
         <div className="flex flex-col items-center py-10 bg-gray-100 h-screen">
