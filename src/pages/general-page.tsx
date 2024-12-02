@@ -9,7 +9,7 @@ import {InputDurationDropdown} from "../components/input-duration-dropdown.tsx";
 import {Box, Tab, Tabs} from "@mui/material";
 import {useEffect, useState} from "react";
 
-const generalPage = () => {
+const GeneralPage = () => {
     const filterChart1 = [
         "revenueChartByDate",
         "revenueChartByDay",
@@ -156,7 +156,7 @@ const generalPage = () => {
                     style=
                         {{
                             width: '360px',
-                            height: '622px',
+                            height: '693px',
                             marginTop: "16px",
                             backgroundColor: "white",
                             borderRadius: "8px",
@@ -224,4 +224,4 @@ const generalPage = () => {
     )
 }
 
-export default generalPage;
+export default GeneralPage;
