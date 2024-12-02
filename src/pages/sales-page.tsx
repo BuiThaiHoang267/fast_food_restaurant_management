@@ -222,7 +222,7 @@ const SalesPage = () => {
                     </div>
                 </div>
                 <div className="flex flex-col flex-1 border-r border-gray-300 h-full">
-                    <div className="flex gap-2 bg-white p-3">
+                    <div className="flex flex-col flex-wrap gap-2 max-h-64 bg-white px-3 pt-3 pb-3 overflow-y-auto">
                         {categories.map((category) => (
                             <button
                                 key={category.id}
@@ -237,9 +237,9 @@ const SalesPage = () => {
                         ))}
                     </div>
                     <div
-                        className="flex flex-wrap gap-3 px-5 py-2 overflow-auto"
+                        className="flex flex-wrap px-4 py-2 gap-3 overflow-auto"
                         style={{
-                            justifyContent: 'left',
+                            justifyContent: 'center',
                             alignItems: 'center',
                         }}
                     >

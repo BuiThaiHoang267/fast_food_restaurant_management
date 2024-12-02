@@ -128,22 +128,30 @@ const Navbar = () => {
                                 marginTop: '7px'
                             },
                         }}>
-                        <MenuItem className="flex w-full gap-2">
-                            <PieChartIcon fontSize="small"/>
-                            <div>Cuối ngày</div>
-                        </MenuItem>
-                        <MenuItem className="flex w-full gap-2">
-                            <CategoryIcon fontSize="small"/>
-                            <div>Bán hàng</div>
-                        </MenuItem>
-                        <MenuItem className="flex w-full gap-2">
-                            <FileCopyIcon fontSize="small"/>
-                            <div>Hàng hoá</div>
-                        </MenuItem>
-                        <MenuItem className="flex w-full gap-2">
-                            <TrendingUpIcon fontSize="small"/>
-                            <div>Tài chính</div>
-                        </MenuItem>
+                        {/*<Link to="/report">*/}
+                        {/*    <MenuItem className="flex w-full gap-2">*/}
+                        {/*        <PieChartIcon fontSize="small"/>*/}
+                        {/*        <div>Cuối ngày</div>*/}
+                        {/*    </MenuItem>*/}
+                        {/*</Link>*/}
+                        <Link to="/report-sale">
+                            <MenuItem className="flex w-full gap-2">
+                                <CategoryIcon fontSize="small"/>
+                                <div>Bán hàng</div>
+                            </MenuItem>
+                        </Link>
+                        <Link to="/report-product">
+                            <MenuItem className="flex w-full gap-2">
+                                <FileCopyIcon fontSize="small"/>
+                                <div>Hàng hoá</div>
+                            </MenuItem>
+                        </Link>
+                        {/*<Link to="/report-finance">*/}
+                        {/*    <MenuItem className="flex w-full gap-2">*/}
+                        {/*        <TrendingUpIcon fontSize="small"/>*/}
+                        {/*        <div>Tài chính</div>*/}
+                        {/*    </MenuItem>*/}
+                        {/*</Link>*/}
                     </Menu>
                 </div  >
                 <div className="flex-row ml-auto w-fit content-center">
