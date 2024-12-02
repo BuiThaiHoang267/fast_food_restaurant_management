@@ -32,3 +32,9 @@ export const PAYMENT_METHOD_API = {
 export const BRANCH_API = {
     GET_ALL_BRANCH: '/branch/all',
 }
+
+export const STATISTIC_API = {
+    GET_STATISTIC_RESULT_TODAY: '/statistic/result-today',
+    GET_REVENUE_CHART: '/statistic/revenue-chart',
+    GET_TOP_PRODUCT: '/statistic/top-product',
+}
