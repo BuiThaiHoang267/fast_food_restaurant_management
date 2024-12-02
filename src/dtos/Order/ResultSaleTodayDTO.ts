@@ -77,3 +77,18 @@ export class DateRange {
         };
     }
 }
+
+export class TopProductDTO {
+    constructor(
+        public topProductByRevenue: AxisDTO,
+        public topProductBySale: AxisDTO,
+    ) {
+    }
+
+    static fromJSON(data: any): TopProductDTO {
+        return new TopProductDTO(
+            AxisDTO.fromJSON(data.topProductByRevenue),
+            AxisDTO.fromJSON(data.topProductBySale),
+        );
+    }
+}
