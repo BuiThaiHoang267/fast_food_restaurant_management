@@ -2,6 +2,11 @@
 import CardDashboardResultToday from "../components/card-dashboard-result-today.tsx";
 import {bg_blue_500} from "../common/constant.ts";
 import CardRecentlyAction from "../components/card-recently-action.tsx";
+import dayjs, {Dayjs} from "dayjs";
+import {StatisticService} from "../services/StatisticService.ts";
+import {useEffect, useState} from "react";
+import {RevenueChartDTO} from "../dtos/Order/ResultSaleTodayDTO.ts";
+import {InputDurationDropdown} from "../components/input-duration-dropdown.tsx";
 
 const generalPage = () => {
     const data = [
@@ -16,6 +21,29 @@ const generalPage = () => {
         { product: 'Product I', sales: 75 },
         { product: 'Product J', sales: 70 },
     ];
+
+    const [dataChart, setDataChart] = useState<RevenueChartDTO>(new RevenueChartDTO(0, {labels: [], data: []}, {labels: [], data: []}, {labels: [], data: []}));
+    const [startDate, setStartDate] = useState<Dayjs>(dayjs());
+    const [endDate, setEndDate] = useState<Dayjs>(dayjs());
+
+    useEffect(() => {
+        fetchRevenueChart();
+    }, [dataChart!==undefined]);
+
+    useEffect(() => {
+        fetchRevenueChart();
+    }, [startDate,endDate]);
+
+    const fetchRevenueChart = async () => {
+        try{
+            const response = await StatisticService.getRevenueChart(startDate, endDate);
+            console.log(response);
+            setDataChart(response);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
 
     return (
         <div className={"flex flex-col items-center"}>
@@ -45,18 +73,38 @@ const generalPage = () => {
                                 boxShadow: "0 0 8px 0 rgba(0,0,0,0.1)"
                             }}
                     >
-                        <span style={{fontSize: "1rem", fontWeight: "bold"}}>DOANH SỐ HÔM NAY</span>
+                        <div className={'flex flex-row justify-between items-center'}>
+                            <div className={'flex flex-row flex-1'}>
+                                <span style={{
+                                    fontSize: "1rem",
+                                    fontWeight: "bold"
+                                }}>DOANH SỐ</span>
+                                <span style={{
+                                    fontSize: "1rem",
+                                    fontWeight: "bold",
+                                    color: bg_blue_500,
+                                    marginLeft: "8px"
+                                }}>{dataChart.totalRevenue.toLocaleString()} VND</span>
+                            </div>
+                            <div>
+                                <InputDurationDropdown isChart={true} onChange={(start, end) => {
+                                    setStartDate(start);
+                                    setEndDate(end);
+                                }}/>
+                            </div>
+
+                        </div>
                         <BarChart
                             series={[
-                                {data: [35, 44, 24, 34, 67, 23, 43], color: bg_blue_500},
+                                {data: dataChart.revenueChartByDate.data, color: bg_blue_500},
                             ]}
                             height={400}
                             xAxis={[{
-                                data: [35, 44, 24, 34, 67, 23, 43],
+                                data: dataChart.revenueChartByDate.labels,
                                 scaleType: 'band',
                                 categoryGapRatio: 0.6,
                             }]}
-                            margin={{top: 10, bottom: 30, left: 40, right: 10}}
+                            margin={{top: 10, bottom: 30, left: 80, right: 10}}
                         ></BarChart>
                     </div>
                 </div>
