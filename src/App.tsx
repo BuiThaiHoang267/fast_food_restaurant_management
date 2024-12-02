@@ -10,6 +10,8 @@ import OrderPage from "./pages/order-page.tsx";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import LoginPage from "./pages/login-page.tsx";
+import ReportSalePage from "./pages/report-sale-page.tsx";
+import ReportProductPage from "./pages/report-product-page.tsx";
 
 function App() {
   return (
@@ -20,7 +22,9 @@ function App() {
                   <Route path="/" element={<GeneralPage />} />
                   <Route path="/product-category" element={<ProductCategoryPage />} />
                   <Route path="/product-price" element={<ProductPricePage />} />
-                  <Route path={"/orders"} element={<OrderPage />} />
+                  <Route path="/orders" element={<OrderPage />} />
+                  <Route path="/report-sale" element={<ReportSalePage />} />
+                  <Route path="/report-product" element={<ReportProductPage />} />
               </Route>
               <Route path="/kitchen" element={<KitchenPage />} />
               <Route path="/sales" element={<SalesPage />}/>

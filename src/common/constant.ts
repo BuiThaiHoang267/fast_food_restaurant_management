@@ -29,6 +29,18 @@ export const bg_green_700 = "#047857";
 export const bg_green_800 = "#065F46";
 export const bg_green_900 = "#064E3B";
 
+// bg-yellow
+export const bg_yellow_50 = "#FFFBEB";
+export const bg_yellow_100 = "#FEF3C7";
+export const bg_yellow_200 = "#FDE68A";
+export const bg_yellow_300 = "#FCD34D";
+export const bg_yellow_400 = "#FBBF24";
+export const bg_yellow_500 = "#F59E0B";
+export const bg_yellow_600 = "#D97706";
+export const bg_yellow_700 = "#B45309";
+export const bg_yellow_800 = "#92400E";
+export const bg_yellow_900 = "#78350F";
+
 export const success_50 = "#E9FBEF";
 export const success_100 = "#C8F2DA";
 export const success_200 = "#A3E8C2";

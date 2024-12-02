@@ -38,20 +38,21 @@ interface SearchCardProps {
     placeholder: string;
     onSearch: (value: string) => void;
 }
-export const SearchCard: React.FC<SearchCardProps> = ({ title, placeholder, onSearch }) => {
+
+export const SearchCard: React.FC<SearchCardProps> = ({title, placeholder, onSearch}) => {
     const [searchValue, setSearchValue] = useState('');
 
     const handleChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchValue(e.target.value);
-        if(e.target.value === '') {
+        if (e.target.value === '') {
             onSearch('');
         }
     }
 
     return (
-        <Card sx={{ minWidth: 200, padding: 0.5, borderRadius: 1, boxShadow: 1 }}>
-            <CardContent sx={{ padding: '4px 8px' }} className="space-y-2">
-                <Typography variant="body2" component="div" gutterBottom sx={{ fontWeight: 'bold' }}>
+        <Card sx={{minWidth: 200, padding: 0.5, borderRadius: 1, boxShadow: 1}}>
+            <CardContent sx={{padding: '4px 8px'}} className="space-y-2">
+                <Typography variant="body2" component="div" gutterBottom sx={{fontWeight: 'bold'}}>
                     {title}
                 </Typography>
                 <TextField
@@ -62,11 +63,11 @@ export const SearchCard: React.FC<SearchCardProps> = ({ title, placeholder, onSe
                     fullWidth
                     slotProps={{
                         input: {
-                            sx: { fontSize: '0.8rem' },
+                            sx: {fontSize: '0.8rem'},
                             endAdornment: (
                                 <InputAdornment position="end">
                                     <IconButton onClick={() => onSearch(searchValue)} edge="end">
-                                        <SearchIcon fontSize="small" />
+                                        <SearchIcon fontSize="small"/>
                                     </IconButton>
                                 </InputAdornment>
                             ),
@@ -80,10 +81,11 @@ export const SearchCard: React.FC<SearchCardProps> = ({ title, placeholder, onSe
 
 interface CheckBoxCardProps {
     title: string;
-    options: {id:number; label: string; checked: boolean }[];
-    onChange: (id:number, label: string, checked: boolean) => void;
+    options: { id: number; label: string; checked: boolean }[];
+    onChange: (id: number, label: string, checked: boolean) => void;
 }
-export const CheckBoxCard: React.FC<CheckBoxCardProps> = ({ title, options, onChange }) => {
+
+export const CheckBoxCard: React.FC<CheckBoxCardProps> = ({title, options, onChange}) => {
     const [expanded, setExpanded] = useState(true);
 
     const handleExpandClick = () => {
@@ -91,10 +93,10 @@ export const CheckBoxCard: React.FC<CheckBoxCardProps> = ({ title, options, onCh
     };
 
     return (
-        <Card sx={{ minWidth: 200, padding: 0.5, borderRadius: 1, boxShadow: 1 }}>
-            <CardContent sx={{ 'padding-bottom': '0px !important', padding: '4px 8px' }} className="space-y-2">
+        <Card sx={{minWidth: 200, padding: 0.5, borderRadius: 1, boxShadow: 1}}>
+            <CardContent sx={{'padding-bottom': '0px !important', padding: '4px 8px'}} className="space-y-2">
                 <div className="flex items-center justify-between">
-                    <Typography variant="body2" component="div" gutterBottom sx={{ fontWeight: 'bold' }}>
+                    <Typography variant="body2" component="div" gutterBottom sx={{fontWeight: 'bold'}}>
                         {title}
                     </Typography>
                     <IconButton onClick={handleExpandClick} size="small">
@@ -119,7 +121,8 @@ export const CheckBoxCard: React.FC<CheckBoxCardProps> = ({ title, options, onCh
                                         size="small"
                                     />
                                 }
-                                label={<Typography variant="body2" sx={{ fontSize: '0.8rem' }}>{option.label}</Typography>}
+                                label={<Typography variant="body2"
+                                                   sx={{fontSize: '0.8rem'}}>{option.label}</Typography>}
                             />
                         ))}
                     </FormGroup>
@@ -135,7 +138,7 @@ interface RadioBoxCardProps {
     selectedValue: string;
     onChange: (value: string) => void;
 }
-export const RadioBoxCard: React.FC<RadioBoxCardProps> = ({ title, options, selectedValue, onChange }) => {
+export const RadioBoxCard: React.FC<RadioBoxCardProps> = ({title, options, selectedValue, onChange}) => {
     const [expanded, setExpanded] = useState(false);
 
     const handleExpandClick = () => {
@@ -143,10 +146,10 @@ export const RadioBoxCard: React.FC<RadioBoxCardProps> = ({ title, options, sele
     };
 
     return (
-        <Card sx={{ minWidth: 200, padding: 0.5, borderRadius: 1, boxShadow: 1 }}>
-            <CardContent sx={{ 'padding-bottom': '0px !important', padding: '4px 8px' }} className="space-y-2">
+        <Card sx={{minWidth: 200, padding: 0.5, borderRadius: 1, boxShadow: 1}}>
+            <CardContent sx={{'padding-bottom': '0px !important', padding: '4px 8px'}} className="space-y-2">
                 <div className="flex items-center justify-between">
-                    <Typography variant="body2" component="div" gutterBottom sx={{ fontWeight: 'bold' }}>
+                    <Typography variant="body2" component="div" gutterBottom sx={{fontWeight: 'bold'}}>
                         {title}
                     </Typography>
                     <IconButton onClick={handleExpandClick} size="small">
@@ -164,13 +167,15 @@ export const RadioBoxCard: React.FC<RadioBoxCardProps> = ({ title, options, sele
                         <RadioGroup
                             value={selectedValue}
                             onChange={(e) => onChange(e.target.value)}
+                            sx={{padding: '0px 10px'}}
                         >
                             {options.map((option) => (
                                 <FormControlLabel
                                     key={option.value}
                                     value={option.value}
-                                    control={<Radio size="small" />}
-                                    label={<Typography variant="body2" sx={{ fontSize: '0.8rem' }}>{option.label}</Typography>}
+                                    control={<Radio size="small"/>}
+                                    label={<Typography variant="body2"
+                                                       sx={{fontSize: '0.8rem'}}>{option.label}</Typography>}
                                 />
                             ))}
                         </RadioGroup>
@@ -185,7 +190,8 @@ interface ProductCardProps {
     product: ProductDTO
     onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
-export const SalesProductCard: React.FC<ProductCardProps> = ({product, onClick }) => {
+
+export const SalesProductCard: React.FC<ProductCardProps> = ({product, onClick}) => {
     return (
         <Card
             onClick={onClick}
@@ -221,9 +227,9 @@ export const SalesProductCard: React.FC<ProductCardProps> = ({product, onClick }
                 }}
             >
                 {product.image ? (
-                    <img src={product.image} alt={""} style={{ width: '50%', height: 'auto' }} />
+                    <img src={product.image} alt={""} style={{width: '50%', height: 'auto'}}/>
                 ) : (
-                    <RestaurantIcon sx={{ fontSize: 30, color: '#90CAF9' }} />
+                    <RestaurantIcon sx={{fontSize: 30, color: '#90CAF9'}}/>
                 )}
                 {/* Price with White Background and Border */}
                 <div
@@ -289,6 +295,7 @@ interface OrderProductCardProps {
     onQuantityChange: (newQuantity: number) => void;
     onDelete: () => void;
 }
+
 export const OrderProductCard: React.FC<OrderProductCardProps> = ({
                                                                       index,
                                                                       name,
@@ -296,7 +303,8 @@ export const OrderProductCard: React.FC<OrderProductCardProps> = ({
                                                                       quantity,
                                                                       price,
                                                                       onQuantityChange,
-                                                                      onDelete,}) => {
+                                                                      onDelete,
+                                                                  }) => {
     const handleIncrement = () => {
         onQuantityChange(quantity + 1); // Notify parent of increment
     };
@@ -383,7 +391,7 @@ export const OrderProductCard: React.FC<OrderProductCardProps> = ({
                                 minWidth: '24px',
                             }}
                         >
-                            <RemoveIcon fontSize="small" />
+                            <RemoveIcon fontSize="small"/>
                         </IconButton>
                         <Typography
                             variant="body2"
@@ -413,7 +421,7 @@ export const OrderProductCard: React.FC<OrderProductCardProps> = ({
                                 minWidth: '24px',
                             }}
                         >
-                            <AddIcon fontSize="small" />
+                            <AddIcon fontSize="small"/>
                         </IconButton>
                     </ButtonGroup>
                 </div>
@@ -452,7 +460,7 @@ export const OrderProductCard: React.FC<OrderProductCardProps> = ({
                             flexShrink: 0,
                         }}
                     >
-                        <DeleteOutlineIcon fontSize="small" />
+                        <DeleteOutlineIcon fontSize="small"/>
                     </IconButton>
                 </div>
             </div>
@@ -467,12 +475,14 @@ interface CookingProductCardProps {
     onProcessOrder: () => void;
     onDelete: (productIndex: number) => void;
 }
+
 export const CookingProductCard: React.FC<CookingProductCardProps> = ({
                                                                           index,
                                                                           order,
                                                                           onProcessProduct,
                                                                           onProcessOrder,
-                                                                          onDelete}) => {
+                                                                          onDelete
+                                                                      }) => {
     const [collapsed, setCollapsed] = useState(true);
 
     const toggleCollapse = () => {
