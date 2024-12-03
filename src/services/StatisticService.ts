@@ -2,7 +2,7 @@ import {DateRange, ResultSaleTodayDTO, RevenueChartDTO, TopProductDTO} from "../
 import {STATISTIC_API} from "./base-service/apiEndpoints.ts";
 import axiosInstance from "./base-service/axiosConfig.ts";
 import {Dayjs} from "dayjs";
-import {StatisticSaleDTO} from "../dtos/StatisticSaleDTO.ts";
+import {StatisticProductDTO, StatisticSaleDTO} from "../dtos/StatisticSaleDTO.ts";
 
 export const StatisticService = {
     getResultSaleToday: async (): Promise<ResultSaleTodayDTO> => {
@@ -62,6 +62,29 @@ export const StatisticService = {
             const response = await axiosInstance.get(`${STATISTIC_API.GET_STATISTICAL_REPORT_SALE}?${query}`);
             console.log(response);
             const data = StatisticSaleDTO.fromJSON(response.data.data);
+            console.log(data);
+            return data;
+        }
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
+    },
+
+    getDataStatisticalReportProduct: async (startDate: Dayjs, endDate: Dayjs, branchId: string, categoryId: string): Promise<StatisticProductDTO> => {
+        try {
+            const dateRange = new DateRange(startDate, endDate);
+            let query = new URLSearchParams(dateRange.convertToQueryObject()).toString();
+            if (branchId !== "") {
+                query += `&branchId=${branchId}`;
+            }
+            if (categoryId !== "") {
+                query += `&categoryId=${categoryId}`;
+            }
+
+            const response = await axiosInstance.get(`${STATISTIC_API.GET_STATISTICAL_REPORT_PRODUCT}?${query}`);
+            console.log(response);
+            const data = StatisticProductDTO.fromJSON(response.data.data);
             console.log(data);
             return data;
         }

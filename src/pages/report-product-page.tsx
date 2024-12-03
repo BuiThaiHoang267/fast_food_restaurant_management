@@ -1,40 +1,86 @@
 ﻿import {Typography} from "@mui/material";
-import {CheckBoxCard, RadioBoxCard} from "../components/card.tsx";
+import { RadioBoxCard} from "../components/card.tsx";
 import CardTimeOrder from "../components/card-time-order.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import dayjs, {Dayjs} from "dayjs";
-import {timeConverter} from "../utils/TimeElapsedConverter.ts";
-import {bg_blue_500} from "../common/constant.ts";
+import {bg_blue_500, color_green_primary} from "../common/constant.ts";
 import {BarChart} from "@mui/x-charts";
+import {BranchService} from "../services/BranchService.ts";
+import {CategoryService} from "../services/CategoryService.ts";
+import {StatisticService} from "../services/StatisticService.ts";
+import {StatisticProductDTO} from "../dtos/StatisticSaleDTO.ts";
+import {AxisDTO} from "../dtos/ResultSaleTodayDTO.ts";
 
-
-interface ReportProductFilter {
-    branch: string,
-    categories: number[],
-    startDate: string,
-    endDate: string
-}
 const ReportProductPage = () => {
     const reportOptions = [
-        {label: "Bán hàng", value: "sale"},
+        {label: "Doanh thu", value: "revenue"},
         {label: "Lợi nhuận", value: "profit"},
-    ]
-    const branchFilters = [
-        {label: "Chi nhánh trung tâm", value: "0"},
-        {label: "Chi nhánh 1", value: "1"},
+        {label: "Số lượng bán", value: "sale"},
     ]
 
-    const [reportOption, setReportOption] = useState<string>("sale");
-    const [categoryFilter, setCategoryFilter] = useState<{id: number, label: string, checked: boolean}[]>([]);
+    const [reportOption, setReportOption] = useState<string>("revenue");
+    const [categoryFilter, setCategoryFilter] = useState<string>("");
     const [branchFilter, setBranchFilter] = useState<string>("");
-    const [reportFilter, setReportFilter] = useState<ReportProductFilter>(
-        {
-            branch: "",
-            categories: [],
-            startDate: dayjs().add(-1,'day').format('DD/MM/YYYY'),
-            endDate: dayjs().format('DD/MM/YYYY'),
+    const [startDate, setStartDate] = useState<Dayjs>(dayjs());
+    const [endDate, setEndDate] = useState<Dayjs>(dayjs());
+    const [branchFilters, setBranchFilters] = useState([
+        {label: "Tất cả", value: ""},
+    ]);
+    const [categoryFilters, setCategoryFilters] = useState([
+        {label: "Tất cả", value: ""},
+    ]);
+    const [data, setData] = useState<StatisticProductDTO>(new StatisticProductDTO(new AxisDTO([], []), new AxisDTO([], []), new AxisDTO([], [])));
+
+    useEffect(() => {
+        fetchAllBranch();
+        fetchAllCategory();
+        getTopProduct();
+    }, []);
+
+    useEffect(() => {
+        getTopProduct();
+    }, [startDate, endDate, branchFilter, categoryFilter]);
+
+    const getTopProduct = async () => {
+        try {
+            const response = await StatisticService.getDataStatisticalReportProduct(startDate, endDate, branchFilter, categoryFilter);
+            console.log(response);
+            setData(response);
         }
-    );
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    const fetchAllBranch = async () => {
+        try {
+            const response = await BranchService.getAllBranch();
+            console.log(response);
+            setBranchFilters((prevFilters) => {
+                return [...prevFilters, ...response.map((branch) => {
+                    return {label: branch.name, value: branch.id.toString()}
+                })]
+            });
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    const fetchAllCategory = async () => {
+        try {
+            const response = await CategoryService.getAllCategory();
+            console.log(response);
+            setCategoryFilters((prevFilters) => {
+                return [...prevFilters, ...response.map((category) => {
+                    return {label: category.name, value: category.id.toString()}
+                })]
+            });
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
 
     const handleReportOptionChange = (value: string) => {
         setReportOption(value);
@@ -42,31 +88,15 @@ const ReportProductPage = () => {
 
     const handleBranchCardChange = (value: string) => {
         setBranchFilter(value);
-        setReportFilter((prevFilter) => {
-            return {...prevFilter, branch: value}
-        });
     }
 
-    const handleCategoryCardChange = (id: number, label: string, checked: boolean) => {
-        setCategoryFilter((prevTypeFilter) =>
-            prevTypeFilter.map((type) =>
-                type.id === id ? { id, label , checked } : type
-            )
-        );
-        setReportFilter((prevFilter) => {
-            if(checked){
-                return {...prevFilter, categories: [...prevFilter.categories, id]}
-            }
-            else{
-                return {...prevFilter, categories: prevFilter.categories.filter((category) => category !== id)}
-            }
-        });
+    const handleCategoryCardChange = (value: string) => {
+        setCategoryFilter(value);
     }
 
     const handleChangeDateInReportFilter = (start: Dayjs, end: Dayjs) => {
-        setReportFilter((prevFilter) => {
-            return {...prevFilter, startDate: start.format('DD/MM/YYYY'), endDate: end.format('DD/MM/YYYY')}
-        });
+        setStartDate(start);
+        setEndDate(end);
     }
 
     return (
@@ -77,8 +107,9 @@ const ReportProductPage = () => {
                 </Typography>
                 <RadioBoxCard title="Mối quan tâm" options={reportOptions} onChange={handleReportOptionChange} selectedValue={reportOption} />
                 <RadioBoxCard title="Chi nhánh" options={branchFilters} onChange={handleBranchCardChange} selectedValue={branchFilter}/>
-                <CheckBoxCard title="Danh mục" options={categoryFilter} onChange={handleCategoryCardChange} />
                 <CardTimeOrder onChangeDate={(start, end) => handleChangeDateInReportFilter(start, end)}/>
+
+                <RadioBoxCard title="Danh mục" options={categoryFilters} onChange={handleCategoryCardChange} selectedValue={categoryFilter}/>
             </div>
             <div className="flex-grow flex-col pl-5 pr-10 py-5 space-y-2">
                 <div
@@ -98,24 +129,68 @@ const ReportProductPage = () => {
                         {reportOption === "profit" && "Lợi nhuận cao nhất"}
                     </span>
 
-                    <BarChart
-                        yAxis={[
-                            {
-                                scaleType: 'band',
-                                data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                                categoryGapRatio: 0.3, // Khoảng cách giữa các cột
-                            },
-                        ]}
-                        series={[
-                            {
-                                data: [2122700, 3000000, 400000, 510000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000],
-                                color: bg_blue_500, // Màu cột
-                            },
-                        ]}
-                        layout="horizontal" // Biểu đồ ngang
-                        height={500} // Chiều cao biểu đồ
-                        margin={{top: 20, bottom: 20, left: 100, right: 20}} // Khoảng cách các cạnh
-                    />
+                    {reportOption === "revenue" &&
+                        <BarChart
+                            yAxis={[
+                                {
+                                    scaleType: 'band',
+                                    data: data.topProductByRevenue.labels,
+                                    categoryGapRatio: 0.3, // Khoảng cách giữa các cột
+                                },
+                            ]}
+                            series={[
+                                {
+                                    data: data.topProductByRevenue.data,
+                                    color: bg_blue_500, // Màu cột
+                                },
+                            ]}
+                            layout="horizontal" // Biểu đồ ngang
+                            height={500} // Chiều cao biểu đồ
+                            margin={{top: 20, bottom: 20, left: 170, right: 20}} // Khoảng cách các cạnh
+                        />
+                    }
+
+                    {reportOption === "profit" &&
+                        <BarChart
+                            yAxis={[
+                                {
+                                    scaleType: 'band',
+                                    data: data.topProductByProfit.labels,
+                                    categoryGapRatio: 0.3, // Khoảng cách giữa các cột
+                                },
+                            ]}
+                            series={[
+                                {
+                                    data: data.topProductByProfit.data,
+                                    color: color_green_primary, // Màu cột
+                                },
+                            ]}
+                            layout="horizontal" // Biểu đồ ngang
+                            height={500} // Chiều cao biểu đồ
+                            margin={{top: 20, bottom: 20, left: 170, right: 20}} // Khoảng cách các cạnh
+                        />
+                    }
+
+                    {reportOption === "sale" &&
+                        <BarChart
+                            yAxis={[
+                                {
+                                    scaleType: 'band',
+                                    data: data.topProductBySale.labels,
+                                    categoryGapRatio: 0.3, // Khoảng cách giữa các cột
+                                },
+                            ]}
+                            series={[
+                                {
+                                    data: data.topProductBySale.data,
+                                    color: "orange", // Màu cột
+                                },
+                            ]}
+                            layout="horizontal" // Biểu đồ ngang
+                            height={500} // Chiều cao biểu đồ
+                            margin={{top: 20, bottom: 20, left: 170, right: 20}} // Khoảng cách các cạnh
+                        />
+                    }
 
                 </div>
             </div>
