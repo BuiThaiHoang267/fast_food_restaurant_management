@@ -118,43 +118,6 @@ const ReportProductPage = () => {
                     />
 
                 </div>
-
-                <div
-                    className={"flex flex-col"}
-                    style=
-                        {{
-                            marginTop: "16px",
-                            backgroundColor: "white",
-                            borderRadius: "8px",
-                            padding: "16px",
-                            boxShadow: "0 0 8px 0 rgba(0,0,0,0.1)",
-                            alignItems: "center"
-                        }}
-                >
-                    <span style={{fontSize: "1rem", fontWeight: "normal"}}>
-                        {reportOption === "sale" && "Top 10 sản phẩm bán chạy theo số lượng"}
-                        {reportOption === "profit" && "Top 10 hàng hoá theo tỷ suất"}
-                    </span>
-
-                    <BarChart
-                        yAxis={[
-                            {
-                                scaleType: 'band',
-                                data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                                categoryGapRatio: 0.3, // Khoảng cách giữa các cột
-                            },
-                        ]}
-                        series={[
-                            {
-                                data: [2122700, 3000000, 400000, 510000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000],
-                                color: bg_blue_500, // Màu cột
-                            },
-                        ]}
-                        layout="horizontal" // Biểu đồ ngang
-                        height={500} // Chiều cao biểu đồ
-                        margin={{top: 20, bottom: 20, left: 100, right: 20}} // Khoảng cách các cạnh
-                    />
-                </div>
             </div>
         </div>
     );
