@@ -1,5 +1,5 @@
-import {IconButton, InputAdornment, Menu, MenuItem, TextField} from "@mui/material";
-import {bg_green_500, bg_green_600, color_black, color_white} from "../common/constant.ts";
+import {IconButton, InputAdornment, MenuItem, TextField} from "@mui/material";
+import {color_black, color_white} from "../common/constant.ts";
 import SearchIcon from "@mui/icons-material/Search";
 import React, {useState} from "react";
 import ProductDTO from "../dtos/ProductDTO.ts";
@@ -16,7 +16,7 @@ export const InputText: React.FC<InputTextProps> = ({ label, placeholder, value,
         <div className="flex items-center justify-between">
             <div className="text-sm font-bold">{label}</div>
             <TextField
-                variant="standard"
+                variant= "standard"
                 placeholder={placeholder}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}

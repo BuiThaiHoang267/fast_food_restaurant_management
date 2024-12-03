@@ -1,38 +1,78 @@
-﻿import {Typography} from "@mui/material";
+﻿import {Divider, Typography} from "@mui/material";
 import {RadioBoxCard} from "../components/card.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import CardTimeOrder from "../components/card-time-order.tsx";
 import dayjs, {Dayjs} from "dayjs";
 import {BarChart} from "@mui/x-charts";
-import {bg_blue_500, bg_green_500, bg_yellow_500} from "../common/constant.ts";
+import {
+    bg_blue_500,
+    bg_blue_600,
+    bg_green_500,
+    bg_grey_500,
+    bg_yellow_500, color_green_primary,
+    Error500,
+    success_500
+} from "../common/constant.ts";
 import {timeConverter} from "../utils/TimeElapsedConverter.ts";
+import {BranchService} from "../services/BranchService.ts";
+import {StatisticService} from "../services/StatisticService.ts";
+import {StatisticSaleDTO} from "../dtos/StatisticSaleDTO.ts";
+import {AxisDTO} from "../dtos/ResultSaleTodayDTO.ts";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import MovingIcon from "@mui/icons-material/Moving";
+import DescriptionIcon from "@mui/icons-material/Description";
 
-
-interface ReportSaleFilter {
-    branch: string,
-    startDate: string,
-    endDate: string
-}
 const ReportSalePage = () => {
     const reportOptions = [
         {label: "Thời gian", value: "time"},
         {label: "Lợi nhuận", value: "profit"},
         {label: "Chi nhánh", value: "branch"}
     ]
-    const branchFilters = [
-        {label: "Chi nhánh trung tâm", value: "0"},
-        {label: "Chi nhánh 1", value: "1"},
-    ]
-
     const [reportOption, setReportOption] = useState<string>("time")
     const [branchFilter, setBranchFilter] = useState<string>("");
-    const [reportFilter, setReportFilter] = useState<ReportSaleFilter>(
-        {
-            branch: "",
-            startDate: dayjs().add(-1,'day').format('DD/MM/YYYY'),
-            endDate: dayjs().format('DD/MM/YYYY'),
-        }
+    const [startDate, setStartDate] = useState<Dayjs>(dayjs());
+    const [endDate, setEndDate] = useState<Dayjs>(dayjs());
+    const [data, setData] = useState<StatisticSaleDTO>(
+        new StatisticSaleDTO(0, 0, 0, 0, [], [], [], [], new AxisDTO([], []))
     );
+
+    const [branchFilters, setBranchFilters] = useState([
+        {label: "Tất cả", value: ""},
+    ]);
+
+    useEffect(() => {
+        fetchAllBranch()
+        getReportSale()
+    }, []);
+
+    useEffect(() => {
+        getReportSale()
+    }, [startDate, endDate, branchFilter]);
+
+    const getReportSale = async () => {
+        try {
+            const response = await StatisticService.getDataStatisticalReportSale(branchFilter, startDate, endDate);
+            setData(response);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    const fetchAllBranch = async () => {
+        try {
+            const response = await BranchService.getAllBranch();
+            console.log(response);
+            setBranchFilters((prevFilters) => {
+                return [...prevFilters, ...response.map((branch) => {
+                    return {label: branch.name, value: branch.id.toString()}
+                })]
+            });
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
 
     const handleReportOptionChange = (value: string) => {
         setReportOption(value);
@@ -40,15 +80,12 @@ const ReportSalePage = () => {
 
     const handleBranchCardChange = (value: string) => {
         setBranchFilter(value);
-        setReportFilter((prevFilter) => {
-            return {...prevFilter, branch: value}
-        });
+
     }
 
     const handleChangeDateInReportFilter = (start: Dayjs, end: Dayjs) => {
-        setReportFilter((prevFilter) => {
-            return {...prevFilter, startDate: start.format('DD/MM/YYYY'), endDate: end.format('DD/MM/YYYY')}
-        });
+        setStartDate(start);
+        setEndDate(end);
     }
 
     return (
@@ -64,59 +101,179 @@ const ReportSalePage = () => {
                 <CardTimeOrder onChangeDate={(start, end) => handleChangeDateInReportFilter(start, end)}/>
             </div>
             <div className="flex-grow flex-col pl-5 pr-10 py-5 space-y-2">
+
+                <div className={'flex flex-col p-4'}
+                     style=
+                         {{
+                             marginTop: "48px",
+                             backgroundColor: "white",
+                             borderRadius: "4px",
+                             boxShadow: "0 0 8px 0 rgba(0,0,0,0.1)",
+                         }}>
+                    <span style={{fontSize: "1rem", fontWeight: "bold"}}>THỐNG KÊ TỔNG QUAN</span>
+                    <div
+                        className={'flex flex-row flex-1 items-center pt-2'}
+                    >
+                        <div className={'flex flex-row flex-1 items-center'}>
+                            <div
+                                className={'flex flex-row items-center justify-center'}
+                                style={{height: 36, width: 36, borderRadius: 36, backgroundColor: bg_blue_600}}
+                            >
+                                <AttachMoneyIcon fontSize="medium" fontWeight='bold' sx={{color: 'white'}}/>
+                            </div>
+                            <div className={'flex-1 flex flex-col pl-4'}>
+                                <span
+                                    style={{fontSize: "0.9rem", fontWeight: "bold", color: bg_grey_500}}>Doanh số</span>
+                                <div className={'flex flex-row items-center'}>
+                                    <div style={{
+                                        fontSize: "1.3rem",
+                                        color: bg_blue_600
+                                    }}>{data.totalRevenue.toLocaleString()}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <Divider
+                            orientation="vertical"
+                            flexItem
+                            sx={{margin: '0 16px'}}
+                        />
+
+                        <div className={'flex flex-row flex-1 items-center'}>
+                            <div
+                                className={'flex flex-row items-center justify-center'}
+                                style={{height: 36, width: 36, borderRadius: 36, backgroundColor: color_green_primary}}
+                            >
+                                <MovingIcon fontSize="medium" fontWeight='bold' sx={{color: 'white'}}/>
+                            </div>
+                            <div className={'flex-1 flex flex-col pl-4'}>
+                                <span style={{
+                                    fontSize: "0.9rem",
+                                    fontWeight: "bold",
+                                    color: bg_grey_500
+                                }}>Lợi nhuận</span>
+                                <div className={'flex flex-row items-center'}>
+                                    <div style={{
+                                        fontSize: "1.3rem",
+                                        color: color_green_primary
+                                    }}>{data.totalProfit.toLocaleString()}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <Divider
+                            orientation="vertical"
+                            flexItem
+                            sx={{margin: '0 16px'}}
+                        />
+
+                        <div className={'flex flex-row flex-1 items-center'}>
+                            <div
+                                className={'flex flex-row items-center justify-center'}
+                                style={{height: 36, width: 36, borderRadius: 36, backgroundColor: 'orange'}}
+                            >
+                                <MovingIcon fontSize="medium" fontWeight='bold' sx={{color: 'white'}}/>
+                            </div>
+                            <div className={'flex-1 flex flex-col pl-4'}>
+                                <span style={{
+                                    fontSize: "0.9rem",
+                                    fontWeight: "bold",
+                                    color: bg_grey_500
+                                }}>Lợi nhuận</span>
+                                <div className={'flex flex-row items-center'}>
+                                    <div style={{
+                                        fontSize: "1.3rem",
+                                        color: 'orange'
+                                    }}>{data.totalProfit.toLocaleString()}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <Divider
+                            orientation="vertical"
+                            flexItem
+                            sx={{margin: '0 16px'}}
+                        />
+
+                        <div className={'flex flex-row flex-1 items-center'}>
+                            <div
+                                className={'flex flex-row items-center justify-center'}
+                                style={{height: 36, width: 36, borderRadius: 36, backgroundColor: Error500}}
+                            >
+                                <DescriptionIcon fontSize="small" fontWeight='bold' sx={{color: 'white'}}/>
+                            </div>
+                            <div className={'flex-1 flex flex-col pl-4'}>
+                                <span
+                                    style={{fontSize: "0.9rem", fontWeight: "bold", color: bg_grey_500}}>Hóa đơn</span>
+                                <div className={'flex flex-row items-center'}>
+                                    <div style={{fontSize: "1.3rem", color: Error500}}>{data.totalOrder}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
                 <div
                     className={"flex flex-col"}
                     style=
                         {{
                             marginTop: "16px",
                             backgroundColor: "white",
-                            borderRadius: "8px",
+                            borderRadius: "4px",
                             padding: "16px",
                             boxShadow: "0 0 8px 0 rgba(0,0,0,0.1)",
                             alignItems: "center"
                         }}
                 >
-                    <span style={{fontSize: "1rem", fontWeight: "normal"}}>Doanh Số {timeConverter(reportFilter.startDate, reportFilter.endDate)}</span>
+                    <span style={{
+                        fontSize: "1rem",
+                        fontWeight: "normal"
+                    }}>Doanh Số {timeConverter(startDate.format("DD/MM/YYYY"), endDate.format("DD/MM/YYYY"), true)}</span>
                     {reportOption === "time" &&
                         <BarChart
                             series={[
                                 {
-                                    data: [2122700, 3000000, 400000, 510000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000],
+                                    data: data.revenue,
+                                    label: "Doanh số",
                                     color: bg_blue_500
                                 },
                             ]}
                             height={400}
                             xAxis={[{
-                                data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12],
+                                data: data.labels,
                                 scaleType: 'band',
                                 categoryGapRatio: 0.6,
                             }]}
-                            margin={{top: 10, bottom: 30, left: 65, right: 10}}
+                            margin={{top: 40, bottom: 30, left: 65, right: 10}}
                         ></BarChart>
                     }
                     {reportOption === "profit" &&
                         <BarChart
                             series={[
                                 {
-                                    data: [2122700, 3000000, 400000, 510000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000],
+                                    data: data.revenue,
+                                    label: "Doanh số",
                                     color: bg_blue_500
                                 },
                                 {
-                                    data: [2122700, 3000000, 400000, 510000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000],
+                                    data: data.profit,
+                                    label: "Lợi nhuận",
                                     color: bg_green_500
                                 },
                                 {
-                                    data: [2122700, 3000000, 400000, 510000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000],
+                                    data: data.cost,
+                                    label: "Chi phí",
                                     color: bg_yellow_500
                                 },
                             ]}
                             height={400}
                             xAxis={[{
-                                data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12],
+                                data: data.labels,
                                 scaleType: 'band',
                                 categoryGapRatio: 0.6,
                             }]}
-                            margin={{top: 10, bottom: 30, left: 65, right: 10}}
+                            margin={{top: 40, bottom: 30, left: 65, right: 10}}
                         ></BarChart>
                     }
                     {reportOption === "branch" &&
@@ -124,19 +281,20 @@ const ReportSalePage = () => {
                             yAxis={[
                                 {
                                     scaleType: 'band',
-                                    data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                                    data: data.revenueByBranch.labels,
                                     categoryGapRatio: 0.3, // Khoảng cách giữa các cột
                                 },
                             ]}
                             series={[
                                 {
-                                    data: [2122700, 3000000, 400000, 510000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000],
+                                    data: data.revenueByBranch.data,
+                                    label: "Doanh số",
                                     color: bg_blue_500, // Màu cột
                                 },
                             ]}
                             layout="horizontal" // Biểu đồ ngang
                             height={500} // Chiều cao biểu đồ
-                            margin={{top: 20, bottom: 20, left: 100, right: 20}} // Khoảng cách các cạnh
+                            margin={{top: 40, bottom: 20, left: 100, right: 20}} // Khoảng cách các cạnh
                         />
                     }
                 </div>

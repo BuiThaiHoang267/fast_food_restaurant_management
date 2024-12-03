@@ -10,7 +10,7 @@ import ArrowDownwardTwoToneIcon from '@mui/icons-material/ArrowDownwardTwoTone';
 import ArrowUpwardTwoToneIcon from '@mui/icons-material/ArrowUpwardTwoTone';
 import MovingIcon from '@mui/icons-material/Moving';
 import DescriptionIcon from '@mui/icons-material/Description';
-import {ResultSaleTodayDTO} from "../dtos/Order/ResultSaleTodayDTO.ts";
+import {ResultSaleTodayDTO} from "../dtos/ResultSaleTodayDTO.ts";
 import {useEffect, useState} from "react";
 import {StatisticService} from "../services/StatisticService.ts";
 

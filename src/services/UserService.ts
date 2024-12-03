@@ -2,6 +2,7 @@
 import axiosInstance from "./base-service/axiosConfig.ts";
 import {jwtDecode} from "jwt-decode";
 import {ClaimTypes} from "../common/claim-types.ts";
+import {UserDTO} from "../dtos/UserDTO.ts";
 
 export const UserService = {
     login: async (username: string, password: string) : Promise<string> => {
@@ -47,5 +48,72 @@ export const UserService = {
             console.error(error);
             throw error;
         }
+    },
+
+    getUserByFilter: async (filter: UserFilter) : Promise<UserDTO[]> => {
+        try {
+            const queryObject = Object.entries(filter).reduce((acc, [key, value]) => {
+                acc[key] = value != null ? String(value) : '';
+                return acc;
+            }, {} as Record<string, string>);
+
+            const query = new URLSearchParams(queryObject).toString();
+
+            const response = await axiosInstance.get(`${USER_API.GET_USER_BY_FILTER}?${query}`);
+            console.log(response);
+            const data = response.data.data.map(UserDTO.fromJson);
+            console.log(data);
+            return data;
+        }
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
+    },
+
+    register: async (user: UserDTO) : Promise<UserDTO> => {
+        try {
+            const response = await axiosInstance.post(USER_API.REGISTER, user);
+            console.log(response);
+            const data = response.data.data;
+            console.log(data);
+            return data;
+        }
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
+    },
+
+    updateUser: async (user: UserDTO) => {
+        try {
+            const response = await axiosInstance.patch(USER_API.UPDATE_USER(user.id), user);
+            console.log(response);
+            const data = response.data.data;
+            console.log(data);
+            return data;
+        }
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
+    },
+
+    deleteUser: async (id: number) => {
+        try {
+            const response = await axiosInstance.delete(USER_API.DELETE_USER(id));
+            console.log(response);
+            const data = response.data.data;
+            console.log(data);
+        }
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
     }
+}
+
+export interface UserFilter {
+    branches: number[],
+    roles: number[],
 }

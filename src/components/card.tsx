@@ -139,7 +139,7 @@ interface RadioBoxCardProps {
     onChange: (value: string) => void;
 }
 export const RadioBoxCard: React.FC<RadioBoxCardProps> = ({title, options, selectedValue, onChange}) => {
-    const [expanded, setExpanded] = useState(false);
+    const [expanded, setExpanded] = useState(true);
 
     const handleExpandClick = () => {
         setExpanded((prevExpanded) => !prevExpanded);

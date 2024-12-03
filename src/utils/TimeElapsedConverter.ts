@@ -24,10 +24,14 @@ export function formatElapsedTime(date: Date): string {
     }
 }
 
-export const timeConverter = (startDateStr: string, endDateStr: string): string => {
+export const timeConverter = (startDateStr: string, endDateStr: string, isChooseDateRange = false): string => {
     const today = dayjs();
     const start = dayjs(startDateStr, 'DD/MM/YYYY');
     const end = dayjs(endDateStr, 'DD/MM/YYYY');
+
+    if(isChooseDateRange) {
+        return startDateStr + " - " + endDateStr;
+    }
 
     // Check if both start and end are today
     if (start.isSame(today, 'day') && end.isSame(today, 'day')) {
