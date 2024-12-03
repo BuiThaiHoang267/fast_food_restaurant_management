@@ -28,3 +28,20 @@ export class StatisticSaleDTO {
         );
     }
 }
+
+export class StatisticProductDTO {
+    constructor(
+        public topProductByRevenue: AxisDTO,
+        public topProductBySale: AxisDTO,
+        public topProductByProfit: AxisDTO,
+    ) {
+    }
+
+    static fromJSON(data: any): StatisticProductDTO {
+        return new StatisticProductDTO(
+            AxisDTO.fromJSON(data.topProductByRevenue),
+            AxisDTO.fromJSON(data.topProductBySale),
+            AxisDTO.fromJSON(data.topProductByProfit),
+        );
+    }
+}

@@ -41,6 +41,7 @@ export const STATISTIC_API = {
     GET_REVENUE_CHART: '/statistic/revenue-chart',
     GET_TOP_PRODUCT: '/statistic/top-product',
     GET_STATISTICAL_REPORT_SALE: '/statistical-report/sale',
+    GET_STATISTICAL_REPORT_PRODUCT: '/statistical-report/product',
 }
 
 export const ROLE_API = {
