@@ -21,10 +21,10 @@ export const InputDurationDropdown: React.FC<InputDurationDropdownProps> = ({onC
             {label: 'Hôm nay', startDate: dayjs(), endDate: dayjs()},
             {label: 'Hôm qua', startDate: dayjs().subtract(1, 'day'), endDate: dayjs().subtract(1, 'day')},
             {label: '7 ngày qua', startDate: dayjs().subtract(7, 'day'), endDate: dayjs()},
-            {label: '30 ngày qua', startDate: dayjs().subtract(30, 'day'), endDate: dayjs()},
+            {label: '30 ngày qua', startDate: dayjs().subtract(29, 'day'), endDate: dayjs()},
             {label: 'Tuần này', startDate: dayjs().startOf('week'), endDate: dayjs()},
             {label: 'Tháng này', startDate: dayjs().startOf('month'), endDate: dayjs()},
-            {label: 'Toàn thời gian', startDate: dayjs(0), endDate: dayjs()},
+            {label: 'Toàn thời gian', startDate: dayjs("2024-11-15"), endDate: dayjs()},
         ]
     );
 

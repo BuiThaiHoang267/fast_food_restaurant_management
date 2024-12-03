@@ -4,7 +4,7 @@ import {bg_blue_500} from "../common/constant.ts";
 import CardRecentlyAction from "../components/card-recently-action.tsx";
 import dayjs, {Dayjs} from "dayjs";
 import {StatisticService} from "../services/StatisticService.ts";
-import {AxisDTO, RevenueChartDTO, TopProductDTO} from "../dtos/Order/ResultSaleTodayDTO.ts";
+import {AxisDTO, RevenueChartDTO, TopProductDTO} from "../dtos/ResultSaleTodayDTO.ts";
 import {InputDurationDropdown} from "../components/input-duration-dropdown.tsx";
 import {Box, Tab, Tabs} from "@mui/material";
 import {useEffect, useState} from "react";

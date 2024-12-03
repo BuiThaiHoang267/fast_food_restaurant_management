@@ -40,6 +40,7 @@ export const STATISTIC_API = {
     GET_STATISTIC_RESULT_TODAY: '/statistic/result-today',
     GET_REVENUE_CHART: '/statistic/revenue-chart',
     GET_TOP_PRODUCT: '/statistic/top-product',
+    GET_STATISTICAL_REPORT_SALE: '/statistical-report/sale',
 }
 
 export const ROLE_API = {

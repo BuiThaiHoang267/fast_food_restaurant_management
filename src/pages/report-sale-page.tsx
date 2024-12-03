@@ -1,38 +1,67 @@
 ﻿import {Typography} from "@mui/material";
 import {RadioBoxCard} from "../components/card.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import CardTimeOrder from "../components/card-time-order.tsx";
 import dayjs, {Dayjs} from "dayjs";
 import {BarChart} from "@mui/x-charts";
 import {bg_blue_500, bg_green_500, bg_yellow_500} from "../common/constant.ts";
 import {timeConverter} from "../utils/TimeElapsedConverter.ts";
+import {BranchService} from "../services/BranchService.ts";
+import {StatisticService} from "../services/StatisticService.ts";
+import {StatisticSaleDTO} from "../dtos/StatisticSaleDTO.ts";
+import {AxisDTO} from "../dtos/ResultSaleTodayDTO.ts";
 
-
-interface ReportSaleFilter {
-    branch: string,
-    startDate: string,
-    endDate: string
-}
 const ReportSalePage = () => {
     const reportOptions = [
         {label: "Thời gian", value: "time"},
         {label: "Lợi nhuận", value: "profit"},
         {label: "Chi nhánh", value: "branch"}
     ]
-    const branchFilters = [
-        {label: "Chi nhánh trung tâm", value: "0"},
-        {label: "Chi nhánh 1", value: "1"},
-    ]
-
     const [reportOption, setReportOption] = useState<string>("time")
     const [branchFilter, setBranchFilter] = useState<string>("");
-    const [reportFilter, setReportFilter] = useState<ReportSaleFilter>(
-        {
-            branch: "",
-            startDate: dayjs().add(-1,'day').format('DD/MM/YYYY'),
-            endDate: dayjs().format('DD/MM/YYYY'),
-        }
+    const [startDate, setStartDate] = useState<Dayjs>(dayjs());
+    const [endDate, setEndDate] = useState<Dayjs>(dayjs());
+    const [data, setData] = useState<StatisticSaleDTO>(
+        new StatisticSaleDTO(0, 0, 0, 0, [], [], [], [], new AxisDTO([], []))
     );
+
+    const [branchFilters, setBranchFilters] = useState([
+        {label: "Tất cả", value: ""},
+    ]);
+
+    useEffect(() => {
+        fetchAllBranch()
+        getReportSale()
+    }, []);
+
+    useEffect(() => {
+        getReportSale()
+    }, [startDate, endDate, branchFilter]);
+
+    const getReportSale = async () => {
+        try {
+            const response = await StatisticService.getDataStatisticalReportSale(branchFilter, startDate, endDate);
+            setData(response);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    const fetchAllBranch = async () => {
+        try {
+            const response = await BranchService.getAllBranch();
+            console.log(response);
+            setBranchFilters((prevFilters) => {
+                return [...prevFilters, ...response.map((branch) => {
+                    return {label: branch.name, value: branch.id.toString()}
+                })]
+            });
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
 
     const handleReportOptionChange = (value: string) => {
         setReportOption(value);
@@ -40,15 +69,12 @@ const ReportSalePage = () => {
 
     const handleBranchCardChange = (value: string) => {
         setBranchFilter(value);
-        setReportFilter((prevFilter) => {
-            return {...prevFilter, branch: value}
-        });
+
     }
 
     const handleChangeDateInReportFilter = (start: Dayjs, end: Dayjs) => {
-        setReportFilter((prevFilter) => {
-            return {...prevFilter, startDate: start.format('DD/MM/YYYY'), endDate: end.format('DD/MM/YYYY')}
-        });
+        setStartDate(start);
+        setEndDate(end);
     }
 
     return (
@@ -76,47 +102,51 @@ const ReportSalePage = () => {
                             alignItems: "center"
                         }}
                 >
-                    <span style={{fontSize: "1rem", fontWeight: "normal"}}>Doanh Số {timeConverter(reportFilter.startDate, reportFilter.endDate)}</span>
+                    <span style={{fontSize: "1rem", fontWeight: "normal"}}>Doanh Số {timeConverter(startDate.format("DD/MM/YYYY"), endDate.format("DD/MM/YYYY"),true)}</span>
                     {reportOption === "time" &&
                         <BarChart
                             series={[
                                 {
-                                    data: [2122700, 3000000, 400000, 510000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000],
+                                    data: data.revenue,
+                                    label: "Doanh số",
                                     color: bg_blue_500
                                 },
                             ]}
                             height={400}
                             xAxis={[{
-                                data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12],
+                                data: data.labels,
                                 scaleType: 'band',
                                 categoryGapRatio: 0.6,
                             }]}
-                            margin={{top: 10, bottom: 30, left: 65, right: 10}}
+                            margin={{top: 40, bottom: 30, left: 65, right: 10}}
                         ></BarChart>
                     }
                     {reportOption === "profit" &&
                         <BarChart
                             series={[
                                 {
-                                    data: [2122700, 3000000, 400000, 510000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000],
+                                    data: data.revenue,
+                                    label: "Doanh số",
                                     color: bg_blue_500
                                 },
                                 {
-                                    data: [2122700, 3000000, 400000, 510000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000],
+                                    data: data.profit,
+                                    label: "Lợi nhuận",
                                     color: bg_green_500
                                 },
                                 {
-                                    data: [2122700, 3000000, 400000, 510000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000],
+                                    data: data.cost,
+                                    label: "Chi phí",
                                     color: bg_yellow_500
                                 },
                             ]}
                             height={400}
                             xAxis={[{
-                                data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12],
+                                data: data.labels,
                                 scaleType: 'band',
                                 categoryGapRatio: 0.6,
                             }]}
-                            margin={{top: 10, bottom: 30, left: 65, right: 10}}
+                            margin={{top: 40, bottom: 30, left: 65, right: 10}}
                         ></BarChart>
                     }
                     {reportOption === "branch" &&
@@ -124,19 +154,20 @@ const ReportSalePage = () => {
                             yAxis={[
                                 {
                                     scaleType: 'band',
-                                    data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                                    data: data.revenueByBranch.labels,
                                     categoryGapRatio: 0.3, // Khoảng cách giữa các cột
                                 },
                             ]}
                             series={[
                                 {
-                                    data: [2122700, 3000000, 400000, 510000, 7000000, 7000000, 7000000, 7000000, 7000000, 7000000],
+                                    data: data.revenueByBranch.data,
+                                    label: "Doanh số",
                                     color: bg_blue_500, // Màu cột
                                 },
                             ]}
                             layout="horizontal" // Biểu đồ ngang
                             height={500} // Chiều cao biểu đồ
-                            margin={{top: 20, bottom: 20, left: 100, right: 20}} // Khoảng cách các cạnh
+                            margin={{top: 40, bottom: 20, left: 100, right: 20}} // Khoảng cách các cạnh
                         />
                     }
                 </div>
