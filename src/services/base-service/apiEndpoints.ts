@@ -14,6 +14,8 @@ export const USER_API = {
     LOGIN: '/user/login',
     REGISTER: '/user/register',
     GET_USER_BY_FILTER: '/user',
+    UPDATE_USER: (id: number) => `/user/update/${id}`,
+    DELETE_USER: (id: number) => `/user/${id}`,
 }
 
 export const ORDER_API = {

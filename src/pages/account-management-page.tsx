@@ -21,9 +21,7 @@ import {
     success_700
 } from "../common/constant.ts";
 import MenuFieldTable, {MenuFieldProps} from "../components/menu-field.tsx";
-import CardTimeOrder from "../components/card-time-order.tsx";
 import {BranchService} from "../services/BranchService.ts";
-import dayjs, {Dayjs} from "dayjs";
 import {RoleService} from "../services/RoleService.ts";
 import {UserFilter, UserService} from "../services/UserService.ts";
 import {UserDTO} from "../dtos/UserDTO.ts";
@@ -45,19 +43,18 @@ const AccountManagementPage = () => {
         { label: 'Tên chi nhánh', name: 'branchName', visible: true },
 
     ]);
-    const [openDialogAdd, setOpenDialogAdd] = useState(true);
+    const [openDialogAdd, setOpenDialogAdd] = useState(false);
+    const [openDialogDetail, setOpenDialogDetail] = useState(false);
     const [roleFilter, setRoleFilter] = useState<{id: number, label: string, checked: boolean}[]>([]);
     const [branchFilter, setBranchFilter] = useState<{id: number, label: string, checked: boolean}[]>([]);
     const [users, setUsers] = useState<UserDTO[]>([]);
     const [userDetail, setUserDetail] = useState<UserDTO>(
-        new UserDTO(0, '', '', '', '', 0, '', '', 0, '', true)
+        new UserDTO(0, '','' , '', '', '', 0, '', '', 0, '', true)
     );
     const [userFilter, setUserFilter] = useState<UserFilter>(
         {
             branches: [],
             roles: [],
-            startDate: dayjs().format('DD/MM/YYYY'),
-            endDate: dayjs().format('DD/MM/YYYY'),
         }
     );
 
@@ -109,8 +106,20 @@ const AccountManagementPage = () => {
         }
     }
 
-    const handleCloseDialogAdd = () => {
+    const handleCloseDialogAdd = (isRerender: boolean) => {
+        if(isRerender)
+        {
+            fetchUserByFilters();
+        }
         setOpenDialogAdd(false);
+    }
+
+    const handleCloseDialogDetail = (isRerender: boolean) => {
+        if(isRerender)
+        {
+            fetchUserByFilters();
+        }
+        setOpenDialogDetail(false);
     }
 
     const handleRoleCardChange = (id: number, label: string, checked: boolean) => {
@@ -164,9 +173,9 @@ const AccountManagementPage = () => {
         });
     };
     // Custom action when clicking on a row (other than the checkbox)
-    const handleRowClick = (order: UserDTO) => {
-        console.log(order);
-        setUserDetail(order);
+    const handleRowClick = (user: UserDTO) => {
+        setUserDetail(user);
+        setOpenDialogDetail(true);
     };
     // Handler for pagination change
     const handleChangePage = (e: unknown, newPage: number) => {
@@ -195,12 +204,6 @@ const AccountManagementPage = () => {
         );
     }
 
-    const handleChangeDateInOrderFilter = (start: Dayjs, end: Dayjs) => {
-        setUserFilter((prevFilter) => {
-            return {...prevFilter, startDate: start.format('DD/MM/YYYY'), endDate: end.format('DD/MM/YYYY')}
-        });
-    }
-
     // Determine rows to display on the current page
     const displayedRows = users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
@@ -209,7 +212,6 @@ const AccountManagementPage = () => {
             <div className="w-3/12 flex-col pl-10 pr-5 py-5 space-y-4" style={{width: '350px'}}>
                 <CheckBoxCard title="Vai trò" options={roleFilter} onChange={handleRoleCardChange} />
                 <CheckBoxCard title="Chi nhánh" options={branchFilter} onChange={handleBranchCardChange} />
-                <CardTimeOrder onChangeDate={(start, end) => handleChangeDateInOrderFilter(start, end)}/>
             </div>
             <div className="flex-grow flex-col pl-5 pr-10 py-5 space-y-2">
                 <div className="flex items-center justify-between">
@@ -221,6 +223,7 @@ const AccountManagementPage = () => {
                             variant="contained"
                             color="primary"
                             startIcon={<AddIcon />}
+                            onClick={() => setOpenDialogAdd(true)}
                             sx={{
                                 textTransform: 'none',
                                 fontWeight: 'bold',
@@ -238,6 +241,8 @@ const AccountManagementPage = () => {
                             onClose={handleCloseDialogAdd}
                             user={userDetail}
                             isAdd={true}
+                            branches={branchFilter}
+                            roles={roleFilter}
                         />
                         <Button
                             variant="contained"
@@ -335,6 +340,14 @@ const AccountManagementPage = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
+                <DialogUser
+                    open={openDialogDetail}
+                    onClose={handleCloseDialogDetail}
+                    user={userDetail}
+                    isAdd={false}
+                    branches={branchFilter}
+                    roles={roleFilter}
+                />
                 {/* Pagination Component */}
                 <TablePagination
                     component="div"
