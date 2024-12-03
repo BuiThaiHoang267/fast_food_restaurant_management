@@ -13,6 +13,7 @@ export const CATEGORY_API = {
 export const USER_API = {
     LOGIN: '/user/login',
     REGISTER: '/user/register',
+    GET_USER_BY_FILTER: '/user',
 }
 
 export const ORDER_API = {
@@ -37,4 +38,8 @@ export const STATISTIC_API = {
     GET_STATISTIC_RESULT_TODAY: '/statistic/result-today',
     GET_REVENUE_CHART: '/statistic/revenue-chart',
     GET_TOP_PRODUCT: '/statistic/top-product',
+}
+
+export const ROLE_API = {
+    GET_ALL_ROLE: '/role/all',
 }

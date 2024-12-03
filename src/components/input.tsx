@@ -16,7 +16,7 @@ export const InputText: React.FC<InputTextProps> = ({ label, placeholder, value,
         <div className="flex items-center justify-between">
             <div className="text-sm font-bold">{label}</div>
             <TextField
-                variant="standard"
+                variant= "standard"
                 placeholder={placeholder}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}

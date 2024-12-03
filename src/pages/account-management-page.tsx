@@ -1,4 +1,4 @@
-import {CheckBoxCard, SearchCard} from '../components/card';
+import {CheckBoxCard} from '../components/card';
 import {useEffect, useState} from "react";
 import {
     Table,
@@ -21,60 +21,64 @@ import {
     success_700
 } from "../common/constant.ts";
 import MenuFieldTable, {MenuFieldProps} from "../components/menu-field.tsx";
-import {Link} from "react-router-dom";
-import {OrderDTO} from "../dtos/OrderDTO.ts";
 import CardTimeOrder from "../components/card-time-order.tsx";
 import {BranchService} from "../services/BranchService.ts";
-import {PaymentMethodService} from "../services/PaymentMethodService.ts";
-import {OrderFilter, OrderService} from "../services/OrderService.ts";
 import dayjs, {Dayjs} from "dayjs";
+import {RoleService} from "../services/RoleService.ts";
+import {UserFilter, UserService} from "../services/UserService.ts";
+import {UserDTO} from "../dtos/UserDTO.ts";
+import DialogUser from "../components/dialog-user.tsx";
 
 const AccountManagementPage = () => {
     const [openFilterTable, setOpenFilterTable] = useState<null | HTMLElement>(null);
-    const [selectedRows, setSelectedRows] = useState<OrderDTO[]>([]);
+    const [selectedRows, setSelectedRows] = useState<UserDTO[]>([]);
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [fields, setFields] = useState<MenuFieldProps[]>([
-        { label: 'Mã hóa đơn', name: 'id', visible: false },
-        { label: 'Trạng thái', name: 'status', visible: true },
-        { label: 'Số phục vụ', name: 'numberOrder', visible: true },
-        { label: 'Chi nhánh', name: 'branchName', visible: true },
-        { label: 'PT thanh toán', name: 'paymentMethodName', visible: true },
-        { label: 'Ngày tạo', name: 'updatedAt', visible: true },
-        { label: 'Tổng hóa đơn', name: 'totalPrice', visible: true },
+        { label: 'Mã người dùng', name: 'id', visible: false },
+        { label: 'Tên người dùng', name: 'name', visible: true },
+        { label: 'Tài khoản', name: 'username', visible: true },
+        { label: 'Email', name: 'email', visible: true },
+        { label: 'Số điện thoại', name: 'phone', visible: true },
+        { label: 'Tên vai trò', name: 'roleName', visible: true },
+        { label: 'Role Code', name: 'roleCode', visible: true },
+        { label: 'Tên chi nhánh', name: 'branchName', visible: true },
+
     ]);
-    const [paymentMethodFilter, setPaymentMethodFilter] = useState<{id: number, label: string, checked: boolean}[]>([]);
+    const [openDialogAdd, setOpenDialogAdd] = useState(true);
+    const [roleFilter, setRoleFilter] = useState<{id: number, label: string, checked: boolean}[]>([]);
     const [branchFilter, setBranchFilter] = useState<{id: number, label: string, checked: boolean}[]>([]);
-    const [orders, setOrders] = useState<OrderDTO[]>([]);
-    const [orderDetail, setOrderDetail] = useState<OrderDTO>();
-    const [orderFilter, setOrderFilter] = useState<OrderFilter>(
+    const [users, setUsers] = useState<UserDTO[]>([]);
+    const [userDetail, setUserDetail] = useState<UserDTO>(
+        new UserDTO(0, '', '', '', '', 0, '', '', 0, '', true)
+    );
+    const [userFilter, setUserFilter] = useState<UserFilter>(
         {
-            id: "",
-            paymentMethods: [],
             branches: [],
-            startDate: dayjs().add(-1,'day').format('DD/MM/YYYY'),
+            roles: [],
+            startDate: dayjs().format('DD/MM/YYYY'),
             endDate: dayjs().format('DD/MM/YYYY'),
         }
     );
 
     useEffect(() => {
         fetchAllBranch()
-        fetchAllPaymentMethod()
-        fetchOrderByFilters()
+        fetchAllRole()
+        fetchUserByFilters()
     }, []);
 
     useEffect(() => {
-        fetchOrderByFilters()
-    }, [orderFilter]);
+        fetchUserByFilters()
+    }, [userFilter]);
 
     useEffect(() => {
         setPage(0);
-    }, [orders]);
+    }, [users]);
 
-    const fetchOrderByFilters = async () => {
+    const fetchUserByFilters = async () => {
         try{
-            const response = await OrderService.getOrderByFilters(orderFilter);
-            setOrders(response);
+            const response = await UserService.getUserByFilter(userFilter);
+            setUsers(response);
         }
         catch (error){
             console.error(error);
@@ -93,11 +97,11 @@ const AccountManagementPage = () => {
         }
     }
 
-    const fetchAllPaymentMethod = async () => {
+    const fetchAllRole = async () => {
         try{
-            const response = await PaymentMethodService.getAllPaymentMethod();
-            setPaymentMethodFilter(response.map((payment) => {
-                return {id: payment.id, label: payment.name, checked: false}
+            const response = await RoleService.getAllRole();
+            setRoleFilter(response.map((role) => {
+                return {id: role.id, label: role.name, checked: false}
             }));
         }
         catch (error){
@@ -105,24 +109,22 @@ const AccountManagementPage = () => {
         }
     }
 
-    const handleSearch = (value: string) => {
-        setOrderFilter((prevFilter) => {
-            return {...prevFilter, id: value}
-        });
+    const handleCloseDialogAdd = () => {
+        setOpenDialogAdd(false);
     }
 
-    const handlePaymentMethodCardChange = (id: number, label: string, checked: boolean) => {
-        setPaymentMethodFilter((prevTypeFilter) =>
+    const handleRoleCardChange = (id: number, label: string, checked: boolean) => {
+        setRoleFilter((prevTypeFilter) =>
             prevTypeFilter.map((type) =>
                 type.id === id ? { id, label , checked } : type
             )
         );
-        setOrderFilter((prevFilter) => {
+        setUserFilter((prevFilter) => {
             if(checked){
-                return {...prevFilter, paymentMethods: [...prevFilter.paymentMethods, id]}
+                return {...prevFilter, roles: [...prevFilter.roles, id]}
             }
             else{
-                return {...prevFilter, paymentMethods: prevFilter.paymentMethods.filter((payment) => payment !== id)}
+                return {...prevFilter, roles: prevFilter.roles.filter((role) => role !== id)}
             }
         });
     }
@@ -133,7 +135,7 @@ const AccountManagementPage = () => {
                 type.id === id ? { id, label , checked } : type
             )
         );
-        setOrderFilter((prevFilter) => {
+        setUserFilter((prevFilter) => {
             if(checked){
                 return {...prevFilter, branches: [...prevFilter.branches, id]}
             }
@@ -146,13 +148,13 @@ const AccountManagementPage = () => {
     // Handler for "Select All" checkbox
     const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
-            setSelectedRows(orders);
+            setSelectedRows(users);
         } else {
             setSelectedRows([]);
         }
     };
     // Handler for row selection (checkbox and row click)
-    const toggleRowSelection = (order: OrderDTO) => {
+    const toggleRowSelection = (order: UserDTO) => {
         setSelectedRows((prevSelectedRows) => {
             if (prevSelectedRows.includes(order)) {
                 return prevSelectedRows.filter((row) => row !== order);
@@ -162,9 +164,9 @@ const AccountManagementPage = () => {
         });
     };
     // Custom action when clicking on a row (other than the checkbox)
-    const handleRowClick = (order: OrderDTO) => {
+    const handleRowClick = (order: UserDTO) => {
         console.log(order);
-        setOrderDetail(order);
+        setUserDetail(order);
     };
     // Handler for pagination change
     const handleChangePage = (e: unknown, newPage: number) => {
@@ -194,21 +196,20 @@ const AccountManagementPage = () => {
     }
 
     const handleChangeDateInOrderFilter = (start: Dayjs, end: Dayjs) => {
-        setOrderFilter((prevFilter) => {
+        setUserFilter((prevFilter) => {
             return {...prevFilter, startDate: start.format('DD/MM/YYYY'), endDate: end.format('DD/MM/YYYY')}
         });
     }
 
     // Determine rows to display on the current page
-    const displayedRows = orders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    const displayedRows = users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     return (
         <div className="flex flex-row justify-between">
-            <div className="w-3/12 flex-col pl-10 pr-5 py-5 space-y-4" style={{width: '25%'}}>
-                <SearchCard title="Tìm kiếm" placeholder="Theo mã hóa đơn" onSearch={handleSearch}/>
-                <CheckBoxCard title="Phương thức thanh toán" options={paymentMethodFilter} onChange={handlePaymentMethodCardChange} />
-                <CardTimeOrder onChangeDate={(start, end) => handleChangeDateInOrderFilter(start, end)}/>
+            <div className="w-3/12 flex-col pl-10 pr-5 py-5 space-y-4" style={{width: '350px'}}>
+                <CheckBoxCard title="Vai trò" options={roleFilter} onChange={handleRoleCardChange} />
                 <CheckBoxCard title="Chi nhánh" options={branchFilter} onChange={handleBranchCardChange} />
+                <CardTimeOrder onChangeDate={(start, end) => handleChangeDateInOrderFilter(start, end)}/>
             </div>
             <div className="flex-grow flex-col pl-5 pr-10 py-5 space-y-2">
                 <div className="flex items-center justify-between">
@@ -216,24 +217,28 @@ const AccountManagementPage = () => {
                         Tài khoản
                     </Typography>
                     <div className="flex space-x-2">
-                        <Link to="/sales">
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                startIcon={<AddIcon />}
-                                sx={{
-                                    textTransform: 'none',
-                                    fontWeight: 'bold',
-                                    borderRadius: '8px',
-                                    backgroundColor: color_green_primary,
-                                    '&:hover': {
-                                        backgroundColor: success_700,
-                                    },
-                                }}
-                            >
-                                Thêm tài khoản
-                            </Button>
-                        </Link>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<AddIcon />}
+                            sx={{
+                                textTransform: 'none',
+                                fontWeight: 'bold',
+                                borderRadius: '8px',
+                                backgroundColor: color_green_primary,
+                                '&:hover': {
+                                    backgroundColor: success_700,
+                                },
+                            }}
+                        >
+                            Thêm tài khoản
+                        </Button>
+                        <DialogUser
+                            open={openDialogAdd}
+                            onClose={handleCloseDialogAdd}
+                            user={userDetail}
+                            isAdd={true}
+                        />
                         <Button
                             variant="contained"
                             color="primary"
@@ -294,9 +299,9 @@ const AccountManagementPage = () => {
                                 <TableCell padding="checkbox">
                                     <Checkbox
                                         indeterminate={
-                                            selectedRows.length > 0 && selectedRows.length < orders.length
+                                            selectedRows.length > 0 && selectedRows.length < users.length
                                         }
-                                        checked={selectedRows.length === orders.length}
+                                        checked={selectedRows.length === users.length}
                                         onChange={handleSelectAll}
                                     />
                                 </TableCell>
@@ -333,7 +338,7 @@ const AccountManagementPage = () => {
                 {/* Pagination Component */}
                 <TablePagination
                     component="div"
-                    count={orders.length}
+                    count={users.length}
                     page={page}
                     onPageChange={handleChangePage}
                     rowsPerPage={rowsPerPage}
