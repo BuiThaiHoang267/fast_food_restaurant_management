@@ -3,6 +3,7 @@
 export const color_white = "#ffffff";
 export const color_black = "#000000";
 export const color_green_primary = "#00B63E";
+export const color_header_table = "#dcf4fc";
 
 // bg-blue
 export const bg_blue_50 = "#EFF6FF";
