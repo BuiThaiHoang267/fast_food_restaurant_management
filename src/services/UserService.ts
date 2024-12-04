@@ -3,6 +3,7 @@ import axiosInstance from "./base-service/axiosConfig.ts";
 import {jwtDecode} from "jwt-decode";
 import {ClaimTypes} from "../common/claim-types.ts";
 import {UserDTO} from "../dtos/UserDTO.ts";
+import {toast} from "react-toastify";
 
 export const UserService = {
     login: async (username: string, password: string) : Promise<string> => {
@@ -26,13 +27,13 @@ export const UserService = {
             const branchId = decode["Branch Id"];
             const branchName = decode["Branch"];
 
-            sessionStorage.setItem("name", JSON.stringify(name));
-            sessionStorage.setItem("userId", JSON.stringify(userId));
-            sessionStorage.setItem("userName", JSON.stringify(userName));
-            sessionStorage.setItem("roleId", JSON.stringify(roleId));
-            sessionStorage.setItem("role", JSON.stringify(role));
-            sessionStorage.setItem("branchId", JSON.stringify(branchId));
-            sessionStorage.setItem("branchName", JSON.stringify(branchName));
+            sessionStorage.setItem("name", name);
+            sessionStorage.setItem("userId", userId);
+            sessionStorage.setItem("userName", userName);
+            sessionStorage.setItem("roleId", roleId);
+            sessionStorage.setItem("role", role);
+            sessionStorage.setItem("branchId", branchId);
+            sessionStorage.setItem("branchName", branchName);
 
             // console.log(decode);
             // console.log(name);
@@ -43,6 +44,47 @@ export const UserService = {
             // console.log(branchId);
             // console.log(branchName);
             return data;
+        }
+        catch (error) {
+            toast.error(error.response.data.message);
+
+            // console.error(error);
+            // throw error;
+        }
+    },
+
+    logout: () => {
+        // Clear session data
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("name");
+        sessionStorage.removeItem("userId");
+        sessionStorage.removeItem("userName");
+        sessionStorage.removeItem("role");
+        sessionStorage.removeItem("branchId");
+        sessionStorage.removeItem("branchName");
+    },
+
+    getProfile: async () : Promise<UserDTO> => {
+        try {
+            const userIdString = sessionStorage.getItem("userId");
+
+            // Check if userId exists and if it can be converted to a number
+            if (!userIdString) {
+                throw new Error("User is not authenticated. Redirecting to login page.");
+            }
+
+            const userId = parseInt(userIdString, 10); // Convert string to number
+
+            // Handle invalid userId (e.g., NaN if the string is not a valid number)
+            if (isNaN(userId)) {
+                throw new Error("Invalid user ID. Redirecting to login page.");
+            }
+
+            const response = await axiosInstance.get(USER_API.GET_USER_BY_ID(userId));
+            console.log(response);
+            const data = response.data.data;
+            console.log(UserDTO.fromJson(data));
+            return UserDTO.fromJson(data);
         }
         catch (error) {
             console.error(error);
@@ -73,14 +115,28 @@ export const UserService = {
 
     register: async (user: UserDTO) : Promise<UserDTO> => {
         try {
+            if (user.name === '') {
+                toast.error("Name must not be empty");
+                throw new Error("Name must not be empty");
+            }
+            if (user.username === '') {
+                toast.error("User name must not be empty");
+                throw new Error("User name must not be empty");
+            }
+            if (user.password === '') {
+                toast.error("Password must not be empty");
+                throw new Error("Password must not be empty");
+            }
             const response = await axiosInstance.post(USER_API.REGISTER, user);
             console.log(response);
             const data = response.data.data;
             console.log(data);
+            toast.success("Register success");
             return data;
         }
         catch (error) {
-            console.error(error);
+            console.log(error);
+            toast.error(error.response.data.message);
             throw error;
         }
     },
@@ -94,8 +150,9 @@ export const UserService = {
             return data;
         }
         catch (error) {
-            console.error(error);
-            throw error;
+            toast.error(JSON.stringify(error.response.data.errors));
+            // console.log(JSON.stringify(error.response.data.errors));
+            // throw error;
         }
     },
 
@@ -105,6 +162,7 @@ export const UserService = {
             console.log(response);
             const data = response.data.data;
             console.log(data);
+            toast.success("Delete success");
         }
         catch (error) {
             console.error(error);

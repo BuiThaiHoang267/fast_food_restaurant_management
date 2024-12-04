@@ -1,6 +1,7 @@
 import ProductDTO from "../dtos/ProductDTO.ts";
 import {PRODUCT_API} from "./base-service/apiEndpoints.ts";
 import axiosInstance from "./base-service/axiosConfig.ts";
+import {toast} from "react-toastify";
 
 export const productService = {
 
@@ -71,9 +72,12 @@ export const productService = {
         try {
             const response = await axiosInstance.post(PRODUCT_API.CREATE_PRODUCT, product);
             console.log(response);
+            toast.success("Create product success");
         }
         catch (error) {
             console.error(error);
+            // toast.error(error.response.data.message);
+            toast.error("Create product failed");
             throw error;
         }
     },
@@ -82,6 +86,7 @@ export const productService = {
         try {
             const response = await axiosInstance.patch(`${PRODUCT_API.DELETE_PRODUCT_BY_ID(productId)}`, {});
             console.log(response);
+            toast.success("Delete product success");
         }
         catch (error) {
             console.error(error);

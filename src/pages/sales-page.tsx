@@ -1,9 +1,9 @@
-﻿import {Button, Divider, IconButton, Tab, Tabs, Typography} from "@mui/material";
+﻿import {Button, Divider, IconButton, Menu, MenuItem, Tab, Tabs, Tooltip, Typography} from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import {OrderProductCard, SalesProductCard} from "../components/card.tsx";
-import {bg_blue_600, bg_blue_700, bg_blue_800, bg_grey_600, color_white} from "../common/constant.ts";
+import {bg_blue_500, bg_blue_600, bg_blue_700, bg_blue_800, bg_grey_600, color_white} from "../common/constant.ts";
 import {useEffect, useMemo, useState} from "react";
 import React from "react";
 import CategoryDTO from "../dtos/CategoryDTO.ts";
@@ -14,12 +14,27 @@ import {OrderItemDTO} from "../dtos/OrderItemDTO.ts";
 import {OrderDTO} from "../dtos/OrderDTO.ts";
 import {InputSearchProduct} from "../components/input.tsx";
 import DialogPayment from "../components/dialog-payment.tsx";
-import {useLocation} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 import {OrderService} from "../services/OrderService.ts";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import {UserService} from "../services/UserService.ts";
+import DialogUserProfile from "../components/dialog-user-profile.tsx";
+import {UserDTO} from "../dtos/UserDTO.ts";
+import {BranchService} from "../services/BranchService.ts";
+import {RoleService} from "../services/RoleService.ts";
 
 type Orders = OrderItemDTO[][]; // Array of product arrays for each tab
 
 const SalesPage = () => {
+    const navigate = useNavigate();
+    const [openUserMenu, setOpenUserMenu] = useState<null | HTMLElement>(null);
+
+    const [openDialogDetail, setOpenDialogDetail] = useState(false);
+    const [userDetail, setUserDetail] = useState<UserDTO>(
+        new UserDTO(0, '','' , '', '', '', 0, '', '', 0, '', true)
+    );
+    const [branchFilter, setBranchFilter] = useState<{id: number, label: string, checked: boolean}[]>([]);
+    const [roleFilter, setRoleFilter] = useState<{id: number, label: string, checked: boolean}[]>([]);
 
     const [selectedCategory, setSelectedCategory] = useState<CategoryDTO>();
     const [tabValue, setTabValue] = useState(0); // Track selected tab
@@ -46,6 +61,10 @@ const SalesPage = () => {
     const [tabUpdate, setTabUpdate] = useState<number | null>();
 
     useEffect(() => {
+        fetchUserInfo();
+        fetchAllBranch();
+        fetchAllRole();
+
         fetchAllCategory();
         fetchProductByCategoryId(0);
         if(orderUpdate){
@@ -93,6 +112,56 @@ const SalesPage = () => {
         catch (error) {
             console.error(error);
         }
+    }
+
+    const fetchUserInfo = async () => {
+        try{
+            const response = await UserService.getProfile();
+            setUserDetail(response)
+            console.log(response);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    const fetchAllBranch = async () => {
+        try{
+            const response = await BranchService.getAllBranch();
+            setBranchFilter(response.map((branch) => {
+                return {id: branch.id, label: branch.name, checked: false}
+            }));
+        }
+        catch (error){
+            console.error(error);
+        }
+    }
+
+    const fetchAllRole = async () => {
+        try{
+            const response = await RoleService.getAllRole();
+            setRoleFilter(response.map((role) => {
+                return {id: role.id, label: role.name, checked: false}
+            }));
+        }
+        catch (error){
+            console.error(error);
+        }
+    }
+
+
+    const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => setOpenUserMenu(event.currentTarget);
+    const handleUserMenuClose = () => setOpenUserMenu(null);
+
+    const handleLogout = () => {
+        UserService.logout();
+        setOpenUserMenu(null);
+        navigate('/login');
+    }
+    const handleProfile = async () => {
+        await fetchUserInfo();
+        setOpenUserMenu(null);
+        setOpenDialogDetail(true);
     }
 
     const handleCloseDialogPayment = (value: boolean) => {
@@ -205,13 +274,20 @@ const SalesPage = () => {
 
 
     const handleSetOrderRequest = () => {
+        const branchIdString = sessionStorage.getItem("branchId");
+
+        // Check if userId exists and if it can be converted to a number
+        if (!branchIdString) {
+            throw new Error("User is not authenticated. Redirecting to login page.");
+        }
+
         const currentOrder = orders[tabValue] || [];
         if (currentOrder.length > 0) {
             setOrderRequest((prevOrderRequest) => {
                 const updatedOrderRequest = { ...prevOrderRequest };
                 updatedOrderRequest.orderItems = currentOrder;
                 updatedOrderRequest.totalPrice = totals.totalPrice;
-                updatedOrderRequest.paymentMethodId = 1;
+                updatedOrderRequest.paymentMethodId = parseInt(branchIdString, 10);
                 updatedOrderRequest.branchId = 1;
                 updatedOrderRequest.numberOrder = parseInt(tabNames[tabValue], 0); // Parse the tab name as the order number
                 console.log("Order Request:", updatedOrderRequest);
@@ -225,6 +301,14 @@ const SalesPage = () => {
 
     return (
         <div className="flex flex-row h-screen">
+            <DialogUserProfile
+                open={openDialogDetail}
+                onClose={() => setOpenDialogDetail(false)}
+                user={userDetail}
+                isAdd={false}
+                branches={branchFilter}
+                roles={roleFilter}
+            />
             {/* Left Section */}
             <div className="flex flex-col flex-1" style={{flex: 5}}>
                 <div className="pt-2 pb-3 bg-blue-800 h-12">
@@ -402,6 +486,49 @@ const SalesPage = () => {
                         >
                             <AddIcon sx={{fontSize: '20px'}}/>
                         </IconButton>
+                        <div className="flex items-center gap-2 flex-1 justify-end">
+                            <Tooltip title="người dùng">
+                                <IconButton
+                                    onClick={handleUserMenuOpen}
+                                    sx={{
+                                        color: color_white,
+                                        ml: 2,
+                                        '&:focus': {outline: 'none'},
+                                    }}
+                                >
+                                    <AccountCircleIcon/>
+                                </IconButton>
+                            </Tooltip>
+                            {/* User Menu */}
+                            <Menu
+                                anchorEl={openUserMenu}
+                                open={Boolean(openUserMenu)}
+                                onClose={handleUserMenuClose}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'right',
+                                }}
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                sx={{
+                                    '& .MuiPaper-root': {
+                                        backgroundColor: bg_blue_500,
+                                        color: color_white,
+                                    },
+                                }}
+                            >
+                                <MenuItem onClick={handleProfile}>Hồ sơ</MenuItem>
+                                <Link to="/">
+                                    <MenuItem>Quản lý</MenuItem>
+                                </Link>
+                                <Link to="/kitchen">
+                                    <MenuItem>Nhà bếp</MenuItem>
+                                </Link>
+                                <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
+                            </Menu>
+                        </div>
                     </div>
                 </div>
 

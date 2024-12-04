@@ -3,22 +3,32 @@ import {Box, Button, Container, TextField, Typography} from "@mui/material";
 import {bg_blue_600, bg_blue_800} from "../common/constant.ts";
 import {UserService} from "../services/UserService.ts";
 import {useNavigate} from "react-router-dom";
+import {toast} from "react-toastify";
+import DialogUser from "../components/dialog-user.tsx";
+import {UserDTO} from "../dtos/UserDTO.ts";
 
 const LoginPage = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState(null);
+    const [password, setPassword] = useState(null);
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            if (!username) {
+                toast.error("User name must not be empty");
+                return;
+            }
+            if (!password) {
+                toast.error("Password must not be empty");
+                return;
+            }
             await UserService.login(username, password);
             const token = sessionStorage.getItem('token');
 
             // If the token is not found or invalid, redirect to the login page
             if (token) {
                 navigate('/');
-                console.log('Login failed');
             }
         } catch (error) {
             console.error(error);

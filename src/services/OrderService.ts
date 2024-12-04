@@ -2,12 +2,14 @@ import {OrderDTO} from "../dtos/OrderDTO.ts";
 import axiosInstance from "./base-service/axiosConfig.ts";
 import {ORDER_API} from "./base-service/apiEndpoints.ts";
 import {OrderItemDTO} from "../dtos/OrderItemDTO.ts";
+import {toast} from "react-toastify";
 
 export const OrderService = {
     createOrder: async (order: OrderDTO) => {
         try {
             const response = await axiosInstance.post(ORDER_API.CREATE_ORDER, order);
             console.log(response);
+            toast.success("Order successfully!");
         }
         catch (error) {
             console.error(error);
@@ -90,6 +92,7 @@ export const OrderService = {
         try{
             const response = await axiosInstance.delete(ORDER_API.DELETE_ORDER(id));
             console.log(response);
+            toast.success("Delete order successfully!")
         }
         catch (error) {
             console.error(error);

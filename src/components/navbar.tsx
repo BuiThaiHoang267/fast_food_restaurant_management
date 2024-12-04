@@ -1,29 +1,91 @@
 ﻿import {AppBar, Button, IconButton, Menu, MenuItem, Tooltip} from "@mui/material";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import CategoryIcon from '@mui/icons-material/Category';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
-import PieChartIcon from '@mui/icons-material/PieChart';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import DescriptionIcon from '@mui/icons-material/Description';
 import LunchDiningIcon from '@mui/icons-material/LunchDining';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import {bg_blue_500, bg_blue_600, bg_blue_700, bg_blue_800, color_white} from "../common/constant.ts";
+import {UserService} from "../services/UserService.ts";
+import {UserDTO} from "../dtos/UserDTO.ts";
+import {BranchService} from "../services/BranchService.ts";
+import {RoleService} from "../services/RoleService.ts";
+import DialogUserProfile from "./dialog-user-profile.tsx";
 
 const Navbar = () => {
-
+    const navigate = useNavigate();
     const [openReport, setOpenReport] = useState<null | HTMLElement>(null);
     const [openUserMenu, setOpenUserMenu] = useState<null | HTMLElement>(null);
+
+    const [openDialogDetail, setOpenDialogDetail] = useState(false);
+    const [userDetail, setUserDetail] = useState<UserDTO>(
+        new UserDTO(0, '','' , '', '', '', 0, '', '', 0, '', true)
+    );
+    const [branchFilter, setBranchFilter] = useState<{id: number, label: string, checked: boolean}[]>([]);
+    const [roleFilter, setRoleFilter] = useState<{id: number, label: string, checked: boolean}[]>([]);
 
     const handleReportMenuOpen = (event: React.MouseEvent<HTMLElement>) => setOpenReport(event.currentTarget);
     const handleReportMenuClose = () => setOpenReport(null);
 
     const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => setOpenUserMenu(event.currentTarget);
     const handleUserMenuClose = () => setOpenUserMenu(null);
+
+    const handleLogout = () => {
+        UserService.logout();
+        setOpenUserMenu(null);
+        navigate('/login');
+    }
+    const handleProfile = async () => {
+        await fetchUserInfo();
+        setOpenUserMenu(null);
+        setOpenDialogDetail(true);
+    }
+
+    const fetchUserInfo = async () => {
+        try{
+            const response = await UserService.getProfile();
+            setUserDetail(response)
+            console.log(response);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    const fetchAllBranch = async () => {
+        try{
+            const response = await BranchService.getAllBranch();
+            setBranchFilter(response.map((branch) => {
+                return {id: branch.id, label: branch.name, checked: false}
+            }));
+        }
+        catch (error){
+            console.error(error);
+        }
+    }
+
+    const fetchAllRole = async () => {
+        try{
+            const response = await RoleService.getAllRole();
+            setRoleFilter(response.map((role) => {
+                return {id: role.id, label: role.name, checked: false}
+            }));
+        }
+        catch (error){
+            console.error(error);
+        }
+    }
+
+    useEffect(() => {
+        fetchUserInfo();
+        fetchAllBranch();
+        fetchAllRole();
+    }, []);
 
     return (
         <AppBar className={'flex flex-row justify-center items-center'} position="static" sx={{'--AppBar-background': bg_blue_600, flexDirection: 'row'}}>
@@ -156,7 +218,7 @@ const Navbar = () => {
                 </div  >
                 <div className="flex-row ml-auto w-fit content-center">
                     {/*Sales*/}
-                    <Tooltip title="Sales">
+                    <Tooltip title="Thu ngân">
                         <Link to="/sales">
                             <IconButton
                                 className="h-full"
@@ -176,7 +238,7 @@ const Navbar = () => {
                     </Tooltip>
 
                     {/*Kitchen*/}
-                    <Tooltip title="Kitchen">
+                    <Tooltip title="Nhà bếp">
                         <Link to="/kitchen">
                             <IconButton
                                 className="h-full"
@@ -196,7 +258,7 @@ const Navbar = () => {
                     </Tooltip>
 
                     {/*User*/}
-                    <Tooltip title="User">
+                    <Tooltip title="Người dùng">
                         <IconButton
                             onClick={handleUserMenuOpen}
                             color="inherit"
@@ -228,12 +290,19 @@ const Navbar = () => {
                             },
                         }}
                     >
-                        <MenuItem onClick={handleUserMenuClose}>Profile</MenuItem>
-                        <MenuItem onClick={handleUserMenuClose}>Settings</MenuItem>
-                        <MenuItem onClick={handleUserMenuClose}>Logout</MenuItem>
+                        <MenuItem onClick={handleProfile}>Hồ sơ</MenuItem>
+                        <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
                     </Menu>
                 </div>
             </div>
+            <DialogUserProfile
+                open={openDialogDetail}
+                onClose={() => setOpenDialogDetail(false)}
+                user={userDetail}
+                isAdd={false}
+                branches={branchFilter}
+                roles={roleFilter}
+            />
         </AppBar>
     )
 }
