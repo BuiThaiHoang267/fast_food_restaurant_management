@@ -52,6 +52,7 @@ const ProductCategoryPage = () => {
         categories: [],
         types: [],
     });
+    const [productSelectIndex, setProductSelectIndex] = useState<number>(0);
 
     useEffect(() => {
         fetchAllCategory();
@@ -152,6 +153,7 @@ const ProductCategoryPage = () => {
         console.log(product);
         setProductDetail(product);
         setOpenDialogDetail(true);
+        setProductSelectIndex(products.indexOf(product));
     };
     // Handler for pagination change
     const handleChangePage = (e: unknown, newPage: number) => {
@@ -175,8 +177,17 @@ const ProductCategoryPage = () => {
         setOpenDialogAdd(false);
     }
 
+    const handleRemoveProduct = () => {
+        setProducts((prevProducts) => {
+            const newProducts = [...prevProducts];
+            newProducts.splice(productSelectIndex, 1);
+            return newProducts;
+        });
+    }
+
     const handleDialogDetailClose = () => {
         setOpenDialogDetail(false);
+        setProductSelectIndex(0);
     }
 
     const handleCheckField = (name: string, visible: boolean) => {
@@ -220,7 +231,7 @@ const ProductCategoryPage = () => {
                         >
                             Thêm mới
                         </Button>
-                        <DialogAddProduct open={openDialogAdd} onClose={handleDialogAddClose} isAdd={true}></DialogAddProduct>
+                        <DialogAddProduct open={openDialogAdd} onClose={handleDialogAddClose} onRemove={handleRemoveProduct} isAdd={true}></DialogAddProduct>
                         <Button
                             variant="contained"
                             color="primary"
@@ -318,7 +329,7 @@ const ProductCategoryPage = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
-                <DialogAddProduct open={openDialogDetail} onClose={handleDialogDetailClose} productParams={productDetail} isAdd={false}/>
+                <DialogAddProduct open={openDialogDetail} onClose={handleDialogDetailClose} productParams={productDetail} onRemove={handleRemoveProduct} isAdd={false}/>
                 {/* Pagination Component */}
                 <TablePagination
                     component="div"

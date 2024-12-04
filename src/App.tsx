@@ -13,27 +13,30 @@ import LoginPage from "./pages/login-page.tsx";
 import AccountManagementPage from "./pages/account-management-page.tsx";
 import ReportSalePage from "./pages/report-sale-page.tsx";
 import ReportProductPage from "./pages/report-product-page.tsx";
-import React from "react";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import ProtectedRoute from "./components/protected-route.tsx";
 
 function App() {
   return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <BrowserRouter>
           <Routes>
-              <Route element={<LayoutMain />}>
-                  <Route path="/" element={<GeneralPage />} />
-                  <Route path="/product-category" element={<ProductCategoryPage />} />
-                  <Route path="/product-price" element={<ProductPricePage />} />
-                  <Route path={"/orders"} element={<OrderPage />} />
-                  <Route path={"/account-management"} element={<AccountManagementPage />} />
-                  <Route path={"/report-sale"} element={<ReportSalePage/>} />
-                  <Route path={"/report-product"} element={<ReportProductPage/>} />
-              </Route>
-              <Route path="/kitchen" element={<KitchenPage />} />
-              <Route path="/sales" element={<SalesPage />}/>
               <Route path="/login" element={<LoginPage />} />
+
+              <Route element={<ProtectedRoute />}>
+                  <Route element={<LayoutMain />}>
+                      <Route path="/" element={<GeneralPage />} />
+                      <Route path="/product-category" element={<ProductCategoryPage />} />
+                      <Route path="/product-price" element={<ProductPricePage />} />
+                      <Route path={"/orders"} element={<OrderPage />} />
+                      <Route path={"/account-management"} element={<AccountManagementPage />} />
+                      <Route path={"/report-sale"} element={<ReportSalePage/>} />
+                      <Route path={"/report-product"} element={<ReportProductPage/>} />
+                  </Route>
+                  <Route path="/kitchen" element={<KitchenPage />} />
+                  <Route path="/sales" element={<SalesPage />}/>
+              </Route>
           </Routes>
         </BrowserRouter>
           <ToastContainer />

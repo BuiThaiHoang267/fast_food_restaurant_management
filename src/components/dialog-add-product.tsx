@@ -27,11 +27,12 @@ import {CategoryService} from "../services/CategoryService.ts";
 interface DialogAddProductProps {
     open: boolean;
     onClose: () => void;
+    onRemove: () => void;
     productParams?: ProductDTO;
     isAdd: boolean;
 }
 
-const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose, productParams, isAdd = false}) => {
+const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose, onRemove, productParams, isAdd = false}) => {
     const [isCombo, setIsCombo] = useState(false);
     const [product, setProduct] = useState<ProductDTO[]>([]);
     const [productAdd, setProductAdd] = useState<ProductDTO>(new ProductDTO(0,"","","",0,0,"",0,"",[]));
@@ -99,6 +100,21 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose, produ
             }
         }
         saveProduct();
+        onClose();
+    }
+
+    const handleDeleteProduct = () => {
+        console.log(productAdd);
+        const deleteProduct = async () => {
+            try {
+                await productService.deleteProduct(productAdd.id);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
+        deleteProduct();
+        onRemove();
         onClose();
     }
 
@@ -293,23 +309,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({open, onClose, produ
                         <Button
                             variant="contained"
                             color="primary"
-                            onClick={handleDialogClose}
-                            sx={{
-                                backgroundColor: color_green_primary,
-                                textTransform: 'none',
-                                borderRadius: '8px',
-                                fontWeight: 'bold',
-                                '&:hover': {
-                                    backgroundColor: success_700,
-                                },
-                            }}
-                        >
-                            Cập Nhật
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleDialogClose}
+                            onClick={handleDeleteProduct}
                             sx={{
                                 backgroundColor: Error500,
                                 textTransform: 'none',

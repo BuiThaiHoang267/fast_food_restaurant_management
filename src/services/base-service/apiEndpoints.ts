@@ -4,6 +4,7 @@ export const PRODUCT_API = {
     CREATE_PRODUCT: '/product/create',
     GET_PRODUCT_BY_FILTER: '/product',
     GET_PRODUCT_BY_CATEGORY_ID: '/product/category',
+    DELETE_PRODUCT_BY_ID:(id: number) => `/product/soft-delete/${id}`,
 }
 
 export const CATEGORY_API = {
