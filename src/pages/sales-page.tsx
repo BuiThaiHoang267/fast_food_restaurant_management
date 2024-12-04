@@ -316,7 +316,7 @@ const SalesPage = () => {
                                                     autoFocus
                                                     onChange={(e) => {
                                                         const updatedTabs = [...tabNames];
-                                                         // Remove non-numeric characters
+                                                        // Remove non-numeric characters
                                                         updatedTabs[index] = e.target.value.replace(/[^0-9]/g, ''); // Update the tab name with numeric-only input
                                                         setTabNames(updatedTabs); // Update state
                                                     }}
@@ -334,7 +334,10 @@ const SalesPage = () => {
                                                     }}
                                                 />
                                             ) : (
-                                                <span style={{textTransform: "none", fontWeight: "bold"}}>{"Order " + tab}</span>
+                                                <span style={{
+                                                    textTransform: "none",
+                                                    fontWeight: "bold"
+                                                }}>{"Order " + tab}</span>
                                             )}
 
                                             {/* Delete Button for Selected Tab Only */}
@@ -350,7 +353,7 @@ const SalesPage = () => {
                                                         color: bg_grey_600,
                                                     }}
                                                 >
-                                                    <CloseIcon fontSize="small" />
+                                                    <CloseIcon fontSize="small"/>
                                                 </IconButton>
                                             )}
                                         </div>

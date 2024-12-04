@@ -2,6 +2,7 @@
 import {Box, Button, Container, TextField, Typography} from "@mui/material";
 import {bg_blue_600, bg_blue_800} from "../common/constant.ts";
 import {UserService} from "../services/UserService.ts";
+import {toast} from "react-toastify";
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -12,8 +13,7 @@ const LoginPage = () => {
         // Handle login logic here
         try {
             await UserService.login(username, password);
-        }
-        catch (error) {
+        } catch (error) {
             console.error(error);
         }
         console.log('Logging in with:', username, password);

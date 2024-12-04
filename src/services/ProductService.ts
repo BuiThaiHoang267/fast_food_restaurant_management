@@ -1,6 +1,7 @@
 import ProductDTO from "../dtos/ProductDTO.ts";
 import {PRODUCT_API} from "./base-service/apiEndpoints.ts";
 import axiosInstance from "./base-service/axiosConfig.ts";
+import {toast} from "react-toastify";
 
 export const productService = {
 
@@ -45,6 +46,7 @@ export const productService = {
             console.log(response);
             const data = response.data.data.map(ProductDTO.fromJSON)
             console.log(data);
+
             return data;
         }
         catch (error) {
