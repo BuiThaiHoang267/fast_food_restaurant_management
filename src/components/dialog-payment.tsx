@@ -33,9 +33,10 @@ interface DialogPaymentProps {
     open: boolean;
     onClose: (createSuccess: boolean) => void;
     order: OrderDTO;
+    updateOrder: () => void;
 }
 
-const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => {
+const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order, updateOrder}) => {
     const [discount, setDiscount] = React.useState<number>(0);
     const [paymentMethod, setPaymentMethod] = React.useState<number>(1);
     const [change, setChange] = React.useState<number>(0);
@@ -88,6 +89,9 @@ const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => 
 
     const handleCallApiCreateOrder = async () => {
         const createSuccess = await createOrder(orderRequest);
+        if(createSuccess){
+            updateOrder();
+        }
         onClose(createSuccess);
     }
 
@@ -161,10 +165,10 @@ const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => 
                                     }
                                 }}
                             >
-                                <TableCell sx={{minWidth: 70, padding: "0", paddingX: 1, fontWeight: 'bold'}}>Món ăn</TableCell>
-                                <TableCell sx={{minWidth: 300}}></TableCell>
-                                <TableCell sx={{minWidth: 100}}></TableCell>
-                                <TableCell sx={{width: 100}}></TableCell>
+                                <TableCell sx={{minWidth: 70, padding: "0", paddingX: 1, fontWeight: 'bold'}}>STT</TableCell>
+                                <TableCell sx={{minWidth: 300, padding: "0", paddingX: 1, fontWeight: 'bold'}}>Tên món ăn</TableCell>
+                                <TableCell sx={{minWidth: 100, padding: "0", paddingX: 1, fontWeight: 'bold'}}>Số lượng</TableCell>
+                                <TableCell sx={{minWidth: 80, padding: "0", paddingX: 1, fontWeight: 'bold', textAlign: 'right'}}>Giá bán</TableCell>
 
                             </TableHead>
                             <TableBody>
@@ -177,6 +181,8 @@ const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => 
                                             sx={{
                                                 fontWeight: 'bold',
                                                 fontSize: '0.8rem',
+                                                textAlign: 'left',
+                                                padding: "0",
                                             }}
                                         >{item.productName}</TableCell>
                                         <TableCell>{item.quantity}</TableCell>
@@ -185,6 +191,8 @@ const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => 
                                                 fontWeight: 'bold',
                                                 fontSize: '0.8rem',
                                                 textAlign: 'right',
+                                                padding: "0",
+                                                paddingX: 1,
                                             }}
                                         >{item.productPrice.toLocaleString()}</TableCell>
                                     </TableRow>

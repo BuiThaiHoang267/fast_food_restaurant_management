@@ -15,8 +15,7 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import ListIcon from '@mui/icons-material/List';
 import {
-    bg_grey_100,
-    color_black, color_green_primary,
+    color_black, color_green_primary, color_header_table,
     color_white,
     success_700
 } from "../common/constant.ts";
@@ -28,6 +27,7 @@ import {BranchService} from "../services/BranchService.ts";
 import {PaymentMethodService} from "../services/PaymentMethodService.ts";
 import {OrderFilter, OrderService} from "../services/OrderService.ts";
 import dayjs, {Dayjs} from "dayjs";
+import DialogOrder from "../components/dialog-order.tsx";
 
 const OrderPage = () => {
     const [openFilterTable, setOpenFilterTable] = useState<null | HTMLElement>(null);
@@ -46,7 +46,8 @@ const OrderPage = () => {
     const [paymentMethodFilter, setPaymentMethodFilter] = useState<{id: number, label: string, checked: boolean}[]>([]);
     const [branchFilter, setBranchFilter] = useState<{id: number, label: string, checked: boolean}[]>([]);
     const [orders, setOrders] = useState<OrderDTO[]>([]);
-    const [orderDetail, setOrderDetail] = useState<OrderDTO>();
+    const [openDialog, setOpenDialog] = useState(false);
+    const [orderDetail, setOrderDetail] = useState<OrderDTO>(OrderDTO.constructorOrderDTO());
     const [orderFilter, setOrderFilter] = useState<OrderFilter>(
         {
             id: "",
@@ -164,6 +165,7 @@ const OrderPage = () => {
     // Custom action when clicking on a row (other than the checkbox)
     const handleRowClick = (order: OrderDTO) => {
         console.log(order);
+        setOpenDialog(true);
         setOrderDetail(order);
     };
     // Handler for pagination change
@@ -197,6 +199,14 @@ const OrderPage = () => {
         setOrderFilter((prevFilter) => {
             return {...prevFilter, startDate: start.format('DD/MM/YYYY'), endDate: end.format('DD/MM/YYYY')}
         });
+    }
+
+
+    const handleCloseDialog = (isRerender: boolean) => {
+        setOpenDialog(false);
+        if(isRerender){
+            fetchOrderByFilters();
+        }
     }
 
     // Determine rows to display on the current page
@@ -284,7 +294,7 @@ const OrderPage = () => {
                         <TableHead
                             sx = {{
                                 '& th': {
-                                    backgroundColor: bg_grey_100,
+                                    backgroundColor: color_header_table,
                                     fontWeight: 'bold',
 
                                 }
@@ -330,6 +340,7 @@ const OrderPage = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
+                <DialogOrder open={openDialog} onClose={handleCloseDialog} order={orderDetail}/>
                 {/* Pagination Component */}
                 <TablePagination
                     component="div"

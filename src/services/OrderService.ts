@@ -84,6 +84,17 @@ export const OrderService = {
             console.error(error);
             throw error;
         }
+    },
+
+    deleteOrder: async (id: number) => {
+        try{
+            const response = await axiosInstance.delete(ORDER_API.DELETE_ORDER(id));
+            console.log(response);
+        }
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
     }
 }
 

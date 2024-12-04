@@ -14,6 +14,8 @@ import {OrderItemDTO} from "../dtos/OrderItemDTO.ts";
 import {OrderDTO} from "../dtos/OrderDTO.ts";
 import {InputSearchProduct} from "../components/input.tsx";
 import DialogPayment from "../components/dialog-payment.tsx";
+import {useLocation} from "react-router-dom";
+import {OrderService} from "../services/OrderService.ts";
 
 type Orders = OrderItemDTO[][]; // Array of product arrays for each tab
 
@@ -39,10 +41,19 @@ const SalesPage = () => {
     const [textSearch, setTextSearch] = useState<string>("");
     const [productSearch, setProductSearch] = useState<ProductDTO[]>([]);
     const [openDialogPayment, setOpenDialogPayment] = useState(false);
+    const orderLocation = useLocation();
+    const {orderUpdate} = orderLocation.state || {};
+    const [tabUpdate, setTabUpdate] = useState<number | null>();
 
     useEffect(() => {
         fetchAllCategory();
         fetchProductByCategoryId(0);
+        if(orderUpdate){
+            setOrders([orderUpdate.orderItems]);
+            setTabNames([orderUpdate.numberOrder.toString()]);
+            setTabValue(0);
+            setTabUpdate(0);
+        }
     }, []);
 
     useEffect(() => {
@@ -54,6 +65,16 @@ const SalesPage = () => {
             const allCategory = await CategoryService.getAllCategory();
             const all = new CategoryDTO(0,"Tất cả","");
             setCategories([all, ...allCategory]);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    const deleteOrder = async () => {
+        try{
+            await OrderService.deleteOrder(orderUpdate.id);
+            console.log("Delete order success");
         }
         catch (error) {
             console.error(error);
@@ -108,6 +129,13 @@ const SalesPage = () => {
             return updatedOrders;
         });
     };
+
+    const handleUpdateOrder = () => {
+        if((tabValue === tabUpdate) && orderUpdate){
+            deleteOrder();
+        }
+    }
+
     const handleUpdateQuantity = (index: number, newQuantity: number) => {
         setOrders((prevOrders) => {
             const updatedOrders = [...prevOrders];
@@ -463,9 +491,14 @@ const SalesPage = () => {
                             onClick={handleSetOrderRequest}
                         >
                             <AttachMoneyIcon fontSize="medium" sx={{marginRight: '8px'}}/>
-                            Thanh toán
+                            {tabUpdate === tabValue ? "Cập nhật" : "Thanh toán"}
                         </Button>
-                        <DialogPayment open={openDialogPayment} onClose={(value) => handleCloseDialogPayment(value)} order={orderRequest}></DialogPayment>
+                        <DialogPayment
+                            open={openDialogPayment}
+                            onClose={(value) => handleCloseDialogPayment(value)}
+                            order={orderRequest}
+                            updateOrder={handleUpdateOrder}
+                        ></DialogPayment>
                     </div>
                 </div>
             </div>
