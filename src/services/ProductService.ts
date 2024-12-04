@@ -77,6 +77,17 @@ export const productService = {
             throw error;
         }
     },
+
+    deleteProduct: async (productId: number) => {
+        try {
+            const response = await axiosInstance.patch(`${PRODUCT_API.DELETE_PRODUCT_BY_ID(productId)}`, {});
+            console.log(response);
+        }
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
 }
 
 export interface ProductFilter {

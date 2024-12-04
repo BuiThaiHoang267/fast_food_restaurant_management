@@ -2,20 +2,27 @@
 import {Box, Button, Container, TextField, Typography} from "@mui/material";
 import {bg_blue_600, bg_blue_800} from "../common/constant.ts";
 import {UserService} from "../services/UserService.ts";
+import {useNavigate} from "react-router-dom";
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle login logic here
         try {
             await UserService.login(username, password);
+            const token = sessionStorage.getItem('token');
+
+            // If the token is not found or invalid, redirect to the login page
+            if (token) {
+                navigate('/');
+                console.log('Login failed');
+            }
         } catch (error) {
             console.error(error);
         }
-        console.log('Logging in with:', username, password);
     };
 
     return (
