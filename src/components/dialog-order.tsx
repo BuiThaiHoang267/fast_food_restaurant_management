@@ -1,6 +1,5 @@
 import {OrderDTO} from "../dtos/OrderDTO.ts";
 import {
-    bg_blue_200,
     bg_blue_300,
     bg_blue_500,
     bg_grey_500,
@@ -13,6 +12,9 @@ import {
 import {InputText} from "./input.tsx";
 import {Button, Dialog, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
 import React, {useEffect, useState} from "react";
+import {OrderStatus} from "../common/order-status.ts";
+import {OrderService} from "../services/OrderService.ts";
+import {useNavigate} from "react-router-dom";
 
 interface DialogOrderProps {
     open: boolean;
@@ -24,6 +26,11 @@ const DialogOrder: React.FC<DialogOrderProps> = ({open, onClose, order}) => {
     const [orderReq, setOrderReq] = useState<OrderDTO>(
         OrderDTO.constructorOrderDTO()
     );
+    const navigate = useNavigate();
+
+    const handleNavigate = () => {
+        navigate('/sales', {state: {orderUpdate: orderReq}});
+    }
 
     useEffect(() => {
         if(open)
@@ -31,6 +38,22 @@ const DialogOrder: React.FC<DialogOrderProps> = ({open, onClose, order}) => {
             setOrderReq(order);
         }
     }, [open]);
+
+    const deleteOrder = async () => {
+        try{
+            await OrderService.deleteOrder(orderReq.id);
+            console.log("Delete order success");
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    const handleDeleteOrder = () => {
+        deleteOrder().then(() => {
+            onClose(true);
+        });
+    }
 
 
     return (
@@ -139,25 +162,11 @@ const DialogOrder: React.FC<DialogOrderProps> = ({open, onClose, order}) => {
                 </div>
 
                 <div className="flex justify-end gap-2 mt-6">
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        sx={{
-                            textTransform: 'none',
-                            borderRadius: '8px',
-                            fontWeight: 'bold',
-                            backgroundColor: color_green_primary,
-                            '&:hover': {
-                                backgroundColor: success_700,
-                            },
-                        }}
-                    >
-                        Thêm mới
-                    </Button>
-                    <div className={'flex flex-row gap-2'}>
+                    {(orderReq.status == OrderStatus.PENDING) && <div className={'flex flex-row gap-2'}>
                         <Button
                             variant="contained"
                             color="primary"
+                            onClick={handleNavigate}
                             sx={{
                                 backgroundColor: color_green_primary,
                                 textTransform: 'none',
@@ -173,6 +182,7 @@ const DialogOrder: React.FC<DialogOrderProps> = ({open, onClose, order}) => {
                         <Button
                             variant="contained"
                             color="primary"
+                            onClick={handleDeleteOrder}
                             sx={{
                                 backgroundColor: Error500,
                                 textTransform: 'none',
@@ -185,7 +195,7 @@ const DialogOrder: React.FC<DialogOrderProps> = ({open, onClose, order}) => {
                         >
                             Xóa
                         </Button>
-                    </div>
+                    </div>}
                     <Button
                         variant="contained"
                         color="primary"

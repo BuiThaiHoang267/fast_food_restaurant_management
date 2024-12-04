@@ -26,6 +26,7 @@ export const ORDER_API = {
 
     UPDATE_ORDER_ITEM:(id: number) => `/order/item/update/${id}`,
     UPDATE_ORDER:(id: number) => `/order/update/${id}`,
+    DELETE_ORDER:(id: number) => `/order/delete/${id}`,
 }
 
 export const PAYMENT_METHOD_API = {

@@ -33,9 +33,10 @@ interface DialogPaymentProps {
     open: boolean;
     onClose: (createSuccess: boolean) => void;
     order: OrderDTO;
+    updateOrder: () => void;
 }
 
-const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => {
+const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order, updateOrder}) => {
     const [discount, setDiscount] = React.useState<number>(0);
     const [paymentMethod, setPaymentMethod] = React.useState<number>(1);
     const [change, setChange] = React.useState<number>(0);
@@ -88,6 +89,9 @@ const DialogPayment: React.FC<DialogPaymentProps> = ({open, onClose, order}) => 
 
     const handleCallApiCreateOrder = async () => {
         const createSuccess = await createOrder(orderRequest);
+        if(createSuccess){
+            updateOrder();
+        }
         onClose(createSuccess);
     }
 
