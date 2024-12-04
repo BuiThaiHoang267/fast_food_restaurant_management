@@ -2,7 +2,6 @@
 import {Box, Button, Container, TextField, Typography} from "@mui/material";
 import {bg_blue_600, bg_blue_800} from "../common/constant.ts";
 import {UserService} from "../services/UserService.ts";
-import {toast} from "react-toastify";
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');

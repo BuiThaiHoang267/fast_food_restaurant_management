@@ -1,7 +1,6 @@
 import ProductDTO from "../dtos/ProductDTO.ts";
 import {PRODUCT_API} from "./base-service/apiEndpoints.ts";
 import axiosInstance from "./base-service/axiosConfig.ts";
-import {toast} from "react-toastify";
 
 export const productService = {
 
