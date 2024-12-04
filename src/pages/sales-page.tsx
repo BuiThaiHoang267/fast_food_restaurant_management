@@ -1,6 +1,4 @@
 ﻿import {Button, Divider, IconButton, Tab, Tabs, Typography} from "@mui/material";
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
@@ -22,12 +20,10 @@ type Orders = OrderItemDTO[][]; // Array of product arrays for each tab
 const SalesPage = () => {
 
     const [selectedCategory, setSelectedCategory] = useState<CategoryDTO>();
-    const [currentPage, setCurrentPage] = useState(1);
     const [tabValue, setTabValue] = useState(0); // Track selected tab
     const [tabNames, setTabNames] = useState(["00"]);
     const [isEditing, setIsEditing] = useState<number | null>(null); // Track the tab being edited
     const [orders, setOrders] = useState<Orders>([[]]); // Initialize with an empty order for the first tab
-    const totalPages = 3;
     const totals = useMemo(() => {
         const currentTabProducts = orders[tabValue] || [];
         const totalQuantity = currentTabProducts.reduce((sum, product) => sum + (product.quantity || 1), 0);
@@ -126,13 +122,6 @@ const SalesPage = () => {
         });
     };
 
-    const handleNextPage = () => {
-        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-    };
-    const handlePreviousPage = () => {
-        if (currentPage > 1) setCurrentPage(currentPage - 1);
-    };
-
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         if (newValue >= 0 && newValue < tabNames.length) {
             setTabValue(newValue); // Update the selected tab index
@@ -209,40 +198,43 @@ const SalesPage = () => {
     return (
         <div className="flex flex-row h-screen">
             {/* Left Section */}
-            <div className="flex flex-col" style={{flex: 5}}>
+            <div className="flex flex-col flex-1" style={{flex: 5}}>
                 <div className="pt-2 pb-3 bg-blue-800 h-12">
                     <div className="w-1/2 h-7 px-4">
                         <InputSearchProduct
                             value={textSearch}
                             onChange={setTextSearch}
                             recommendations={productSearch}
-                            onClickItem={(product) => {handleProductClick(product)}}
+                            onClickItem={(product) => {
+                                handleProductClick(product)
+                            }}
                             isBlack={false}
                         ></InputSearchProduct>
                     </div>
                 </div>
-                <div className="flex flex-col flex-1 border-r border-gray-300 h-full">
-                    <div className="flex flex-col flex-wrap gap-2 max-h-64 bg-white px-3 pt-3 pb-3 overflow-y-auto">
-                        {categories.map((category) => (
-                            <button
-                                key={category.id}
-                                onClick={() => handleCategoryClick(category)}
-                                style={{height: '50px', fontSize: "14px"}}
-                                className={`px-3 py-1 text-sm rounded-full ${
-                                    selectedCategory === category ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
-                                }`}
-                            >
-                                {category.name}
-                            </button>
-                        ))}
-                    </div>
-                    <div
-                        className="flex flex-wrap px-4 py-2 gap-3 overflow-auto"
-                        style={{
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
+                <div
+                    className="flex flex-row gap-2 bg-white px-3 pt-3 pb-3 overflow-x-auto"
+                    style={{
+                        scrollbarWidth: 'thin',
+                        scrollbarColor: '#aaa #f0f0f0',
+                    }}
+                >
+                    {categories.map((category) => (
+                        <button
+                            key={category.id}
+                            onClick={() => handleCategoryClick(category)}
+                            style={{height: '50px', fontSize: '14px'}}
+                            className={`px-3 py-1 text-sm rounded-full flex-shrink-0 ${
+                                selectedCategory === category ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
+                            }`}
+                        >
+                            {category.name}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="flex-1 overflow-y-auto px-4 py-2">
+                    <div className="flex flex-wrap gap-3 justify-center">
                         {products.map((product) => (
                             <SalesProductCard
                                 key={product.id}
@@ -254,56 +246,11 @@ const SalesPage = () => {
                             />
                         ))}
                     </div>
-                    <div className="bg-white px-2 mt-auto">
-                        <div className="flex justify-end items-center p-2">
-                            <div className="flex items-center gap-2">
-                                {/* Previous Button */}
-                                <IconButton
-                                    className="px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
-                                    onClick={handlePreviousPage}
-                                    disabled={currentPage === 1}
-                                    sx={{
-                                        backgroundColor: 'gray.100',
-                                        color: 'gray.700',
-                                        '&:hover': {backgroundColor: 'gray.200'},
-                                        borderRadius: '999px', // Makes it fully rounded
-                                        minWidth: '20px', // Optional: to control button size
-                                        minHeight: '20px', // Optional: to control button size
-                                    }}
-                                >
-                                    <ArrowBackIosIcon fontSize="small"/>
-                                </IconButton>
-
-                                {/* Pagination Text */}
-                                <div className="text-sm text-gray-700">
-                                    <span className="font-bold text-blue-600">{currentPage}</span> / {totalPages}
-                                </div>
-
-                                {/* Next Button */}
-                                <IconButton
-                                    className="px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
-                                    onClick={handleNextPage}
-                                    disabled={currentPage === totalPages}
-                                    sx={{
-                                        backgroundColor: 'gray.100',
-                                        color: 'gray.700',
-                                        '&:hover': {backgroundColor: 'gray.200'},
-                                        borderRadius: '999px', // Makes it fully rounded
-                                        minWidth: '20px', // Optional: to control button size
-                                        minHeight: '20px', // Optional: to control button size
-
-                                    }}
-                                >
-                                    <ArrowForwardIosIcon fontSize="small"/>
-                                </IconButton>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
             {/* Right Section */}
-            <div className="flex flex-col flex-1 bg-white" style={{flex: 4}}>
+            <div className="flex flex-col flex-1 bg-white" style={{flex: 5}}>
                 {/* Tabs for Orders */}
                 <div className="flex items-end justify-between px-4 h-12 bg-blue-800">
                     <div className="flex items-center gap-2 flex-1">
@@ -369,7 +316,7 @@ const SalesPage = () => {
                                                     autoFocus
                                                     onChange={(e) => {
                                                         const updatedTabs = [...tabNames];
-                                                         // Remove non-numeric characters
+                                                        // Remove non-numeric characters
                                                         updatedTabs[index] = e.target.value.replace(/[^0-9]/g, ''); // Update the tab name with numeric-only input
                                                         setTabNames(updatedTabs); // Update state
                                                     }}
@@ -387,7 +334,10 @@ const SalesPage = () => {
                                                     }}
                                                 />
                                             ) : (
-                                                <span style={{textTransform: "none", fontWeight: "bold"}}>{"Order " + tab}</span>
+                                                <span style={{
+                                                    textTransform: "none",
+                                                    fontWeight: "bold"
+                                                }}>{"Order " + tab}</span>
                                             )}
 
                                             {/* Delete Button for Selected Tab Only */}
@@ -403,7 +353,7 @@ const SalesPage = () => {
                                                         color: bg_grey_600,
                                                     }}
                                                 >
-                                                    <CloseIcon fontSize="small" />
+                                                    <CloseIcon fontSize="small"/>
                                                 </IconButton>
                                             )}
                                         </div>
@@ -429,7 +379,7 @@ const SalesPage = () => {
 
                 {/*Tabs content*/}
                 <div
-                    className="flex flex-col overflow-y-auto"
+                    className="flex flex-col overflow-y-auto border-l border-gray-300 h-full"
                     style={{
                         flex: 1,
                         maxHeight: 'calc(100% - 60px)', // Adjust height to avoid overlapping with tabs
@@ -459,7 +409,7 @@ const SalesPage = () => {
                 </div>
 
                 {/*Action center*/}
-                <div className="mt-auto px-4 border-t border-gray-200">
+                <div className="mt-auto px-4 border-t border-l border-gray-300">
                     <div className="flex items-center justify-between px-4 py-2">
                         <div className="flex items-center gap-2 ml-auto">
                             <Typography variant="body2">

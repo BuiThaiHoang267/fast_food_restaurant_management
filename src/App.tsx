@@ -13,6 +13,9 @@ import LoginPage from "./pages/login-page.tsx";
 import AccountManagementPage from "./pages/account-management-page.tsx";
 import ReportSalePage from "./pages/report-sale-page.tsx";
 import ReportProductPage from "./pages/report-product-page.tsx";
+import React from "react";
+import {ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
@@ -33,6 +36,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
           </Routes>
         </BrowserRouter>
+          <ToastContainer />
       </LocalizationProvider>
   )
 }

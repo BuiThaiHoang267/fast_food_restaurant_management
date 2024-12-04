@@ -12,8 +12,7 @@ const LoginPage = () => {
         // Handle login logic here
         try {
             await UserService.login(username, password);
-        }
-        catch (error) {
+        } catch (error) {
             console.error(error);
         }
         console.log('Logging in with:', username, password);

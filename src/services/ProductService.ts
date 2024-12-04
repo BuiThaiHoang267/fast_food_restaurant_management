@@ -45,6 +45,7 @@ export const productService = {
             console.log(response);
             const data = response.data.data.map(ProductDTO.fromJSON)
             console.log(data);
+
             return data;
         }
         catch (error) {
