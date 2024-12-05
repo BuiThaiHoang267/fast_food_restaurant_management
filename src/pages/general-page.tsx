@@ -8,6 +8,8 @@ import {AxisDTO, RevenueChartDTO, TopProductDTO} from "../dtos/ResultSaleTodayDT
 import {InputDurationDropdown} from "../components/input-duration-dropdown.tsx";
 import {Box, Tab, Tabs} from "@mui/material";
 import {useEffect, useState} from "react";
+import {AuditLogService} from "../services/AuditLogService.ts";
+import {AuditLogDTO} from "../dtos/AuditLogDTO.ts";
 
 const GeneralPage = () => {
     const filterChart1 = [
@@ -31,7 +33,11 @@ const GeneralPage = () => {
     const [tabSelectedProduct, setTabSelectedProduct] = useState<string>(filterChart2[0]);
     const [data1, setData1] = useState<AxisDTO>({labels: [], data: []});
     const [data2, setData2] = useState<AxisDTO>({labels: [], data: []});
+    const [auditLogs, setAuditLogs] = useState<AuditLogDTO[]>([]);
 
+    useEffect(() => {
+        fetchAuditLogRecent();
+    }, []);
 
     useEffect(() => {
         fetchRevenueChart();
@@ -54,6 +60,17 @@ const GeneralPage = () => {
             const response = await StatisticService.getRevenueChart(startDate, endDate);
             console.log(response);
             setDataChartRevenue(response);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    const fetchAuditLogRecent = async () => {
+        try {
+            const response = await AuditLogService.getAuditLogRecent();
+            console.log(response);
+            setAuditLogs(response);
         }
         catch (error) {
             console.error(error);
@@ -164,7 +181,7 @@ const GeneralPage = () => {
                             boxShadow: "0 0 8px 0 rgba(0,0,0,0.1)"
                         }}
                 >
-                    <CardRecentlyAction></CardRecentlyAction>
+                    <CardRecentlyAction auditLogs={auditLogs} />
                 </div>
             </div>
             <div

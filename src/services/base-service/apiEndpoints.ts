@@ -50,3 +50,7 @@ export const STATISTIC_API = {
 export const ROLE_API = {
     GET_ALL_ROLE: '/role/all',
 }
+
+export const AUDIT_LOG_API = {
+    GET_AUDIT_LOG_RECENT: '/audit-log/recent',
+}

@@ -1,7 +1,12 @@
 import {Divider} from "@mui/material";
 import ItemRecentlyAction from "./item-recently-action.tsx";
+import {AuditLogDTO} from "../dtos/AuditLogDTO.ts";
 
-const CardRecentlyAction = () => {
+interface CardRecentlyActionProps {
+    auditLogs: AuditLogDTO[];
+}
+
+const CardRecentlyAction: React.FC<CardRecentlyActionProps> = ({auditLogs}) => {
     return (
         <div
             className="flex flex-col relative"
@@ -29,19 +34,9 @@ const CardRecentlyAction = () => {
                     overflowY: "auto", // Thêm scroll dọc
                 }}
             >
-                <ItemRecentlyAction/>
-                <ItemRecentlyAction/>
-                <ItemRecentlyAction/>
-                <ItemRecentlyAction/>
-                <ItemRecentlyAction/>
-                <ItemRecentlyAction/>
-                <ItemRecentlyAction/>
-                <ItemRecentlyAction/>
-                <ItemRecentlyAction/>
-                <ItemRecentlyAction/>
-                <ItemRecentlyAction/>
-                <ItemRecentlyAction/>
-                <ItemRecentlyAction/>
+                {auditLogs.map((auditLog, index) => (
+                    <ItemRecentlyAction key={index} auditLog={auditLog} />
+                ))}
 
             </div>
         </div>

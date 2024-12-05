@@ -95,7 +95,7 @@ const CardDashboardResultToday = () => {
               <div className={'flex flex-row flex-1 items-center'}>
                   <div
                       className={'flex flex-row items-center justify-center'}
-                      style={{height: 36, width: 36, borderRadius: 36, backgroundColor: Error500}}
+                      style={{height: 36, width: 36, borderRadius: 36, backgroundColor: 'orange'}}
                   >
                       <DescriptionIcon fontSize="small" fontWeight='bold' sx={{color: 'white'}}/>
                   </div>
