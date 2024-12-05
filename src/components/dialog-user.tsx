@@ -36,7 +36,14 @@ const DialogUser: React.FC<DialogUserProps> = ({open, onClose, user, isAdd, bran
             }
         }
         else{
-            setUserReq(user);
+            if(!open)
+            {
+                setUserReq(new UserDTO(0, '', '', '', '', '', 0, '', '', 0, '', true));
+            }
+            else {
+                console.log("Bat dialog",user);
+                setUserReq(user);
+            }
         }
     }, [open]);
 
@@ -97,6 +104,7 @@ const DialogUser: React.FC<DialogUserProps> = ({open, onClose, user, isAdd, bran
     }
 
     const handleUpdateUser = () => {
+        console.log("update", userReq);
         updateUserReq()
             .then(
                 () => {

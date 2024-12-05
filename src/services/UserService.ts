@@ -147,6 +147,7 @@ export const UserService = {
             console.log(response);
             const data = response.data.data;
             console.log(data);
+            toast.success("Cập nhật thông tin tài khoản thành công");
             return data;
         }
         catch (error) {
