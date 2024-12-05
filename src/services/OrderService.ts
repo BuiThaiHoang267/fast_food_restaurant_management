@@ -3,6 +3,7 @@ import axiosInstance from "./base-service/axiosConfig.ts";
 import {ORDER_API} from "./base-service/apiEndpoints.ts";
 import {OrderItemDTO} from "../dtos/OrderItemDTO.ts";
 import {toast} from "react-toastify";
+import {OrderItemStatus, OrderStatus} from "../common/order-status.ts";
 
 export const OrderService = {
     createOrder: async (order: OrderDTO) => {
@@ -40,7 +41,8 @@ export const OrderService = {
 
     getOrderStatusPending: async (): Promise<OrderDTO[]> => {
         try{
-            const response = await axiosInstance.get(ORDER_API.GET_ORDER_STATUS_PENDING);
+            const branchId = sessionStorage.getItem("branchId");
+            const response = await axiosInstance.get(ORDER_API.GET_ORDER_STATUS_PENDING(branchId? branchId : "1"));
             console.log(response);
             const data = response.data.data.map(OrderDTO.fromJSON);
             console.log(data);
@@ -54,7 +56,8 @@ export const OrderService = {
 
     getOrderItemStatusCooked: async (): Promise<OrderItemDTO[]> => {
         try{
-            const response = await axiosInstance.get(ORDER_API.GET_ORDER_ITEM_BY_STATUS_COOKED);
+            const branchId = sessionStorage.getItem("branchId");
+            const response = await axiosInstance.get(ORDER_API.GET_ORDER_ITEM_BY_STATUS_COOKED(branchId? branchId : "1"));
             console.log(response);
             const data = response.data.data.map(OrderItemDTO.fromJSON);
             console.log(data);
@@ -69,6 +72,15 @@ export const OrderService = {
     updateOrderItem: async (orderItem: OrderItemDTO) => {
         try {
             const response = await axiosInstance.patch(ORDER_API.UPDATE_ORDER_ITEM(orderItem.id), orderItem);
+            if(orderItem.status === OrderItemStatus.COOKED)
+            {
+                toast.success(`Đã nấu xong ${orderItem.productName}!`);
+            }
+            else if(orderItem.status === OrderItemStatus.COMPLETED)
+            {
+                toast.success(`${orderItem.productName} được phục vụ!`);
+            }
+
             console.log(response);
         }
         catch (error) {
@@ -80,6 +92,7 @@ export const OrderService = {
     updateOrder: async (order: OrderDTO) => {
         try{
             const response = await axiosInstance.patch(ORDER_API.UPDATE_ORDER(order.id), order);
+            toast.success(`Hoàn thành order ${order.numberOrder} thành công!`);
             console.log(response);
         }
         catch (error) {
