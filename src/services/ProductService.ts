@@ -70,7 +70,11 @@ export const productService = {
 
     createProduct: async (product: ProductDTO) => {
         try {
-            const response = await axiosInstance.post(PRODUCT_API.CREATE_PRODUCT, product);
+            const response = await axiosInstance.post(PRODUCT_API.CREATE_PRODUCT, product, {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                }
+            });
             console.log(response);
             toast.success("Create product success");
         }
@@ -84,7 +88,11 @@ export const productService = {
 
     deleteProduct: async (productId: number) => {
         try {
-            const response = await axiosInstance.patch(`${PRODUCT_API.DELETE_PRODUCT_BY_ID(productId)}`, {});
+            const response = await axiosInstance.patch(`${PRODUCT_API.DELETE_PRODUCT_BY_ID(productId)}`, {}, {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                }
+            });
             console.log(response);
             toast.success("Delete product success");
         }

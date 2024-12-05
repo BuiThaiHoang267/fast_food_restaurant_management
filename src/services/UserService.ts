@@ -17,7 +17,7 @@ export const UserService = {
             console.log(data);
 
             // Luu data vao session storage
-            sessionStorage.setItem("token", JSON.stringify(data));
+            sessionStorage.setItem("token", data);
             const decode: never = jwtDecode(data);
             const name = decode["Name"];
             const userId = decode[ClaimTypes.NAME_IDENTIFIER];
@@ -127,7 +127,11 @@ export const UserService = {
                 toast.error("Password must not be empty");
                 throw new Error("Password must not be empty");
             }
-            const response = await axiosInstance.post(USER_API.REGISTER, user);
+            const response = await axiosInstance.post(USER_API.REGISTER, user, {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                }
+            });
             console.log(response);
             const data = response.data.data;
             console.log(data);
@@ -143,7 +147,11 @@ export const UserService = {
 
     updateUser: async (user: UserDTO) => {
         try {
-            const response = await axiosInstance.patch(USER_API.UPDATE_USER(user.id), user);
+            const response = await axiosInstance.patch(USER_API.UPDATE_USER(user.id), user, {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                }
+            });
             console.log(response);
             const data = response.data.data;
             console.log(data);
@@ -159,7 +167,11 @@ export const UserService = {
 
     deleteUser: async (id: number) => {
         try {
-            const response = await axiosInstance.delete(USER_API.DELETE_USER(id));
+            const response = await axiosInstance.delete(USER_API.DELETE_USER(id), {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                }
+            });
             console.log(response);
             const data = response.data.data;
             console.log(data);
