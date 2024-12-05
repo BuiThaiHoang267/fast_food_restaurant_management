@@ -178,11 +178,7 @@ const ProductCategoryPage = () => {
     }
 
     const handleRemoveProduct = () => {
-        setProducts((prevProducts) => {
-            const newProducts = [...prevProducts];
-            newProducts.splice(productSelectIndex, 1);
-            return newProducts;
-        });
+        fetchProductByFilter();
     }
 
     const handleDialogDetailClose = () => {

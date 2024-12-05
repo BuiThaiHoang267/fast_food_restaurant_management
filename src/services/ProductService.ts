@@ -98,6 +98,7 @@ export const productService = {
         }
         catch (error) {
             console.error(error);
+            toast.error("Cannot delete product");
             throw error;
         }
     }
