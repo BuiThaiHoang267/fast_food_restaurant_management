@@ -287,8 +287,8 @@ const SalesPage = () => {
                 const updatedOrderRequest = { ...prevOrderRequest };
                 updatedOrderRequest.orderItems = currentOrder;
                 updatedOrderRequest.totalPrice = totals.totalPrice;
-                updatedOrderRequest.paymentMethodId = parseInt(branchIdString, 10);
-                updatedOrderRequest.branchId = 1;
+                updatedOrderRequest.paymentMethodId = 1;
+                updatedOrderRequest.branchId = parseInt(branchIdString, 10);
                 updatedOrderRequest.numberOrder = parseInt(tabNames[tabValue], 0); // Parse the tab name as the order number
                 console.log("Order Request:", updatedOrderRequest);
                 return updatedOrderRequest;
