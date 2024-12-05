@@ -7,7 +7,11 @@ import {toast} from "react-toastify";
 export const OrderService = {
     createOrder: async (order: OrderDTO) => {
         try {
-            const response = await axiosInstance.post(ORDER_API.CREATE_ORDER, order);
+            const response = await axiosInstance.post(ORDER_API.CREATE_ORDER, order, {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                }
+            });
             console.log(response);
             toast.success("Order successfully!");
         }
@@ -68,7 +72,11 @@ export const OrderService = {
 
     updateOrderItem: async (orderItem: OrderItemDTO) => {
         try {
-            const response = await axiosInstance.patch(ORDER_API.UPDATE_ORDER_ITEM(orderItem.id), orderItem);
+            const response = await axiosInstance.patch(ORDER_API.UPDATE_ORDER_ITEM(orderItem.id), orderItem, {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                }
+            });
             console.log(response);
         }
         catch (error) {
@@ -90,7 +98,11 @@ export const OrderService = {
 
     deleteOrder: async (id: number) => {
         try{
-            const response = await axiosInstance.delete(ORDER_API.DELETE_ORDER(id));
+            const response = await axiosInstance.delete(ORDER_API.DELETE_ORDER(id), {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                }
+            });
             console.log(response);
             toast.success("Delete order successfully!")
         }
