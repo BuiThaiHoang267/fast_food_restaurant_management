@@ -102,7 +102,7 @@ const CardDashboardResultToday = () => {
                   <div className={'flex-1 flex flex-col pl-4'}>
                       <span style={{fontSize: "0.9rem", fontWeight: "bold", color: bg_grey_500}}>Hóa đơn</span>
                       <div className={'flex flex-row items-center'}>
-                          <div style={{fontSize: "1.3rem", color: Error500}}>{data.totalOrdersToday}</div>
+                          <div style={{fontSize: "1.3rem", color: 'orange'}}>{data.totalOrdersToday}</div>
                           {(data.percentRevenueChange > 0) ?
                               <ArrowUpwardTwoToneIcon fontSize="small" sx={{color: success_500, marginLeft: 2}}/>:
                               <ArrowDownwardTwoToneIcon fontSize="small" sx={{color: 'red', marginLeft: 2}}/>

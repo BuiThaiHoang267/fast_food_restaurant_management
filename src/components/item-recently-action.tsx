@@ -13,7 +13,7 @@ const ItemRecentlyAction: React.FC<ItemRecentlyActionProps> = ({auditLog}) => {
                 className={"flex items-center justify-center"}
                 style={{
                     height: 36, width: 36, borderRadius: 36,
-                    backgroundColor: auditLog.action === 'Create' ? color_green_primary : auditLog.action === 'Update' ? bg_blue_400 : 'red'
+                    backgroundColor: auditLog.action === 'Create' ? color_green_primary : auditLog.action === 'Update' ? bg_blue_400 : auditLog.action === 'Add'? color_green_primary : 'red'
             }}
             >
                 <FileCopyIcon fontSize="small" sx={{color: 'white'}}/>

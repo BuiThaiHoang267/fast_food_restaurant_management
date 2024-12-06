@@ -53,8 +53,8 @@ const OrderPage = () => {
             id: "",
             paymentMethods: [],
             branches: [],
-            startDate: dayjs().add(-1,'day').format('DD/MM/YYYY'),
-            endDate: dayjs().format('DD/MM/YYYY'),
+            startDate: dayjs().startOf('day').format('DD/MM/YYYY'),
+            endDate: dayjs().endOf('day').format('DD/MM/YYYY'),
         }
     );
 
