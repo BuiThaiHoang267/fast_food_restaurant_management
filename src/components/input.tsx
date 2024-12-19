@@ -80,7 +80,7 @@ export const InputNumber: React.FC<InputNumberProps> = ({ label, value, onChange
 
         // Nếu người dùng xóa hết thì set giá trị thành chuỗi rỗng
         if (inputValue === '') {
-            onChange("");
+            onChange(0);
             return;
         }
 
@@ -125,7 +125,7 @@ export const InputNumberCustom: React.FC<InputNumberCustomProps> = ({ label, val
 
         // Nếu người dùng xóa hết thì set giá trị thành chuỗi rỗng
         if (inputValue === '') {
-            onChange("");
+            onChange(0);
             return;
         }
 
@@ -168,7 +168,7 @@ export const InputQuantity: React.FC<InputQuantityProps> = ({value, onChange }) 
 
         // Nếu người dùng xóa hết thì set giá trị thành chuỗi rỗng
         if (inputValue === '') {
-            onChange("");
+            onChange(0);
             return;
         }
 

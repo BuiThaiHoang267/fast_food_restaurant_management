@@ -220,6 +220,7 @@ const SalesPage = () => {
     };
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+        console.log(event);
         if (newValue >= 0 && newValue < tabNames.length) {
             setTabValue(newValue); // Update the selected tab index
             setIsEditing(null);    // Exit edit mode if it was active

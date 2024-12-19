@@ -3,7 +3,7 @@ import axiosInstance from "./base-service/axiosConfig.ts";
 import {ORDER_API} from "./base-service/apiEndpoints.ts";
 import {OrderItemDTO} from "../dtos/OrderItemDTO.ts";
 import {toast} from "react-toastify";
-import {OrderItemStatus, OrderStatus} from "../common/order-status.ts";
+import {OrderItemStatus} from "../common/order-status.ts";
 
 export const OrderService = {
     createOrder: async (order: OrderDTO) => {

@@ -6,7 +6,7 @@ import {UserDTO} from "../dtos/UserDTO.ts";
 import {toast} from "react-toastify";
 
 export const UserService = {
-    login: async (username: string, password: string) : Promise<string> => {
+    login: async (username: string, password: string) => {
         try {
             const response = await axiosInstance.post(USER_API.LOGIN, {
                 username: username,
@@ -45,7 +45,7 @@ export const UserService = {
             // console.log(branchName);
             return data;
         }
-        catch (error) {
+        catch (error : any) {
             toast.error(error.response.data.message);
 
             // console.error(error);
@@ -138,9 +138,9 @@ export const UserService = {
             toast.success("Register success");
             return data;
         }
-        catch (error) {
+        catch (error : any) {
             console.log(error);
-            toast.error(error.response.data.message);
+            toast.error(JSON.stringify(error.response.data.errors));
             throw error;
         }
     },
@@ -158,7 +158,7 @@ export const UserService = {
             toast.success("Cập nhật thông tin tài khoản thành công");
             return data;
         }
-        catch (error) {
+        catch (error : any) {
             toast.error(JSON.stringify(error.response.data.errors));
             // console.log(JSON.stringify(error.response.data.errors));
             // throw error;

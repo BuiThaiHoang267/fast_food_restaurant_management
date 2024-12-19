@@ -3,7 +3,7 @@ import {RadioBoxCard} from "../components/card.tsx";
 import {useEffect, useState} from "react";
 import CardTimeOrder from "../components/card-time-order.tsx";
 import dayjs, {Dayjs} from "dayjs";
-import {BarChart} from "@mui/x-charts";
+import {AxisConfig, BarChart, ChartsXAxisProps, ChartsYAxisProps} from "@mui/x-charts";
 import {
     bg_blue_500,
     bg_blue_600,
@@ -11,7 +11,6 @@ import {
     bg_grey_500,
     bg_yellow_500, color_green_primary,
     Error500,
-    success_500
 } from "../common/constant.ts";
 import {timeConverter} from "../utils/TimeElapsedConverter.ts";
 import {BranchService} from "../services/BranchService.ts";
@@ -240,11 +239,13 @@ const ReportSalePage = () => {
                                 },
                             ]}
                             height={400}
-                            xAxis={[{
-                                data: data.labels,
-                                scaleType: 'band',
-                                categoryGapRatio: 0.6,
-                            }]}
+                            xAxis={[
+                                {
+                                    data: data.labels,
+                                    scaleType: 'band',
+                                    categoryGapRatio: 0.6,
+                                }  as AxisConfig<'band', string, ChartsXAxisProps>
+                            ]}
                             margin={{top: 40, bottom: 30, left: 65, right: 10}}
                         ></BarChart>
                     }
@@ -268,11 +269,13 @@ const ReportSalePage = () => {
                                 },
                             ]}
                             height={400}
-                            xAxis={[{
-                                data: data.labels,
-                                scaleType: 'band',
-                                categoryGapRatio: 0.6,
-                            }]}
+                            xAxis={[
+                                {
+                                    data: data.labels,
+                                    scaleType: 'band',
+                                    categoryGapRatio: 0.6,
+                                }   as AxisConfig<'band', string, ChartsXAxisProps>
+                            ]}
                             margin={{top: 40, bottom: 30, left: 65, right: 10}}
                         ></BarChart>
                     }
@@ -283,7 +286,7 @@ const ReportSalePage = () => {
                                     scaleType: 'band',
                                     data: data.revenueByBranch.labels,
                                     categoryGapRatio: 0.3, // Khoảng cách giữa các cột
-                                },
+                                }   as AxisConfig<'band', string, ChartsYAxisProps>,
                             ]}
                             series={[
                                 {
