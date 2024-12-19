@@ -179,6 +179,7 @@ const AccountManagementPage = () => {
     };
     // Handler for pagination change
     const handleChangePage = (e: unknown, newPage: number) => {
+        console.log(e);
         setPage(newPage);
     };
 
@@ -332,7 +333,7 @@ const AccountManagementPage = () => {
                                     </TableCell>
                                     {fields.map((field, index) => (
                                         (field.visible && field.name != "image") && <TableCell key={index}>
-                                            {field.name === 'updatedAt' ? row[field.name].format('DD/MM/YYYY HH:mm') : row[field.name]}
+                                            {row[field.name as keyof UserDTO]}
                                         </TableCell>
                                     ))}
                                 </TableRow>

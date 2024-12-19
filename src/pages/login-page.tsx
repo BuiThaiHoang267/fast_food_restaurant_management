@@ -4,12 +4,10 @@ import {bg_blue_600, bg_blue_800} from "../common/constant.ts";
 import {UserService} from "../services/UserService.ts";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
-import DialogUser from "../components/dialog-user.tsx";
-import {UserDTO} from "../dtos/UserDTO.ts";
 
 const LoginPage = () => {
-    const [username, setUsername] = useState(null);
-    const [password, setPassword] = useState(null);
+    const [username, setUsername] = useState<string>();
+    const [password, setPassword] = useState<string>();
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {

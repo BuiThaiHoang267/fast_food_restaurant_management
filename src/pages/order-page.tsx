@@ -170,6 +170,7 @@ const OrderPage = () => {
     };
     // Handler for pagination change
     const handleChangePage = (e: unknown, newPage: number) => {
+        console.log(e);
         setPage(newPage);
     };
 
@@ -332,7 +333,7 @@ const OrderPage = () => {
                                     </TableCell>
                                     {fields.map((field, index) => (
                                         (field.visible && field.name != "image") && <TableCell key={index}>
-                                            {field.name === 'updatedAt' ? row[field.name].format('DD/MM/YYYY HH:mm') : row[field.name]}
+                                            {field.name === 'updatedAt' ? row[field.name].format('DD/MM/YYYY HH:mm') : row[field.name as keyof OrderDTO] as React.ReactNode}
                                         </TableCell>
                                     ))}
                                 </TableRow>

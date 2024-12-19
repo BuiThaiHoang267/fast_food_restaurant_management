@@ -1,7 +1,6 @@
 import dayjs, {Dayjs} from "dayjs";
 import React, {useState} from "react";
 import {MenuItem, TextField} from "@mui/material";
-import {node} from "globals";
 import {bg_blue_600} from "../common/constant.ts";
 
 interface InputDurationDropdownProps {
@@ -16,7 +15,7 @@ interface Duration {
 }
 
 export const InputDurationDropdown: React.FC<InputDurationDropdownProps> = ({onChange, isChart}) => {
-    const [duration, setDuration] = useState<Duration[]>(
+    const [duration] = useState<Duration[]>(
         [
             {label: 'Hôm nay', startDate: dayjs(), endDate: dayjs()},
             {label: 'Hôm qua', startDate: dayjs().subtract(1, 'day'), endDate: dayjs().subtract(1, 'day')},

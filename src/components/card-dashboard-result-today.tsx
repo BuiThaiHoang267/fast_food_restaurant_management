@@ -3,7 +3,6 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import {
     bg_blue_600,
     bg_grey_500,
-    Error500,
     success_500
 } from "../common/constant.ts";
 import ArrowDownwardTwoToneIcon from '@mui/icons-material/ArrowDownwardTwoTone';

@@ -4,7 +4,7 @@ import CardTimeOrder from "../components/card-time-order.tsx";
 import {useEffect, useState} from "react";
 import dayjs, {Dayjs} from "dayjs";
 import {bg_blue_500, color_green_primary} from "../common/constant.ts";
-import {BarChart} from "@mui/x-charts";
+import {AxisConfig, BarChart, ChartsYAxisProps} from "@mui/x-charts";
 import {BranchService} from "../services/BranchService.ts";
 import {CategoryService} from "../services/CategoryService.ts";
 import {StatisticService} from "../services/StatisticService.ts";
@@ -136,7 +136,7 @@ const ReportProductPage = () => {
                                     scaleType: 'band',
                                     data: data.topProductByRevenue.labels,
                                     categoryGapRatio: 0.3, // Khoảng cách giữa các cột
-                                },
+                                } as AxisConfig<'band', string, ChartsYAxisProps>,
                             ]}
                             series={[
                                 {
@@ -157,7 +157,7 @@ const ReportProductPage = () => {
                                     scaleType: 'band',
                                     data: data.topProductByProfit.labels,
                                     categoryGapRatio: 0.3, // Khoảng cách giữa các cột
-                                },
+                                } as AxisConfig<'band', string, ChartsYAxisProps>,
                             ]}
                             series={[
                                 {
@@ -178,7 +178,7 @@ const ReportProductPage = () => {
                                     scaleType: 'band',
                                     data: data.topProductBySale.labels,
                                     categoryGapRatio: 0.3, // Khoảng cách giữa các cột
-                                },
+                                } as AxisConfig<'band', string, ChartsYAxisProps>,
                             ]}
                             series={[
                                 {

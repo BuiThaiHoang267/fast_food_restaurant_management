@@ -52,7 +52,6 @@ const ProductCategoryPage = () => {
         categories: [],
         types: [],
     });
-    const [productSelectIndex, setProductSelectIndex] = useState<number>(0);
 
     useEffect(() => {
         fetchAllCategory();
@@ -153,10 +152,10 @@ const ProductCategoryPage = () => {
         console.log(product);
         setProductDetail(product);
         setOpenDialogDetail(true);
-        setProductSelectIndex(products.indexOf(product));
     };
     // Handler for pagination change
     const handleChangePage = (e: unknown, newPage: number) => {
+        console.log(e);
         setPage(newPage);
     };
 
@@ -183,7 +182,6 @@ const ProductCategoryPage = () => {
 
     const handleDialogDetailClose = () => {
         setOpenDialogDetail(false);
-        setProductSelectIndex(0);
     }
 
     const handleCheckField = (name: string, visible: boolean) => {
@@ -318,7 +316,9 @@ const ProductCategoryPage = () => {
                                     </TableCell>
                                     {fields[0].visible && <TableCell style={{padding: "5px 0"}}><img src={row.image} alt={row.name} width={40} height={40}/></TableCell>}
                                     {fields.map((field, index) => (
-                                        (field.visible && field.name != "image") && <TableCell key={index}>{row[field.name]}</TableCell>
+                                        (field.visible && field.name != "image") && <TableCell key={index}>
+                                            {row[field.name as keyof ProductDTO] as React.ReactNode}
+                                        </TableCell>
                                     ))}
                                 </TableRow>
                             ))}

@@ -1,4 +1,4 @@
-﻿import { BarChart} from "@mui/x-charts";
+﻿import {AxisConfig, BarChart, ChartsXAxisProps, ChartsYAxisProps} from "@mui/x-charts";
 import CardDashboardResultToday from "../components/card-dashboard-result-today.tsx";
 import {bg_blue_500} from "../common/constant.ts";
 import CardRecentlyAction from "../components/card-recently-action.tsx";
@@ -90,10 +90,12 @@ const GeneralPage = () => {
 
 
     const handleChangTab = (event: React.SyntheticEvent, newValue: string) => {
+        console.log(event);
         setTabSelected(newValue);
     }
 
     const handleChangTabProduct = (event: React.SyntheticEvent, newValue: string) => {
+        console.log(event);
         setTabSelectedProduct(newValue);
     }
 
@@ -159,11 +161,14 @@ const GeneralPage = () => {
                                 {data: data1.data,  color: bg_blue_500},
                             ]}
                             height={400}
-                            xAxis={[{
-                                data: data1.labels,
-                                scaleType: 'band',
-                                categoryGapRatio: 0.6,
-                            }]}
+                            xAxis={[
+                                {
+                                    data: data1.labels,
+                                    scaleType: 'band',
+                                    categoryGapRatio: 0.6,
+                                    barGapRatio: 0.2,
+                                } as AxisConfig<'band', string, ChartsXAxisProps>
+                            ]}
                             margin={{top: 10, bottom: 30, left: 80, right: 10}}
                         ></BarChart>
                     </div>
@@ -224,7 +229,7 @@ const GeneralPage = () => {
                             scaleType: 'band',
                             data: data2.labels, // Gắn dữ liệu trục y là tên sản phẩm
                             categoryGapRatio: 0.3, // Khoảng cách giữa các cột
-                        },
+                        } as AxisConfig<'band', string, ChartsYAxisProps>
                     ]}
                     series={[
                         {
